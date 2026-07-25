@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark" />
-  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v9</title>
+  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v10</title>
   <style>
     :root {
       --bg: #060a12;
@@ -581,7 +581,7 @@
         <div class="brand-mark"><img src="logo.png" alt="Logo ATLAS 118" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" /><span class="brand-fallback">✚</span></div>
         <div>
           <div class="brand-title">ATLAS 118</div>
-          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v9</div>
+          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v10</div>
         </div>
       </div>
 
@@ -762,7 +762,7 @@
                 <div class="alert-key"><span class="alert-amber">AVVISO</span><p>Gruppi A/B mischiati, RO nel 118, equipaggio tutto femminile, ruoli poco equilibrati o responsabili sotto obiettivo.</p></div>
                 <div class="alert-key"><span class="alert-blue">INFO</span><p>Situazioni ammesse ma da conoscere, come Sumirago inserita manualmente.</p></div>
               </article>
-              <article class="manual-card"><h3>Regole chiave</h3><ul><li>Le Libere entrano nel 118 secondo abilitazioni e sono neutrali rispetto ai gruppi.</li><li>Raschi svolge GRS; MGSE solo quando il minimo SE non è raggiungibile.</li><li>Sumirago non viene generata automaticamente: si inserisce manualmente.</li><li>Il sabato mattina ordinario copre G2, G3 e Somma; il sabato pomeriggio copre G2 e Somma. Di notte tutte le postazioni sono a 3.</li><li>Dopo ogni turno N o P+N, ATLAS inserisce RC nel giorno successivo e impedisce nuove attività lavorative, salvo forzatura manuale segnalata come errore.</li><li>Il RO entra nel 118 solo in estrema urgenza.</li></ul></article>
+              <article class="manual-card"><h3>Regole chiave</h3><ul><li>Le Libere entrano nel 118 secondo abilitazioni e sono neutrali rispetto ai gruppi.</li><li>Raschi svolge GRS; MGSE solo quando il minimo SE non è raggiungibile.</li><li>Sumirago non viene generata automaticamente: si inserisce manualmente.</li><li>Il sabato mattina ordinario copre G2, G3 e Somma; il sabato pomeriggio copre G2 e Somma. Di notte tutte le postazioni sono a 3.</li><li>La macchina a 2 di Gallarate deve avere almeno un uomo: due donne nello stesso equipaggio non sono consentite. Negli equipaggi a 3 ATLAS distribuisce gli uomini in modo da ridurre gli equipaggi interamente femminili, compatibilmente con abilitazioni, gruppi, sedi, riposi e monte ore.</li><li>Dopo ogni turno N o P+N, ATLAS inserisce RC nel giorno successivo e impedisce nuove attività lavorative, salvo forzatura manuale segnalata come errore.</li><li>Il RO entra nel 118 solo in estrema urgenza.</li></ul></article>
               <article class="manual-card"><h3>Inserire Sumirago</h3><ol><li>Apri la cella del dipendente e della data.</li><li>Scegli <strong>118</strong>.</li><li>Imposta fascia, sede <strong>Sumirago</strong> e ruolo A/C/S.</li><li>Salva le tre persone dell’equipaggio.</li><li>Verifica la pagina Coperture e l’alert informativo.</li></ol></article>
               <article class="manual-card"><h3>Anagrafiche</h3><p>L’ID resta tecnico e invisibile. Dalla pagina Anagrafiche puoi inserire o rimuovere persone, impostare gruppo, sesso, abilitazioni, responsabilità, sedi e monte ore mensile. Il sesso è usato solo dall’algoritmo e nella pagina Anagrafiche, non nel Calendario.</p></article>
               <article class="manual-card"><h3>Saldo ore nel Calendario</h3><p>Accanto al gruppo viene mostrato lo scostamento dal monte ore personale: il segno <strong>−</strong> indica le ore ancora mancanti, il segno <strong>+</strong> le ore in eccesso e <strong>0 h</strong> il raggiungimento del target. Passa il mouse sul valore per vedere ore programmate e obiettivo.</p></article>
@@ -812,7 +812,7 @@
           <div class="field full"><label>CSV Google Sheet · Matrice dipendenti</label><input id="setSheetCsv" class="input" /></div>
           <div class="field full"><label>CSV Google Sheet · Database turni</label><input id="setDatabaseCsv" class="input" /></div>
           <div class="field full"><label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0"><input id="setRotation" type="checkbox" /> Usa rotazione A/B settimanale (settimane pari A=M, B=P; dispari B=M, A=P)</label></div>
-          <div class="field full"><label>URL Web App Google Apps Script per salvataggio diretto</label><input id="setAppsScript" class="input" placeholder="https://script.google.com/macros/s/AKfycbwmFp82xN0UlDdJpyDfDyQ4xFxS4JZNlNFBAclFHPil2HNygBJSJCkczDKMGFFpzKRS/exec" /></div>
+          <div class="field full"><label>URL Web App Google Apps Script per salvataggio diretto</label><input id="setAppsScript" class="input" placeholder="https://script.google.com/macros/s/.../exec" /></div>
         </div>
         <div class="notice info"><strong>Per scrivere sul Google Sheet:</strong> incolla l’URL della distribuzione Web App che termina in <code>/exec</code>. Dopo ogni modifica al codice Apps Script devi creare una nuova versione della distribuzione. Il pulsante verde “Salva calendario” aggiorna il foglio Database del mese visualizzato.</div>
         <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
@@ -964,10 +964,10 @@
     allowRoAuto: false
   };
 
-  const STORAGE_KEY = 'atlas-118-turnazione-v9';
-  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
-  const APP_VERSION = 9;
-  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8,9]);
+  const STORAGE_KEY = 'atlas-118-turnazione-v10';
+  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v9','atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
+  const APP_VERSION = 10;
+  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8,9,10]);
   const DOW = ['dom','lun','mar','mer','gio','ven','sab'];
   const MONTHS = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
   const CREW_SLOTS = [
@@ -1252,10 +1252,18 @@
       if(item.site!=='G'&&String(item.machine)!=='3')errors.push('Somma e Sumirago prevedono esclusivamente equipaggi a 3.');
       if(d.getDay()===6&&item.shift==='P'&&!['G2','Somma'].includes(crewKey(item)))warnings.push('Il sabato pomeriggio la copertura ordinaria dipendenti prevede solo Gallarate macchina a 2 e Somma. Questa assegnazione è extra-ordinaria.');if(item.site==='SU')warnings.push('Sumirago è una postazione manuale al bisogno e non viene inserita dalla generazione automatica.');
       if(item.role==='A'&&!e.autista)errors.push('Abilitazione Autista mancante.');if(item.role==='C'&&!e.capo)errors.push('Abilitazione Capo Equipaggio mancante.');if(item.role==='S'&&!e.soccorritore)errors.push('Abilitazione Soccorritore mancante.');
+
+      const genderExisting=shiftRows(day,item.shift).filter(r=>r.employeeId!==e.id);
+      const genderCrew=crewKey(item);
+      const genderCrewRows=genderExisting.filter(r=>crewKey(r.a)===genderCrew);
+      if(genderCrew==='G2'&&isFemale(e)&&genderCrewRows.length>=1&&genderCrewRows.every(r=>isFemale(r.employee))){
+        errors.push('La macchina a 2 di Gallarate non può essere composta da due donne. Assegnare almeno un uomo all’equipaggio.');
+      }
+
       if(e.turno==='RO'&&!allowRo)warnings.push('Il Responsabile Operativo va usato nel 118 solo in estrema urgenza.');
       if(manual){
-        const existing=shiftRows(day,item.shift).filter(r=>r.employeeId!==e.id);const groups=[...new Set(existing.map(r=>r.employee.turno).filter(g=>['A','B'].includes(g)))];if(['A','B'].includes(e.turno)&&groups.length&&groups.some(g=>g!==e.turno))warnings.push(`Il turno contiene già personale del gruppo ${groups.join('/')}: assegnazione mista A/B.`);
-        const crew=crewKey(item),crewRows=existing.filter(r=>crewKey(r.a)===crew),expected=crew==='G2'?2:3;if(isFemale(e)&&crewRows.length===expected-1&&crewRows.every(r=>isFemale(r.employee)))warnings.push(`L’equipaggio ${crew} risulterà composto solo da donne: consentito ma da segnalare.`);
+        const existing=genderExisting;const groups=[...new Set(existing.map(r=>r.employee.turno).filter(g=>['A','B'].includes(g)))];if(['A','B'].includes(e.turno)&&groups.length&&groups.some(g=>g!==e.turno))warnings.push(`Il turno contiene già personale del gruppo ${groups.join('/')}: assegnazione mista A/B.`);
+        const crew=genderCrew,crewRows=genderCrewRows,expected=crew==='G2'?2:3;if(crew!=='G2'&&isFemale(e)&&crewRows.length===expected-1&&crewRows.every(r=>isFemale(r.employee)))warnings.push(`L’equipaggio ${crew} risulterà composto solo da donne. ATLAS proverà a riequilibrarlo automaticamente quando possibile.`);
         const prev=previous118Row(e.id,day);if(prev&&prev.a.role===item.role&&qualifiedRoles(e).length>1){const gap=Math.round((parseDateKey(day)-parseDateKey(prev.day))/86400000);if(gap<=1)warnings.push(`Ruolo ${item.role} ripetuto rispetto al turno precedente: valutare la rotazione su ${qualifiedRoles(e).filter(r=>r!==item.role).join(' o ')}.`);}
       }
     }
@@ -1298,7 +1306,7 @@
     workdays().forEach(d=>{const day=dateKey(d),count=rows.filter(r=>r.day===day&&r.a.category==='SE').length;if(count<state.settings.seMin)out.push(validation('warning','Secondari sotto il minimo',`${DOW[d.getDay()]} ${d.getDate()}: ${count} persone operative in SE, minimo ${state.settings.seMin}. GRS non viene conteggiato.`,null,day));if(count>state.settings.seMax)out.push(validation('error','Troppi dipendenti nei Secondari',`${DOW[d.getDay()]} ${d.getDate()}: ${count} persone, massimo ${state.settings.seMax}.`,null,day));});
     monthDates().forEach(d=>{const day=dateKey(d);['M','P','N'].forEach(shift=>{if(state.requirements[`${day}|${shift}`]!=='required')return;const cov=coverageFor(day,shift);Object.entries(cov).forEach(([crew,roles])=>Object.entries(roles).forEach(([role,people])=>{if(!people.length)out.push(validation('warning','Ruolo 118 scoperto',`${DOW[d.getDay()]} ${d.getDate()} · ${shift} · ${crew}: manca ${role}.`,null,day));if(people.length>1)out.push(validation('error','Ruolo duplicato',`${DOW[d.getDay()]} ${d.getDate()} · ${shift} · ${crew}: ${role} assegnato a più persone.`,null,day));}));
       const sr=shiftRows(day,shift),groups=[...new Set(sr.map(r=>r.employee.turno).filter(g=>['A','B'].includes(g)))];if(groups.length>1)out.push(validation('warning','Gruppi A/B mischiati',`${DOW[d.getDay()]} ${d.getDate()} · ${shift}: sono presenti dipendenti dei gruppi A e B. Le Libere sono neutrali e non generano questo avviso.`,null,day));
-      Object.keys(cov).forEach(crew=>{const cr=sr.filter(r=>crewKey(r.a)===crew),expected=crew==='G2'?2:3;if(cr.length===expected&&cr.every(r=>isFemale(r.employee)))out.push(validation('warning','Equipaggio tutto femminile',`${DOW[d.getDay()]} ${d.getDate()} · ${shift} · ${crew}: equipaggio completo senza almeno un uomo.`,null,day));});
+      Object.keys(cov).forEach(crew=>{const cr=sr.filter(r=>crewKey(r.a)===crew),expected=crew==='G2'?2:3;if(cr.length===expected&&cr.every(r=>isFemale(r.employee))){if(crew==='G2')out.push(validation('error','Macchina a 2 composta da due donne',`${DOW[d.getDay()]} ${d.getDate()} · ${shift} · Gallarate macchina a 2: configurazione non consentita. Inserire almeno un uomo.`,null,day));else out.push(validation('warning','Equipaggio tutto femminile',`${DOW[d.getDay()]} ${d.getDate()} · ${shift} · ${crew}: ATLAS non ha trovato un riequilibrio valido con almeno un uomo, nel rispetto di ruoli, riposi, sedi e gruppi.`,null,day));}});
     });});
     state.employees.filter(e=>e.responsabile&&['autoparco','magazzino'].includes(slug(e.responsabile))).forEach(e=>{const code=slug(e.responsabile)==='autoparco'?'GRA':'GRM',count=rows.filter(r=>r.employeeId===e.id&&r.a.type===code).length;if(count<state.settings.respMin)out.push(validation('warning',`${code} sotto il minimo`,`${employeeName(e)}: ${count}/${state.settings.respMin}, obiettivo ${state.settings.respGoal}.`,e.id,null));else if(count<state.settings.respGoal)out.push(validation('info',`${code} vicino all’obiettivo`,`${employeeName(e)}: ${count}/${state.settings.respGoal}.`,e.id,null));});
     return dedupe(out);
@@ -1317,14 +1325,15 @@
   function renderKpis(){const errors=state.validations.filter(v=>v.severity==='error').length,warnings=state.validations.filter(v=>v.severity==='warning'&&v.title!=='Ruolo 118 scoperto').length,uncovered=state.validations.filter(v=>v.title==='Ruolo 118 scoperto').length,seOk=workdays().filter(d=>{const day=dateKey(d),c=rowsForDay(day).filter(r=>r.a.category==='SE').length;return c>=state.settings.seTarget;}).length;$('#kpiErrors').textContent=errors;$('#kpiWarnings').textContent=warnings;$('#kpiUncovered').textContent=uncovered;$('#kpiSeOk').textContent=seOk;const required=monthDates().reduce((n,d)=>n+['M','P','N'].reduce((sum,s)=>sum+(state.requirements[`${dateKey(d)}|${s}`]==='required'?crewSlotsForDayShift(d,s).length:0),0),0),filled=allAssignmentRows().filter(r=>r.a.category==='118').length,pct=Math.min(100,Math.round(filled/Math.max(1,required)*100));$('#completionText').textContent=`${pct}%`;$('#completionBar').style.width=`${pct}%`;const chip=$('#monthStatusChip');chip.textContent=!filled?'Bozza':errors?'Da correggere':uncovered?'Incompleto':warnings?'Da verificare':'Valido';chip.style.color=!filled?'var(--muted)':errors?'#ffb0bd':warnings||uncovered?'#ffd978':'#84edbd';}
 
   function employeeEligibleRole(e,role){return role==='A'?e.autista:role==='C'?e.capo:e.soccorritore;}
-  function candidateScore(e,day,item,preferred,{preferMale=false}={}){
+  function candidateScore(e,day,item,preferred,{preferMale=false,preserveMale=false}={}){
     const st=employeeStats(e),target=Math.max(targetHoursFor(e),1),counts=roleCountsFor(e.id),eligible=qualifiedRoles(e);let score=st.hours/target*100+st.M+st.P+st.N*1.5+st.weekends*2;
     if(preferred){if(e.turno===preferred)score-=12;else if(e.turno==='Libera')score-=10;else if(['A','B'].includes(e.turno))score+=45;}
-    if(preferMale&&isMale(e))score-=30;if(preferMale&&isFemale(e))score+=5;
+    if(preferMale&&isMale(e))score-=42;if(preferMale&&isFemale(e))score+=8;
+    if(preserveMale&&isMale(e))score+=36;if(preserveMale&&isFemale(e))score-=4;
     if(item.category==='118'&&item.role){const minEligible=eligible.length?Math.min(...eligible.map(r=>counts[r])):0;score+=(counts[item.role]-minEligible)*15+counts[item.role]*2;const prev=previous118Row(e.id,day);if(prev){const days=(parseDateKey(day)-parseDateKey(prev.day))/86400000;if(prev.a.role===item.role&&eligible.length>1)score+=days<=1?38:16;else if(prev.a.role!==item.role&&eligible.length>1)score-=5;}}
     if(item.role==='S'){if(!e.autista&&!e.capo)score-=8;else score+=2;}if(e.responsabile)score+=4;if(e.turno==='RS')score+=400;if(e.turno==='RO')score+=1000;const hash=[...`${e.id}-${day}-${item.shift}-${item.site}-${item.role}`].reduce((a,c)=>a+c.charCodeAt(0),0)%17;return score+hash/100;
   }
-  function chooseCandidate(day,item,{preferred=null,allowRo=false,pool=null,preferMale=false}={}){let list=(pool||state.employees).filter(e=>e.attivo!==false&&e.turno!=='Amministrazione'&&(item.category!=='118'||employeeEligibleRole(e,item.role)));list=list.filter(e=>checkCandidate(e,day,item,{allowRo}).errors.length===0);if(!allowRo)list=list.filter(e=>e.turno!=='RO');const ranked=list.map(e=>({e,score:candidateScore(e,day,item,preferred,{preferMale})})).sort((a,b)=>a.score-b.score);return ranked[0]?.e||null;}
+  function chooseCandidate(day,item,{preferred=null,allowRo=false,pool=null,preferMale=false,preserveMale=false,requireMale=false}={}){let list=(pool||state.employees).filter(e=>e.attivo!==false&&e.turno!=='Amministrazione'&&(item.category!=='118'||employeeEligibleRole(e,item.role)));if(requireMale)list=list.filter(isMale);list=list.filter(e=>checkCandidate(e,day,item,{allowRo}).errors.length===0);if(!allowRo)list=list.filter(e=>e.turno!=='RO');const ranked=list.map(e=>({e,score:candidateScore(e,day,item,preferred,{preferMale,preserveMale})})).sort((a,b)=>a.score-b.score);return ranked[0]?.e||null;}
 
 
   function autoItem(item){return{id:uid(),origin:'AUTOMATICA',locked:false,status:'PROPOSTO',coverage:'ORDINARIA',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),...item};}
@@ -1339,15 +1348,121 @@
       if(count<state.settings.seMin){const raschi=state.employees.find(e=>slug(e.responsabile)==='secondari'||e.turno==='RS');if(raschi){const grs=getAssignments(raschi.id,day).find(a=>a.type==='GRS');if(!grs||(!grs.locked&&sourceLabel(grs)==='AUTO')){removeAutoGrsForRaschi(raschi,day);const item={category:'SE',type:'MGSE',code:'MGSE',raschiEmergency:true,note:'Responsabile Secondari impiegato operativamente per necessità'};if(checkCandidate(raschi,day,item).errors.length===0){addAuto(raschi,day,item);added++;count++;}}}}
     });return added;}
   function currentSlotOccupied(day,shift,slot){const cov=coverageFor(day,shift);return !!cov[slot.crew]?.[slot.role]?.length;}
+
+  function directShiftRows(day,shift){
+    const rows=[];
+    Object.entries(state.assignments).forEach(([key,items])=>{
+      const split=key.lastIndexOf('|'),employeeId=key.slice(0,split),rowDay=key.slice(split+1);
+      if(rowDay!==day)return;
+      const employee=state.employees.find(e=>e.id===employeeId);
+      if(!employee)return;
+      items.forEach(a=>{
+        if(a.category==='118'&&(a.shift===shift||(a.shift==='PN'&&['P','N'].includes(shift)))){
+          rows.push({employeeId,employee,day,a});
+        }
+      });
+    });
+    return rows;
+  }
+
+  function canWorkAtSite(e,a){
+    return !(a.site!=='G'&&e.sedeSolo==='G');
+  }
+
+  function swapAutoCrewMembers(day,targetRow,donorRow){
+    if(!targetRow||!donorRow||targetRow.a.role!==donorRow.a.role)return false;
+    if(sourceLabel(targetRow.a)!=='AUTO'||sourceLabel(donorRow.a)!=='AUTO')return false;
+    if(targetRow.a.locked||donorRow.a.locked)return false;
+    if(!canWorkAtSite(targetRow.employee,donorRow.a)||!canWorkAtSite(donorRow.employee,targetRow.a))return false;
+
+    const targetKey=assignmentKey(targetRow.employeeId,day);
+    const donorKey=assignmentKey(donorRow.employeeId,day);
+    const targetItems=[...getAssignments(targetRow.employeeId,day)];
+    const donorItems=[...getAssignments(donorRow.employeeId,day)];
+    const targetIndex=targetItems.findIndex(a=>a.id===targetRow.a.id);
+    const donorIndex=donorItems.findIndex(a=>a.id===donorRow.a.id);
+    if(targetIndex<0||donorIndex<0)return false;
+
+    const now=new Date().toISOString();
+    const toTarget={...donorItems[donorIndex],genderBalanced:true,updatedAt:now};
+    const toDonor={...targetItems[targetIndex],genderBalanced:true,updatedAt:now};
+
+    if(toTarget.plannedGroup&&['A','B'].includes(targetRow.employee.turno)){
+      toTarget.crossGroup=targetRow.employee.turno!==toTarget.plannedGroup;
+    }
+    if(toDonor.plannedGroup&&['A','B'].includes(donorRow.employee.turno)){
+      toDonor.crossGroup=donorRow.employee.turno!==toDonor.plannedGroup;
+    }
+
+    targetItems[targetIndex]=toTarget;
+    donorItems[donorIndex]=toDonor;
+    state.assignments[targetKey]=targetItems;
+    state.assignments[donorKey]=donorItems;
+    return true;
+  }
+
+  function rebalanceCrewGender(){
+    let swaps=0;
+    monthDates().forEach(d=>{
+      const day=dateKey(d);
+      ['M','P','N'].forEach(shift=>{
+        if(state.requirements[`${day}|${shift}`]!=='required')return;
+
+        let safety=0;
+        while(safety++<8){
+          const rows=directShiftRows(day,shift);
+          const crews=[...new Set(rows.map(r=>crewKey(r.a)))];
+          const targetCrew=crews.find(crew=>{
+            const cr=rows.filter(r=>crewKey(r.a)===crew);
+            const expected=crew==='G2'?2:3;
+            return crew!=='G2'&&cr.length===expected&&cr.every(r=>isFemale(r.employee));
+          });
+          if(!targetCrew)break;
+
+          const targetRows=rows.filter(r=>
+            crewKey(r.a)===targetCrew&&
+            isFemale(r.employee)&&
+            sourceLabel(r.a)==='AUTO'&&!r.a.locked
+          );
+
+          const donorRows=rows.filter(r=>{
+            if(!isMale(r.employee)||sourceLabel(r.a)!=='AUTO'||r.a.locked)return false;
+            const donorCrew=crewKey(r.a);
+            if(donorCrew===targetCrew)return false;
+            const donorCrewRows=rows.filter(x=>crewKey(x.a)===donorCrew);
+            return donorCrewRows.filter(x=>isMale(x.employee)).length>=2;
+          });
+
+          const pairs=[];
+          targetRows.forEach(target=>{
+            donorRows.filter(donor=>donor.a.role===target.a.role).forEach(donor=>{
+              if(!canWorkAtSite(target.employee,donor.a)||!canWorkAtSite(donor.employee,target.a))return;
+              let penalty=0;
+              if(target.employee.turno!==donor.employee.turno)penalty+=12;
+              if(target.employee.turno==='Libera'||donor.employee.turno==='Libera')penalty-=3;
+              pairs.push({target,donor,penalty});
+            });
+          });
+          pairs.sort((a,b)=>a.penalty-b.penalty);
+
+          if(!pairs.length)break;
+          if(swapAutoCrewMembers(day,pairs[0].target,pairs[0].donor))swaps++;
+          else break;
+        }
+      });
+    });
+    return swaps;
+  }
+
   function chooseShiftGroup(d,shift){const existing=shiftRows(dateKey(d),shift).map(r=>r.employee.turno).filter(g=>['A','B'].includes(g));if(existing.length)return existing[0];const pref=preferredGroup(d,shift);if(pref)return pref;const score=g=>state.employees.filter(e=>e.turno===g&&e.attivo!==false).reduce((s,e)=>s+employeeStats(e).hours/Math.max(1,targetHoursFor(e)),0);return score('A')<=score('B')?'A':'B';}
   const yieldUi=()=>new Promise(resolve=>{const raf=globalThis.requestAnimationFrame||((cb)=>setTimeout(cb,0));raf(()=>resolve());});
   function setGenerationUi(active,percent=0,label='Preparazione…'){state.generating=active;['#generateAutoBtn','#autoBtn','#autoToolbarBtn'].forEach(sel=>{const b=$(sel);if(b)b.disabled=active;});const overlay=$('#generationOverlay');if(overlay)overlay.classList.toggle('open',active);const bar=$('#generationProgressBar');if(bar)bar.style.width=`${Math.max(0,Math.min(100,percent))}%`;const pct=$('#generationProgressPct');if(pct)pct.textContent=`${Math.round(percent)}%`;const stage=$('#generationStage');if(stage)stage.textContent=label;}
   function updateGeneration(percent,label){setGenerationUi(true,percent,label);}
-  async function schedule118({allowRo=false,onProgress=null}={}){let added=0,missing=0,cross=0;const dates=monthDates();for(let i=0;i<dates.length;i++){const d=dates[i],day=dateKey(d);for(const shift of ['M','P','N']){if(state.requirements[`${day}|${shift}`]!=='required')continue;const targetGroup=chooseShiftGroup(d,shift),other=targetGroup==='A'?'B':'A';for(const slot of crewSlotsForDayShift(d,shift)){if(currentSlotOccupied(day,shift,slot))continue;const item={category:'118',shift,site:slot.site,machine:slot.machine,role:slot.role,plannedGroup:targetGroup};const hasMale=shiftRows(day,shift).filter(r=>crewKey(r.a)===slot.crew).some(r=>isMale(r.employee));let e=chooseCandidate(day,item,{preferred:targetGroup,allowRo,pool:state.employees.filter(x=>x.turno===targetGroup||x.turno==='Libera'),preferMale:!hasMale});if(!e){e=chooseCandidate(day,item,{preferred:targetGroup,allowRo,pool:state.employees.filter(x=>x.turno===other),preferMale:!hasMale});if(e){item.crossGroup=true;cross++;}}if(!e&&allowRo)e=chooseCandidate(day,item,{preferred:targetGroup,allowRo:true,pool:state.employees.filter(x=>x.turno==='RO'),preferMale:!hasMale});if(!e){missing++;continue;}addAuto(e,day,item);added++;}}if(i%2===1||i===dates.length-1){if(onProgress)onProgress(i+1,dates.length);await yieldUi();}}return{added,missing,cross};}
+  async function schedule118({allowRo=false,onProgress=null}={}){let added=0,missing=0,cross=0;const dates=monthDates();for(let i=0;i<dates.length;i++){const d=dates[i],day=dateKey(d);for(const shift of ['M','P','N']){if(state.requirements[`${day}|${shift}`]!=='required')continue;const targetGroup=chooseShiftGroup(d,shift),other=targetGroup==='A'?'B':'A',activeCrews=[...new Set(crewSlotsForDayShift(d,shift).map(s=>s.crew))];for(const slot of crewSlotsForDayShift(d,shift)){if(currentSlotOccupied(day,shift,slot))continue;const item={category:'118',shift,site:slot.site,machine:slot.machine,role:slot.role,plannedGroup:targetGroup};const currentRows=shiftRows(day,shift),crewRows=currentRows.filter(r=>crewKey(r.a)===slot.crew),hasMale=crewRows.some(r=>isMale(r.employee)),requireMale=slot.crew==='G2'&&crewRows.length>=1&&!hasMale,otherCrewNeedsMale=activeCrews.some(crew=>crew!==slot.crew&&!currentRows.filter(r=>crewKey(r.a)===crew).some(r=>isMale(r.employee))),preserveMale=hasMale&&otherCrewNeedsMale;let e=chooseCandidate(day,item,{preferred:targetGroup,allowRo,pool:state.employees.filter(x=>x.turno===targetGroup||x.turno==='Libera'),preferMale:!hasMale,preserveMale,requireMale});if(!e){e=chooseCandidate(day,item,{preferred:targetGroup,allowRo,pool:state.employees.filter(x=>x.turno===other),preferMale:!hasMale,preserveMale,requireMale});if(e){item.crossGroup=true;cross++;}}if(!e&&allowRo)e=chooseCandidate(day,item,{preferred:targetGroup,allowRo:true,pool:state.employees.filter(x=>x.turno==='RO'),preferMale:!hasMale,preserveMale,requireMale});if(!e){missing++;continue;}addAuto(e,day,item);added++;}}if(i%2===1||i===dates.length-1){if(onProgress)onProgress(i+1,dates.length);await yieldUi();}}return{added,missing,cross};}
 
-  async function generateAutomatic(){if(state.generating)return toast('Generazione già in corso','Attendi il completamento della proposta.','info');const preserve=$('#autoPreserve')?.checked!==false,admin=$('#autoAdmin')?.checked!==false,resp=$('#autoResp')?.checked!==false,se=$('#autoSe')?.checked!==false,allowRo=$('#autoRo')?.checked===true;closeModal('autoModal');setGenerationUi(true,2,'Avvio del motore di turnazione…');await yieldUi();let added=0,r={added:0,missing:0,cross:0};try{if(!preserve)state.assignments={};else removeAutoProposals();updateGeneration(8,'Indicizzazione disponibilità e vincoli…');beginAutoCache();await yieldUi();if(admin){updateGeneration(15,'Pianificazione amministrazione…');added+=scheduleAdmin();await yieldUi();}if(resp){updateGeneration(24,'Pianificazione giornate responsabili…');added+=scheduleFixedResponsibles();await yieldUi();}if(se){updateGeneration(34,'Pianificazione Secondari…');added+=scheduleSecondari();await yieldUi();}updateGeneration(42,'Composizione equipaggi 118…');r=await schedule118({allowRo,onProgress:(done,total)=>updateGeneration(42+(done/total)*38,`Composizione equipaggi 118 · giorno ${done}/${total}`)});added+=r.added;endAutoCache();updateGeneration(84,'Salvataggio della proposta…');state.localDirty=true;state.lastAutoSummary={at:new Date().toISOString(),added,missing:r.missing,cross:r.cross};saveState();await yieldUi();updateGeneration(90,'Verifica riposi, ruoli e coperture…');renderAll();await yieldUi();updateGeneration(100,'Proposta pronta');toast('ATLAS ha generato la proposta',`${added} assegnazioni proposte · ${r.missing} ruoli scoperti · ${r.cross} inserimenti fuori gruppo.`,r.missing?'error':'success');switchView('anomaliesView');}catch(err){console.error(err);toast('Generazione non completata',err.message||'Errore imprevisto','error');}finally{endAutoCache();setGenerationUi(false);}}
+  async function generateAutomatic(){if(state.generating)return toast('Generazione già in corso','Attendi il completamento della proposta.','info');const preserve=$('#autoPreserve')?.checked!==false,admin=$('#autoAdmin')?.checked!==false,resp=$('#autoResp')?.checked!==false,se=$('#autoSe')?.checked!==false,allowRo=$('#autoRo')?.checked===true;closeModal('autoModal');setGenerationUi(true,2,'Avvio del motore di turnazione…');await yieldUi();let added=0,r={added:0,missing:0,cross:0};try{if(!preserve)state.assignments={};else removeAutoProposals();updateGeneration(8,'Indicizzazione disponibilità e vincoli…');beginAutoCache();await yieldUi();if(admin){updateGeneration(15,'Pianificazione amministrazione…');added+=scheduleAdmin();await yieldUi();}if(resp){updateGeneration(24,'Pianificazione giornate responsabili…');added+=scheduleFixedResponsibles();await yieldUi();}if(se){updateGeneration(34,'Pianificazione Secondari…');added+=scheduleSecondari();await yieldUi();}updateGeneration(42,'Composizione equipaggi 118…');r=await schedule118({allowRo,onProgress:(done,total)=>updateGeneration(42+(done/total)*34,`Composizione equipaggi 118 · giorno ${done}/${total}`)});added+=r.added;endAutoCache();updateGeneration(78,'Riequilibrio della composizione equipaggi…');const genderSwaps=rebalanceCrewGender();await yieldUi();updateGeneration(84,'Salvataggio della proposta…');state.localDirty=true;state.lastAutoSummary={at:new Date().toISOString(),added,missing:r.missing,cross:r.cross,genderSwaps};saveState();await yieldUi();updateGeneration(90,'Verifica riposi, ruoli e coperture…');renderAll();await yieldUi();updateGeneration(100,'Proposta pronta');toast('ATLAS ha generato la proposta',`${added} assegnazioni proposte · ${r.missing} ruoli scoperti · ${r.cross} inserimenti fuori gruppo · ${genderSwaps} riequilibri equipaggio.`,r.missing?'error':'success');switchView('anomaliesView');}catch(err){console.error(err);toast('Generazione non completata',err.message||'Errore imprevisto','error');}finally{endAutoCache();setGenerationUi(false);}}
 
-  function openAutoModal(){if(state.generating)return toast('Generazione già in corso','Attendi il completamento.','info');const req=Object.values(state.requirements).filter(v=>v==='required').length;$('#autoInfo').innerHTML=`<strong>ATLAS</strong> mantiene separati i gruppi <strong>A/B</strong>; le <strong>Libere</strong> partecipano come risorse neutrali secondo le abilitazioni. Alterna i ruoli A/C/S e privilegia almeno <strong>un uomo per equipaggio</strong>. La generazione ordinaria comprende <strong>Gallarate e Somma</strong>; <strong>Sumirago è inserita solo manualmente al bisogno</strong>. Il sabato mattina pianifica <strong>Gallarate macchina a 2, Gallarate macchina a 3 e Somma</strong>; il sabato pomeriggio pianifica <strong>Gallarate macchina a 2 e Somma</strong>; di notte usa soltanto equipaggi a 3. Raschi resta in <strong>GRS</strong> salvo necessità MGSE. Saranno completate ${req} fasce richieste.`;openModal('autoModal');}
+  function openAutoModal(){if(state.generating)return toast('Generazione già in corso','Attendi il completamento.','info');const req=Object.values(state.requirements).filter(v=>v==='required').length;$('#autoInfo').innerHTML=`<strong>ATLAS</strong> mantiene separati i gruppi <strong>A/B</strong>; le <strong>Libere</strong> partecipano come risorse neutrali secondo le abilitazioni. Alterna i ruoli A/C/S, distribuisce gli uomini tra gli equipaggi che ne sono privi e applica la regola rigida: <strong>la macchina a 2 non può avere due donne</strong>. La generazione ordinaria comprende <strong>Gallarate e Somma</strong>; <strong>Sumirago è inserita solo manualmente al bisogno</strong>. Il sabato mattina pianifica <strong>Gallarate macchina a 2, Gallarate macchina a 3 e Somma</strong>; il sabato pomeriggio pianifica <strong>Gallarate macchina a 2 e Somma</strong>; di notte usa soltanto equipaggi a 3. Raschi resta in <strong>GRS</strong> salvo necessità MGSE. Saranno completate ${req} fasce richieste.`;openModal('autoModal');}
 
   function openAbsenceModal(){const sel=$('#absEmployee');sel.innerHTML=state.employees.map(e=>`<option value="${e.id}">${esc(employeeName(e))} · ${esc(e.turno)}</option>`).join('');$('#absFrom').value=`${state.month}-01`;$('#absTo').value=`${state.month}-01`;openModal('absenceModal');toggleAbsenceMode();}
   function toggleAbsenceMode(){const hourly=$('#absMode').value==='ORE';$('#absStart').disabled=!hourly;$('#absEnd').disabled=!hourly;$('#absHours').value=hourly?'4':'7.6';}
