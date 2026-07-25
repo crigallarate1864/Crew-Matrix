@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark" />
-  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v10</title>
+  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v11</title>
   <style>
     :root {
       --bg: #060a12;
@@ -341,6 +341,32 @@
     .assignment-time { color: var(--muted); font-size: 10px; flex: 1; }
     .assignment-hours { color: #9ff5cd; font-size: 10px; font-weight: 800; }
     .assignment-delete { border: 0; background: rgba(251,113,133,.09); color: #ffafbc; border-radius: 9px; padding: 6px 8px; cursor: pointer; }
+    .assignment-edit { border: 1px solid rgba(56,189,248,.22); background: rgba(56,189,248,.08); color: #bcecff; border-radius: 9px; padding: 6px 8px; cursor: pointer; font-size: 10px; font-weight: 800; }
+    .assignment-edit:hover { background: rgba(56,189,248,.15); border-color: rgba(56,189,248,.42); }
+    .replacement-workspace { display: grid; gap: 10px; margin: 2px 0 14px; }
+    .replacement-hero { padding: 13px 14px; border-radius: 14px; border: 1px solid rgba(56,189,248,.28); background: linear-gradient(135deg, rgba(56,189,248,.11), rgba(37,99,235,.06)); }
+    .replacement-hero strong { display:block; font-size: 14px; margin-bottom: 4px; }
+    .replacement-hero p { margin:0; color:var(--muted); font-size:10px; line-height:1.45; }
+    .replacement-source { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; padding:10px 11px; border:1px solid var(--border); border-radius:12px; background:rgba(255,255,255,.025); }
+    .replacement-source-main { min-width:0; }
+    .replacement-source-name { font-size:11px; font-weight:850; }
+    .replacement-source-meta { color:var(--muted); font-size:9px; margin-top:3px; line-height:1.35; }
+    .replacement-section { border:1px solid var(--border); border-radius:14px; padding:11px; background:rgba(255,255,255,.02); }
+    .replacement-toolbar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+    .replacement-toolbar strong { font-size:11px; }
+    .replacement-toolbar span { color:var(--muted); font-size:9px; }
+    .replacement-search { width:100%; margin-bottom:8px; }
+    .replacement-candidates { display:grid; gap:7px; max-height:300px; overflow:auto; padding-right:2px; }
+    .replacement-candidate { display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px; padding:9px 10px; border:1px solid var(--border); border-radius:12px; background:rgba(255,255,255,.025); }
+    .replacement-candidate:hover { border-color:var(--border-strong); background:rgba(56,189,248,.055); }
+    .replacement-candidate-name { font-size:11px; font-weight:850; }
+    .replacement-candidate-meta { display:flex; flex-wrap:wrap; align-items:center; gap:5px; margin-top:4px; color:var(--muted); font-size:9px; }
+    .replacement-candidate-warning { margin-top:4px; color:#ffe0a0; font-size:8.5px; line-height:1.3; }
+    .replacement-select { border:0; border-radius:9px; padding:7px 9px; cursor:pointer; font-size:9px; font-weight:850; color:#eafff5; background:linear-gradient(135deg,#10b981,#047857); }
+    .replacement-empty { padding:12px; border-radius:11px; border:1px dashed rgba(251,113,133,.28); color:#ffc0ca; background:rgba(251,113,133,.05); font-size:10px; line-height:1.4; }
+    .replacement-reason { margin-top:8px; }
+    .replacement-cancel { justify-self:start; }
+    .slot-occupied { border-color:rgba(251,113,133,.28)!important; background:rgba(251,113,133,.07)!important; color:#ffc0ca!important; }
 
     .section-label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; margin: 12px 0 7px; }
     .preset-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
@@ -581,7 +607,7 @@
         <div class="brand-mark"><img src="logo.png" alt="Logo ATLAS 118" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" /><span class="brand-fallback">✚</span></div>
         <div>
           <div class="brand-title">ATLAS 118</div>
-          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v10</div>
+          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v11</div>
         </div>
       </div>
 
@@ -766,6 +792,7 @@
               <article class="manual-card"><h3>Inserire Sumirago</h3><ol><li>Apri la cella del dipendente e della data.</li><li>Scegli <strong>118</strong>.</li><li>Imposta fascia, sede <strong>Sumirago</strong> e ruolo A/C/S.</li><li>Salva le tre persone dell’equipaggio.</li><li>Verifica la pagina Coperture e l’alert informativo.</li></ol></article>
               <article class="manual-card"><h3>Anagrafiche</h3><p>L’ID resta tecnico e invisibile. Dalla pagina Anagrafiche puoi inserire o rimuovere persone, impostare gruppo, sesso, abilitazioni, responsabilità, sedi e monte ore mensile. Il sesso è usato solo dall’algoritmo e nella pagina Anagrafiche, non nel Calendario.</p></article>
               <article class="manual-card"><h3>Saldo ore nel Calendario</h3><p>Accanto al gruppo viene mostrato lo scostamento dal monte ore personale: il segno <strong>−</strong> indica le ore ancora mancanti, il segno <strong>+</strong> le ore in eccesso e <strong>0 h</strong> il raggiungimento del target. Passa il mouse sul valore per vedere ore programmate e obiettivo.</p></article>
+              <article class="manual-card"><h3>Modifica e sostituzione di un turno</h3><p>Nel Calendario apri la giornata e premi <strong>Modifica / sostituisci</strong>. Per un turno 118 ATLAS propone soltanto le risorse attive, disponibili e abilitate allo stesso ruolo. In alternativa puoi sostituire la voce con ferie, permesso, malattia, riposo, formazione, responsabilità o un nuovo turno 118. Se sede, macchina, fascia e ruolo risultano già occupati, compare un avviso prima della conferma.</p></article>
               <article class="manual-card wide"><h3>Prima di chiudere il mese</h3><ul><li>Nessun errore rosso irrisolto.</li><li>Coperture richieste complete o dichiarate da integrare con volontari.</li><li>Secondari tra 1 e 2 risorse feriali.</li><li>GRA/GRM almeno 4 giornate, obiettivo 5.</li><li>Ore individuali verificate nel Riepilogo.</li><li>Backup JSON ed esportazione Database eseguiti.</li></ul></article>
             </div>
           </div>
@@ -779,8 +806,9 @@
       <div class="modal-head"><div><div class="modal-title" id="assignmentTitle">Assegna turno</div><div class="modal-sub" id="assignmentSubtitle"></div></div><button class="modal-close" data-close="assignmentModal">✕</button></div>
       <div class="modal-body">
         <div class="assignment-list" id="existingAssignments"></div>
+        <div class="replacement-workspace hidden" id="replacementWorkspace"></div>
 
-        <div class="section-label">Inserimento rapido</div>
+        <div class="section-label" id="assignmentActionLabel">Inserimento rapido</div>
         <div class="preset-grid" id="presetGrid">
           <button class="preset" data-preset="118"><b>118</b><small>Mattino, pomeriggio, notte o P+N</small></button>
           <button class="preset" data-preset="MGSE"><b>MGSE</b><small>Secondari feriali 06:00–13:30</small></button>
@@ -964,10 +992,10 @@
     allowRoAuto: false
   };
 
-  const STORAGE_KEY = 'atlas-118-turnazione-v10';
-  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v9','atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
-  const APP_VERSION = 10;
-  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8,9,10]);
+  const STORAGE_KEY = 'atlas-118-turnazione-v11';
+  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v10','atlas-118-turnazione-v9','atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
+  const APP_VERSION = 11;
+  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8,9,10,11]);
   const DOW = ['dom','lun','mar','mer','gio','ven','sab'];
   const MONTHS = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
   const CREW_SLOTS = [
@@ -1002,6 +1030,7 @@
     month:'2026-09', employees:structuredClone(FALLBACK_EMPLOYEES), assignments:{}, requirements:{}, settings:structuredClone(DEFAULT_SETTINGS),
     activeCell:null, staffEditingId:null, validations:[], confirmAction:null, dbRecords:[], dbLoaded:false, matrixLoaded:false, localDirty:false, lastAutoSummary:null
   };
+  let replacementContext = null;
 
   const $ = sel => document.querySelector(sel);
   const $$ = sel => [...document.querySelectorAll(sel)];
@@ -1144,7 +1173,7 @@
   function updateSyncStatus(text,mode='local'){ const el=$('#syncText'); if(el)el.textContent=text; const pill=$('#syncPill'); if(pill)pill.style.borderColor=mode==='error'?'rgba(251,113,133,.35)':mode==='sync'?'rgba(56,189,248,.35)':'rgba(52,211,153,.25)'; }
   function toast(title,text='',type='success'){ const el=document.createElement('div');el.className=`toast ${type}`;el.innerHTML=`<strong>${esc(title)}</strong>${text?`<span class="muted">${esc(text)}</span>`:''}`;$('#toastStack').appendChild(el);setTimeout(()=>el.remove(),4200); }
   function openModal(id){ $('#'+id)?.classList.add('open'); }
-  function closeModal(id){ $('#'+id)?.classList.remove('open'); if(id==='assignmentModal')state.activeCell=null; }
+  function closeModal(id){ $('#'+id)?.classList.remove('open'); if(id==='assignmentModal'){state.activeCell=null;replacementContext=null;} }
   function confirmDialog(title,subtitle,text,action){$('#confirmTitle').textContent=title;$('#confirmSubtitle').textContent=subtitle;$('#confirmText').textContent=text;state.confirmAction=action;openModal('confirmModal');}
   function switchView(id){$$('.view').forEach(v=>v.classList.toggle('active',v.id===id));$$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));}
 
@@ -1202,10 +1231,206 @@
     html+='</tbody>';$('#calendarTable').innerHTML=html;$$('.cell-button').forEach(b=>b.addEventListener('click',()=>openAssignment(b.dataset.employee,b.dataset.day)));
   }
 
-  function openAssignment(employeeId,day){ const e=state.employees.find(x=>x.id===employeeId);if(!e)return;state.activeCell={employeeId,day};const d=parseDateKey(day);$('#assignmentTitle').textContent=employeeName(e);$('#assignmentSubtitle').textContent=`${DOW[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()} · ${employeeMeta(e)}`;renderExistingAssignments();$('#assignmentFormHost').innerHTML='';openModal('assignmentModal'); }
+  function resetAssignmentModalMode(){
+    replacementContext=null;
+    $('#replacementWorkspace')?.classList.add('hidden');
+    if($('#replacementWorkspace'))$('#replacementWorkspace').innerHTML='';
+    if($('#assignmentActionLabel'))$('#assignmentActionLabel').textContent='Inserimento rapido';
+    $('#presetGrid')?.classList.remove('replacement-mode');
+  }
+
+  function openAssignment(employeeId,day){
+    const e=state.employees.find(x=>x.id===employeeId);if(!e)return;
+    resetAssignmentModalMode();
+    state.activeCell={employeeId,day};
+    const d=parseDateKey(day);
+    $('#assignmentTitle').textContent=employeeName(e);
+    $('#assignmentSubtitle').textContent=`${DOW[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()} · ${employeeMeta(e)}`;
+    renderExistingAssignments();
+    $('#assignmentFormHost').innerHTML='';
+    openModal('assignmentModal');
+  }
+
+  function replacementSource(){
+    if(!replacementContext)return null;
+    const items=getAssignments(replacementContext.employeeId,replacementContext.day);
+    const index=items.findIndex(a=>a.id===replacementContext.assignmentId);
+    if(index<0)return null;
+    return {item:items[index],index,employee:state.employees.find(e=>e.id===replacementContext.employeeId),day:replacementContext.day};
+  }
+
+  function shiftSegments(a){
+    return a?.shift==='PN'?['P','N']:[a?.shift].filter(Boolean);
+  }
+
+  function duplicateSlotRows(day,item,{excludeEmployeeId=null,excludeAssignmentId=null}={}){
+    if(item?.category!=='118')return[];
+    const wanted=new Set(shiftSegments(item));
+    return buildAssignmentRows().filter(r=>{
+      if(r.day!==day||r.a.category!=='118')return false;
+      if(excludeEmployeeId===r.employeeId&&excludeAssignmentId===r.a.id)return false;
+      if(crewKey(r.a)!==crewKey(item)||r.a.role!==item.role)return false;
+      return shiftSegments(r.a).some(s=>wanted.has(s));
+    });
+  }
+
+  function withReplacementSourceRemoved(fn){
+    const src=replacementSource();
+    if(!src)return fn();
+    const key=assignmentKey(replacementContext.employeeId,replacementContext.day);
+    const original=state.assignments[key];
+    const filtered=original.filter(a=>a.id!==replacementContext.assignmentId);
+    if(filtered.length)state.assignments[key]=filtered;else delete state.assignments[key];
+    try{return fn(src);}finally{state.assignments[key]=original;}
+  }
+
+  function checkReplacementAssignment(e,day,item){
+    return withReplacementSourceRemoved(()=>checkCandidate(e,day,item,{manual:true}));
+  }
+
+  function replacementCandidates(){
+    const src=replacementSource();
+    if(!src||src.item.category!=='118')return[];
+    return state.employees
+      .filter(e=>e.id!==src.employee.id&&e.attivo!==false&&e.turno!=='Amministrazione'&&employeeEligibleRole(e,src.item.role))
+      .map(e=>{
+        const candidate={...src.item,id:uid(),origin:'MANUALE',locked:true,status:'CONFERMATO'};
+        const check=withReplacementSourceRemoved(()=>checkCandidate(e,src.day,candidate,{manual:true,allowRo:false}));
+        const balance=hoursBalanceFor(e);
+        return {e,check,balance};
+      })
+      .filter(x=>x.check.errors.length===0)
+      .sort((a,b)=>{
+        const groupRank=x=>x.e.turno===src.employee.turno?0:x.e.turno==='Libera'?1:2;
+        return groupRank(a)-groupRank(b)||a.check.warnings.length-b.check.warnings.length||a.balance.delta-b.balance.delta||employeeName(a.e).localeCompare(employeeName(b.e),'it');
+      });
+  }
+
+  function renderReplacementCandidates(filter=''){
+    const host=$('#replacementCandidateList');
+    if(!host)return;
+    const q=String(filter||'').trim().toLowerCase();
+    const list=replacementCandidates().filter(x=>employeeName(x.e).toLowerCase().includes(q));
+    const count=$('#replacementCandidateCount');
+    if(count)count.textContent=`${list.length} disponibili`;
+    host.innerHTML=list.length?list.map(x=>{
+      const group=x.e.turno==='Amministrazione'?'AMM':x.e.turno;
+      const warnings=x.check.warnings.length?`<div class="replacement-candidate-warning">${esc(x.check.warnings.join(' '))}</div>`:'';
+      return `<div class="replacement-candidate">
+        <div>
+          <div class="replacement-candidate-name">${esc(employeeName(x.e))}</div>
+          <div class="replacement-candidate-meta">
+            <span class="group-badge group-${x.e.turno.toLowerCase().replace(/\s+/g,'-')}">${esc(group)}</span>
+            <span>abilitato al ruolo ${esc(replacementSource().item.role)}</span>
+            <span class="hours-balance ${x.balance.cls}">${esc(x.balance.label)}</span>
+          </div>${warnings}
+        </div>
+        <button class="replacement-select" data-replacement-employee="${esc(x.e.id)}">Sostituisci</button>
+      </div>`;
+    }).join(''):`<div class="replacement-empty">Nessuna risorsa disponibile con l’abilitazione richiesta, nel rispetto di riposi, assenze, sovrapposizioni, sede e composizione dell’equipaggio.</div>`;
+    $$('[data-replacement-employee]').forEach(b=>b.addEventListener('click',()=>requestResourceReplacement(b.dataset.replacementEmployee)));
+  }
+
+  function renderReplacementWorkspace(){
+    const src=replacementSource(),host=$('#replacementWorkspace');
+    if(!src||!host)return;
+    const t=assignmentTimes(src.item,src.day);
+    const occupied=duplicateSlotRows(src.day,src.item,{excludeEmployeeId:src.employee.id,excludeAssignmentId:src.item.id});
+    const occupiedNotice=occupied.length?`<div class="notice error slot-occupied"><strong>Ruolo già occupato.</strong> ${esc(crewKey(src.item))} · ruolo ${esc(src.item.role)} risulta già assegnato anche a ${esc(occupied.map(r=>employeeName(r.employee)).join(', '))}.</div>`:'';
+    const resourceSection=src.item.category==='118'?`
+      <div class="replacement-section">
+        <div class="replacement-toolbar"><strong>Sostituisci soltanto la risorsa</strong><span id="replacementCandidateCount"></span></div>
+        <input class="input replacement-search" id="replacementSearch" placeholder="Cerca tra le sole risorse disponibili…" />
+        <div class="replacement-candidates" id="replacementCandidateList"></div>
+      </div>`:`<div class="notice info">Questa voce non è un turno 118. Puoi sostituirla scegliendo una nuova tipologia qui sotto.</div>`;
+
+    host.innerHTML=`
+      <div class="replacement-hero">
+        <strong>Con cosa vuoi sostituire questo turno?</strong>
+        <p>Puoi cambiare la risorsa mantenendo turno, sede e ruolo, oppure trasformare l’assegnazione in ferie, permesso, malattia, riposo, formazione o un’altra attività.</p>
+      </div>
+      <div class="replacement-source">
+        <span class="assignment-code ${tagClass(src.item)}" style="padding:7px;border-radius:8px">${esc(normalizeCode(src.item))}</span>
+        <div class="replacement-source-main">
+          <div class="replacement-source-name">${esc(employeeName(src.employee))}</div>
+          <div class="replacement-source-meta">${esc(t.startText)}${t.endText?'–'+esc(t.endText):''} · ${fmt(t.hours)} h · ${esc(sourceLabel(src.item))}</div>
+        </div>
+        <button class="btn ghost replacement-cancel" id="cancelReplacement">Annulla</button>
+      </div>
+      ${occupiedNotice}
+      ${resourceSection}
+      <div class="field replacement-reason"><label>Motivo della modifica (facoltativo)</label><input id="replacementReason" class="input" placeholder="Es. ferie, indisponibilità, cambio operativo…" /></div>`;
+
+    host.classList.remove('hidden');
+    $('#assignmentActionLabel').textContent='Oppure sostituisci con una nuova assegnazione';
+    $('#cancelReplacement')?.addEventListener('click',()=>openAssignment(src.employee.id,src.day));
+    $('#replacementSearch')?.addEventListener('input',e=>renderReplacementCandidates(e.target.value));
+    if(src.item.category==='118')renderReplacementCandidates();
+  }
+
+  function openReplacement(employeeId,day,index){
+    const items=getAssignments(employeeId,day),item=items[index],e=state.employees.find(x=>x.id===employeeId);
+    if(!item||!e)return;
+    replacementContext={employeeId,day,assignmentId:item.id};
+    state.activeCell={employeeId,day};
+    const d=parseDateKey(day);
+    $('#assignmentTitle').textContent=`Sostituisci ${normalizeCode(item)}`;
+    $('#assignmentSubtitle').textContent=`${employeeName(e)} · ${DOW[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+    $('#assignmentFormHost').innerHTML='';
+    renderExistingAssignments();
+    renderReplacementWorkspace();
+    openModal('assignmentModal');
+  }
+
+  function requestResourceReplacement(candidateId){
+    const src=replacementSource(),candidate=state.employees.find(e=>e.id===candidateId);
+    if(!src||!candidate)return;
+    const item={...src.item,id:uid(),origin:'MANUALE',locked:true,status:'CONFERMATO'};
+    const check=withReplacementSourceRemoved(()=>checkCandidate(candidate,src.day,item,{manual:true}));
+    if(check.errors.length)return toast('Risorsa non più disponibile',check.errors.join(' '),'error');
+    const warnings=check.warnings.length?` Avvisi: ${check.warnings.join(' ')}`:'';
+    confirmDialog(
+      'Conferma cambio risorsa',
+      `${normalizeCode(src.item)} · ${crewKey(src.item)} · ruolo ${src.item.role}`,
+      `Sostituire ${employeeName(src.employee)} con ${employeeName(candidate)} mantenendo la stessa assegnazione?${warnings}`,
+      ()=>commitResourceReplacement(candidate.id)
+    );
+  }
+
+  function commitResourceReplacement(candidateId){
+    const src=replacementSource(),candidate=state.employees.find(e=>e.id===candidateId);
+    if(!src||!candidate)return;
+    const reason=$('#replacementReason')?.value.trim()||'';
+    const oldKey=assignmentKey(src.employee.id,src.day),newKey=assignmentKey(candidate.id,src.day);
+    const oldItems=[...getAssignments(src.employee.id,src.day)];
+    const oldIndex=oldItems.findIndex(a=>a.id===src.item.id);
+    if(oldIndex<0)return;
+    removeLinkedPostNightRest(src.employee.id,src.day,src.item);
+    oldItems.splice(oldIndex,1);
+    if(oldItems.length)state.assignments[oldKey]=oldItems;else delete state.assignments[oldKey];
+
+    const note=[src.item.note,`Sostituzione risorsa: ${employeeName(src.employee)} → ${employeeName(candidate)}`,reason?`Motivo: ${reason}`:''].filter(Boolean).join(' · ');
+    const newItem={...src.item,id:uid(),origin:'MANUALE',locked:true,status:'CONFERMATO',note,replacementOf:src.item.id,replacedEmployeeId:src.employee.id,updatedAt:new Date().toISOString()};
+    state.assignments[newKey]=[...getAssignments(candidate.id,src.day),newItem];
+    ensurePostNightRest(candidate.id,src.day,newItem,{dirty:false});
+    state.localDirty=true;
+    saveState();
+    replacementContext=null;
+    renderAll();
+    openAssignment(candidate.id,src.day);
+    toast('Risorsa sostituita',`${employeeName(src.employee)} → ${employeeName(candidate)} · ${normalizeCode(newItem)}`,'success');
+  }
+
   function renderExistingAssignments(){
-    const {employeeId,day}=state.activeCell||{};if(!employeeId)return;const items=getAssignments(employeeId,day);
-    $('#existingAssignments').innerHTML=items.length?items.map((a,i)=>{const t=assignmentTimes(a,day);return `<div class="assignment-item"><span class="assignment-code ${tagClass(a)}" style="padding:7px;border-radius:8px">${esc(normalizeCode(a))}</span><span class="assignment-time">${esc(t.startText)}${t.endText?'–'+esc(t.endText):''}</span><span class="assignment-hours">${fmt(t.hours)} h</span><span class="source-badge source-${sourceLabel(a).toLowerCase()}">${sourceLabel(a)}${a.locked?' 🔒':''}</span><button class="assignment-delete" data-lock-index="${i}" title="Blocca/sblocca">${a.locked?'Sblocca':'Blocca'}</button><button class="assignment-delete" data-index="${i}">Elimina</button></div>`;}).join(''):'<div class="notice info">Nessuna assegnazione presente. Seleziona una tipologia qui sotto.</div>';
+    const {employeeId,day}=state.activeCell||{};if(!employeeId)return;
+    const items=getAssignments(employeeId,day);
+    if(replacementContext){
+      const src=replacementSource();
+      $('#existingAssignments').innerHTML=src?`<div class="notice info">Stai modificando una voce esistente. La nuova scelta sostituirà il turno selezionato, non verrà aggiunta in parallelo.</div>`:'';
+      return;
+    }
+    $('#existingAssignments').innerHTML=items.length?items.map((a,i)=>{const t=assignmentTimes(a,day);return `<div class="assignment-item"><span class="assignment-code ${tagClass(a)}" style="padding:7px;border-radius:8px">${esc(normalizeCode(a))}</span><span class="assignment-time">${esc(t.startText)}${t.endText?'–'+esc(t.endText):''}</span><span class="assignment-hours">${fmt(t.hours)} h</span><span class="source-badge source-${sourceLabel(a).toLowerCase()}">${sourceLabel(a)}${a.locked?' 🔒':''}</span><button class="assignment-edit" data-replace-index="${i}">Modifica / sostituisci</button><button class="assignment-delete" data-lock-index="${i}" title="Blocca/sblocca">${a.locked?'Sblocca':'Blocca'}</button><button class="assignment-delete" data-index="${i}">Elimina</button></div>`;}).join(''):'<div class="notice info">Nessuna assegnazione presente. Seleziona una tipologia qui sotto.</div>';
+    $$('[data-replace-index]').forEach(b=>b.addEventListener('click',()=>openReplacement(employeeId,day,Number(b.dataset.replaceIndex))));
     $$('[data-index]').forEach(b=>b.addEventListener('click',()=>{const arr=[...getAssignments(employeeId,day)],a=arr[Number(b.dataset.index)]; if(a?.origin==='DATABASE'&&!confirm('Questa voce proviene dal Database. Eliminarla localmente?'))return;removeLinkedPostNightRest(employeeId,day,a);arr.splice(Number(b.dataset.index),1);setAssignments(employeeId,day,arr);state.activeCell={employeeId,day};renderExistingAssignments();openModal('assignmentModal');}));
     $$('[data-lock-index]').forEach(b=>b.addEventListener('click',()=>{const arr=[...getAssignments(employeeId,day)],i=Number(b.dataset.lockIndex);arr[i]={...arr[i],locked:!arr[i].locked,updatedAt:new Date().toISOString()};setAssignments(employeeId,day,arr);state.activeCell={employeeId,day};renderExistingAssignments();openModal('assignmentModal');}));
   }
@@ -1220,14 +1445,88 @@
     else if(type==='ABS')html=`<div class="section-label">Assenza / permesso</div><div class="form-grid cols-3"><div class="field"><label>Causale</label><select id="fAbs" class="input"><option value="F">F · Ferie</option><option value="MAL">MAL · Malattia</option><option value="INF">INF · Infortunio</option><option value="L104/92">L104/92</option><option value="AVIS">AVIS</option><option value="CONG">Congedo parentale</option><option value="PERM">Permesso</option></select></div><div class="field"><label>Inizio (vuoto = giornata)</label><input id="fAbsStart" class="input" type="time" /></div><div class="field"><label>Fine</label><input id="fAbsEnd" class="input" type="time" /></div><div class="field"><label>Ore conteggiate</label><input id="fAbsHours" class="input" type="number" step="0.25" value="7.6" /></div><div class="field full"><label>Note</label><input id="fNote" class="input" /></div></div><div style="margin-top:10px"><button class="btn primary" id="addAbs">Aggiungi assenza</button></div>`;
     else if(type==='RC')html=`<div class="section-label">Riposo / festività</div><div class="form-grid"><div class="field"><label>Codice</label><select id="fRc" class="input"><option value="RC">RC · Riposo compensativo</option><option value="A">A · Assenza per festività</option></select></div><div class="field"><label>Ore conteggiate</label><input id="fRcHours" class="input" type="number" step="0.1" value="0" /></div></div><div style="margin-top:10px"><button class="btn primary" id="addRc">Aggiungi</button></div>`;
     else html=`<div class="section-label">Voce personalizzata</div><div class="form-grid cols-3"><div class="field"><label>Codice</label><input id="fCustomCode" class="input" /></div><div class="field"><label>Inizio</label><input id="fStart" class="input" type="time" /></div><div class="field"><label>Fine</label><input id="fEnd" class="input" type="time" /></div><div class="field"><label>Ore riconosciute</label><input id="fHours" class="input" type="number" step="0.25" /></div><div class="field full"><label>Note</label><input id="fNote" class="input" /></div></div><div style="margin-top:10px"><button class="btn primary" id="addCustom">Aggiungi voce</button></div>`;
+    if(replacementContext){
+      const src=replacementSource();
+      html=`<div class="notice info">La nuova voce sostituirà <strong>${esc(src?normalizeCode(src.item):'il turno selezionato')}</strong> di ${esc(src?employeeName(src.employee):employeeName(e))}.</div>${html}`;
+    }
     $('#assignmentFormHost').innerHTML=html;
-    if(type==='118'){const update=()=>{const w=shiftWindow($('#fShift').value,state.activeCell.day);$('#fPreview').textContent=`Orario ${w.start}–${w.end}${w.nextDay?' del giorno successivo':''} · ${fmt(w.hours)} ore`; const fixedMachine=$('#fSite').value!=='G'||['N','PN'].includes($('#fShift').value);if(fixedMachine){$('#fMachine').value='3';$('#fMachine').disabled=true;}else $('#fMachine').disabled=false;};['fShift','fSite'].forEach(id=>$('#'+id).addEventListener('change',update));update();$('#add118').addEventListener('click',add118);}
+    if(replacementContext)$('#assignmentFormHost .btn.primary')?.replaceChildren(document.createTextNode('Conferma sostituzione'));
+    if(type==='118'){
+      const src=replacementSource();
+      if(src?.item.category==='118'){
+        $('#fShift').value=src.item.shift||'M';
+        $('#fSite').value=src.item.site||'G';
+        $('#fMachine').value=String(src.item.machine||'3');
+        $('#fRole').value=src.item.role||'S';
+        $('#fLocked').value='SI';
+      }
+      const update=()=>{
+        const shift=$('#fShift').value,site=$('#fSite').value;
+        const w=shiftWindow(shift,state.activeCell.day);
+        $('#fPreview').textContent=`Orario ${w.start}–${w.end}${w.nextDay?' del giorno successivo':''} · ${fmt(w.hours)} ore`;
+        const fixedMachine=site!=='G'||['N','PN'].includes(shift);
+        if(fixedMachine){$('#fMachine').value='3';$('#fMachine').disabled=true;}else $('#fMachine').disabled=false;
+        const item={category:'118',shift,site,machine:(site==='G'&&!['N','PN'].includes(shift))?$('#fMachine').value:'3',role:$('#fRole').value};
+        const check=replacementContext?checkReplacementAssignment(e,state.activeCell.day,item):checkCandidate(e,state.activeCell.day,item,{manual:true});
+        const lines=[
+          ...check.errors.map(x=>`<div class="notice error">${esc(x)}</div>`),
+          ...check.warnings.map(x=>`<div class="notice">${esc(x)}</div>`)
+        ];
+        $('#fWarnings').innerHTML=lines.join('');
+      };
+      ['fShift','fSite','fMachine','fRole'].forEach(id=>$('#'+id).addEventListener('change',update));
+      update();
+      $('#add118').addEventListener('click',add118);
+    }
     if($('#addMgse'))$('#addMgse').addEventListener('click',()=>addSimple({category:'SE',type:'MGSE',code:'MGSE'}));
     if($('#addResp'))$('#addResp').addEventListener('click',addResp); if($('#addAm'))$('#addAm').addEventListener('click',addAm); if($('#addForm'))$('#addForm').addEventListener('click',addForm); if($('#addAbs'))$('#addAbs').addEventListener('click',addAbs); if($('#addRc'))$('#addRc').addEventListener('click',addRc); if($('#addCustom'))$('#addCustom').addEventListener('click',addCustom);
   }
 
   function manualBase(){return{id:uid(),origin:'MANUALE',locked:true,status:'CONFERMATO',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};}
-  function appendAssignment(item){const {employeeId,day}=state.activeCell;const candidate={...manualBase(),...item};const check=checkCandidate(state.employees.find(e=>e.id===employeeId),day,candidate,{manual:true}); if(check.errors.length)return confirmDialog('Alert sulla modifica','Conferma assegnazione manuale',check.errors.concat(check.warnings).join(' '),()=>commit()); if(check.warnings.length)return confirmDialog('Avviso','Conferma assegnazione manuale',check.warnings.join(' '),()=>commit()); commit(); function commit(){appendTo(employeeId,day,candidate,{dirty:true,render:false});ensurePostNightRest(employeeId,day,candidate,{dirty:true});saveState();renderAll();state.activeCell={employeeId,day};renderExistingAssignments();$('#assignmentFormHost').innerHTML='';openModal('assignmentModal');toast('Assegnazione aggiunta',isNight118(candidate)?`${normalizeCode(candidate)} · RC inserito il giorno successivo`:normalizeCode(candidate));}}
+  function appendAssignment(item){
+    const {employeeId,day}=state.activeCell;
+    const employee=state.employees.find(e=>e.id===employeeId);
+    const candidate={...manualBase(),...item};
+    const check=replacementContext?checkReplacementAssignment(employee,day,candidate):checkCandidate(employee,day,candidate,{manual:true});
+
+    if(replacementContext){
+      if(check.errors.length)return toast('Sostituzione non consentita',check.errors.join(' '),'error');
+      if(check.warnings.length)return confirmDialog('Avvisi sulla sostituzione','Conferma modifica',check.warnings.join(' '),()=>commitReplacementAssignment(candidate));
+      return commitReplacementAssignment(candidate);
+    }
+
+    if(check.errors.length)return confirmDialog('Alert sulla modifica','Conferma assegnazione manuale',check.errors.concat(check.warnings).join(' '),()=>commit());
+    if(check.warnings.length)return confirmDialog('Avviso','Conferma assegnazione manuale',check.warnings.join(' '),()=>commit());
+    commit();
+
+    function commit(){
+      appendTo(employeeId,day,candidate,{dirty:true,render:false});
+      ensurePostNightRest(employeeId,day,candidate,{dirty:true});
+      saveState();renderAll();state.activeCell={employeeId,day};renderExistingAssignments();$('#assignmentFormHost').innerHTML='';openModal('assignmentModal');
+      toast('Assegnazione aggiunta',isNight118(candidate)?`${normalizeCode(candidate)} · RC inserito il giorno successivo`:normalizeCode(candidate));
+    }
+  }
+
+  function commitReplacementAssignment(candidate){
+    const src=replacementSource();if(!src)return;
+    const reason=$('#replacementReason')?.value.trim()||'';
+    const key=assignmentKey(src.employee.id,src.day);
+    const items=[...getAssignments(src.employee.id,src.day)];
+    const index=items.findIndex(a=>a.id===src.item.id);
+    if(index<0)return;
+    removeLinkedPostNightRest(src.employee.id,src.day,src.item);
+    const note=[candidate.note,`Sostituisce ${normalizeCode(src.item)}`,reason?`Motivo: ${reason}`:''].filter(Boolean).join(' · ');
+    const replacement={...candidate,id:uid(),origin:'MANUALE',locked:true,status:'CONFERMATO',note,replacementOf:src.item.id,updatedAt:new Date().toISOString()};
+    items.splice(index,1,replacement);
+    state.assignments[key]=items;
+    ensurePostNightRest(src.employee.id,src.day,replacement,{dirty:false});
+    state.localDirty=true;
+    saveState();
+    replacementContext=null;
+    renderAll();
+    openAssignment(src.employee.id,src.day);
+    toast('Turno sostituito',`${normalizeCode(src.item)} → ${normalizeCode(replacement)}`,'success');
+  }
   function addSimple(item){appendAssignment(item);}
   function add118(){const e=currentEmployee(),shift=$('#fShift').value,site=$('#fSite').value,machine=(site==='G'&&!['N','PN'].includes(shift))?$('#fMachine').value:'3',role=$('#fRole').value; const item={category:'118',shift,site,machine,role,note:$('#fNote').value.trim(),locked:$('#fLocked').value==='SI'};const hard=[];if(e.turno==='Amministrazione')hard.push('Il personale amministrativo non può essere assegnato al 118.');if(site!=='G'&&e.sedeSolo==='G')hard.push('Galli Monica può lavorare solo a Gallarate.');if(role==='A'&&!e.autista)hard.push('Abilitazione Autista assente.');if(role==='C'&&!e.capo)hard.push('Abilitazione Capo equipaggio assente.');if(role==='S'&&!e.soccorritore)hard.push('Abilitazione Soccorritore assente.');if(hard.length)return toast('Assegnazione non consentita',hard.join(' '),'error');if(e.turno==='RO')return confirmDialog('Uso del Responsabile Operativo','Copertura 118 straordinaria',`Stai assegnando ${employeeName(e)} al 118. Conferma che non risultano altre risorse.`,()=>appendAssignment(item));appendAssignment(item);}
   function addResp(){const code=$('#fResp').value,e=currentEmployee(),allowed={GRA:'Autoparco',GRM:'Magazzino',GRS:'Secondari',GRO:'Operativo'}[code];if(e.responsabile!==allowed)return confirmDialog('Responsabilità non prevista','Conferma manuale',`${employeeName(e)} non è indicato come responsabile ${allowed}.`,()=>addSimple({category:'RESP',type:code,code}));addSimple({category:'RESP',type:code,code});}
@@ -1262,6 +1561,9 @@
 
       if(e.turno==='RO'&&!allowRo)warnings.push('Il Responsabile Operativo va usato nel 118 solo in estrema urgenza.');
       if(manual){
+        const src=replacementSource();
+        const duplicates=duplicateSlotRows(day,item,{excludeEmployeeId:src?.employee.id||null,excludeAssignmentId:src?.item.id||null});
+        if(duplicates.length)warnings.push(`Ruolo già occupato su ${crewKey(item)} nella fascia ${item.shift}: ${duplicates.map(r=>employeeName(r.employee)).join(', ')}. L’inserimento creerebbe una doppia assegnazione dello stesso ruolo.`);
         const existing=genderExisting;const groups=[...new Set(existing.map(r=>r.employee.turno).filter(g=>['A','B'].includes(g)))];if(['A','B'].includes(e.turno)&&groups.length&&groups.some(g=>g!==e.turno))warnings.push(`Il turno contiene già personale del gruppo ${groups.join('/')}: assegnazione mista A/B.`);
         const crew=genderCrew,crewRows=genderCrewRows,expected=crew==='G2'?2:3;if(crew!=='G2'&&isFemale(e)&&crewRows.length===expected-1&&crewRows.every(r=>isFemale(r.employee)))warnings.push(`L’equipaggio ${crew} risulterà composto solo da donne. ATLAS proverà a riequilibrarlo automaticamente quando possibile.`);
         const prev=previous118Row(e.id,day);if(prev&&prev.a.role===item.role&&qualifiedRoles(e).length>1){const gap=Math.round((parseDateKey(day)-parseDateKey(prev.day))/86400000);if(gap<=1)warnings.push(`Ruolo ${item.role} ripetuto rispetto al turno precedente: valutare la rotazione su ${qualifiedRoles(e).filter(r=>r!==item.role).join(' o ')}.`);}
