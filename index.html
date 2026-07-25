@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark" />
-  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v8</title>
+  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v9</title>
   <style>
     :root {
       --bg: #060a12;
@@ -101,6 +101,22 @@
     }
     .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,.075); border-color: var(--border-strong); }
     .btn.primary { background: linear-gradient(135deg, var(--blue-2), #2563eb); border-color: transparent; box-shadow: 0 10px 28px rgba(14,165,233,.24); }
+    .btn.save-calendar {
+      background: linear-gradient(135deg, #10b981, #047857);
+      border-color: rgba(110,231,183,.34);
+      color: #f0fff9;
+      box-shadow: 0 10px 28px rgba(16,185,129,.22);
+    }
+    .btn.save-calendar:hover { background: linear-gradient(135deg, #16c98d, #058366); }
+    .btn.save-calendar.saving { animation: savePulse 1s ease-in-out infinite; }
+    @keyframes savePulse { 0%,100% { box-shadow: 0 10px 28px rgba(16,185,129,.18); } 50% { box-shadow: 0 10px 34px rgba(16,185,129,.48); } }
+    .save-result-icon {
+      width: 64px; height: 64px; display:grid; place-items:center; margin: 2px auto 14px;
+      border-radius: 20px; font-size: 30px; color:#baf7db;
+      background: rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.28);
+    }
+    .save-result-summary { text-align:center; font-size:13px; line-height:1.65; color:var(--muted); }
+    .save-result-summary strong { color:var(--text); }
     .btn.danger { background: rgba(251,113,133,.1); border-color: rgba(251,113,133,.28); color: #ffc1cb; }
     .btn.ghost { background: transparent; }
     .btn.small { padding: 7px 9px; font-size: 11px; border-radius: 10px; }
@@ -446,16 +462,114 @@
       .preset-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
+    @page { size: A3 landscape; margin: 5mm; }
+
     @media print {
-      body { background: white; color: black; overflow: visible; }
-      .noise, .topbar, .sidebar, .view-toolbar, .modal-backdrop, .generation-overlay, .toast-stack { display: none !important; }
-      .app, .shell, .content, .view { display: block !important; height: auto; padding: 0; }
+      html, body {
+        width: 410mm !important;
+        height: 287mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #000 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .noise, .topbar, .sidebar, .modal-backdrop, .generation-overlay, .toast-stack,
+      .view-toolbar .toolbar-spacer, .view-toolbar .chip, .view-toolbar button,
+      .hours-balance, .emp-meta { display: none !important; }
+
+      .app, .shell, .content, .view {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
       .view:not(#calendarView) { display: none !important; }
-      .calendar-wrap { overflow: visible; border: 0; box-shadow: none; }
-      table.calendar { transform-origin: top left; transform: scale(.52); }
-      .calendar thead th, .calendar tbody td:nth-child(-n+3) { position: static !important; background: white !important; color: black; }
-      .calendar th, .calendar td { border-color: #bbb; }
-      .shift-tag { color: black !important; background: #eee !important; border-color: #aaa; }
+      #calendarView { page-break-inside: avoid !important; break-inside: avoid-page !important; }
+
+      .view-toolbar {
+        display: flex !important;
+        align-items: flex-end !important;
+        min-height: 0 !important;
+        margin: 0 0 2mm 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+      }
+      .view-title { color:#000 !important; font-size: 12pt !important; line-height:1.1 !important; }
+      .view-sub { color:#333 !important; font-size: 6.5pt !important; margin-top:1mm !important; }
+
+      .calendar-wrap {
+        width: 410mm !important;
+        height: 275mm !important;
+        max-height: 275mm !important;
+        overflow: hidden !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
+      table.calendar {
+        width: 410mm !important;
+        max-width: 410mm !important;
+        height: auto !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+        transform: none !important;
+        zoom: 1 !important;
+        font-size: 5pt !important;
+        line-height: 1.02 !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid-page !important;
+      }
+      .calendar thead { display: table-header-group !important; }
+      .calendar tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+      .calendar thead th, .calendar tbody td:nth-child(-n+3) {
+        position: static !important;
+        background: #fff !important;
+        color: #000 !important;
+        box-shadow: none !important;
+      }
+      .calendar th, .calendar td {
+        min-width: 0 !important;
+        width: auto !important;
+        height: 5.6mm !important;
+        max-height: 5.6mm !important;
+        padding: .25mm .15mm !important;
+        border: .18mm solid #9a9a9a !important;
+        overflow: hidden !important;
+        color: #000 !important;
+        vertical-align: middle !important;
+      }
+      .calendar th:nth-child(1), .calendar td:nth-child(1) { width: 5mm !important; }
+      .calendar th:nth-child(2), .calendar td:nth-child(2) { width: 31mm !important; }
+      .calendar th:nth-child(3), .calendar td:nth-child(3) { width: 15mm !important; }
+      .calendar th:nth-child(n+4), .calendar td:nth-child(n+4) { width: auto !important; }
+
+      .emp-name { font-size: 5.4pt !important; line-height: 1 !important; color:#000 !important; }
+      .emp-index { font-size: 4.8pt !important; min-width:0 !important; padding:0 !important; background:none !important; color:#000 !important; }
+      .group-cell { min-height:0 !important; padding:0 !important; }
+      .group-badge {
+        padding: .3mm .7mm !important; border-radius: 1mm !important;
+        font-size: 5pt !important; color:#000 !important;
+        background:#eee !important; border:.15mm solid #aaa !important;
+      }
+      .cell-button {
+        min-height: 0 !important; height: 100% !important; padding: 0 !important;
+        display:flex !important; align-items:center !important; justify-content:center !important;
+        gap:.2mm !important; overflow:hidden !important;
+      }
+      .shift-tag {
+        display:inline-block !important; min-width:0 !important; max-width:100% !important;
+        padding:.18mm .25mm !important; margin:0 !important; border-radius:.7mm !important;
+        font-size: 4.5pt !important; line-height:1 !important; font-weight:800 !important;
+        color:#000 !important; background:#eee !important; border:.12mm solid #aaa !important;
+        white-space:nowrap !important; overflow:hidden !important; text-overflow:clip !important;
+      }
+      .cell-source, .cell-plus { display:none !important; }
     }
   </style>
 </head>
@@ -467,7 +581,7 @@
         <div class="brand-mark"><img src="logo.png" alt="Logo ATLAS 118" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" /><span class="brand-fallback">✚</span></div>
         <div>
           <div class="brand-title">ATLAS 118</div>
-          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v6</div>
+          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v9</div>
         </div>
       </div>
 
@@ -488,9 +602,9 @@
         <button class="btn primary" id="autoBtn" title="Genera la proposta automatica">✦ <span>Genera automatico</span></button>
         <button class="btn" id="importBtn" title="Importa backup JSON">⇩ <span>Importa</span></button>
         <button class="btn" id="exportBtn" title="Esporta il Database Turni in CSV">⇧ <span>Esporta DB</span></button>
-        <button class="btn" id="printBtn" title="Stampa calendario">⎙ <span>Stampa</span></button>
+        <button class="btn" id="printBtn" title="Stampa calendario in A3 orizzontale su una sola pagina">⎙ <span>Stampa A3</span></button>
         <button class="btn" id="settingsBtn" title="Impostazioni">⚙ <span>Impostazioni</span></button>
-        <button class="btn" id="syncBtn" title="Salva tramite Apps Script o esporta CSV">☁ <span>Salva Sheet</span></button>
+        <button class="btn save-calendar" id="syncBtn" title="Salva il calendario del mese nel foglio Database">💾 <span id="syncBtnText">Salva calendario</span></button>
       </div>
     </header>
 
@@ -565,6 +679,7 @@
             <div>• Sabato mattina: <strong>G2 + G3 + Somma</strong></div>
             <div>• Sabato pomeriggio: <strong>G2 + Somma</strong></div>
             <div>• Notti: <strong>solo macchine a 3</strong></div>
+            <div>• Dopo una notte: <strong>giornata successiva di riposo</strong></div>
             <div>• Equipaggi: <strong>preferibile ≥ 1 uomo</strong></div>
             <div>• Raschi: <strong>GRS, MGSE solo necessità</strong></div>
             <div class="db-status"><span>Fonti collegate</span><strong id="dbStateText">Matrice fallback · Database locale</strong></div>
@@ -647,7 +762,7 @@
                 <div class="alert-key"><span class="alert-amber">AVVISO</span><p>Gruppi A/B mischiati, RO nel 118, equipaggio tutto femminile, ruoli poco equilibrati o responsabili sotto obiettivo.</p></div>
                 <div class="alert-key"><span class="alert-blue">INFO</span><p>Situazioni ammesse ma da conoscere, come Sumirago inserita manualmente.</p></div>
               </article>
-              <article class="manual-card"><h3>Regole chiave</h3><ul><li>Le Libere entrano nel 118 secondo abilitazioni e sono neutrali rispetto ai gruppi.</li><li>Raschi svolge GRS; MGSE solo quando il minimo SE non è raggiungibile.</li><li>Sumirago non viene generata automaticamente: si inserisce manualmente.</li><li>Il sabato mattina ordinario copre G2, G3 e Somma; il sabato pomeriggio copre G2 e Somma. Di notte tutte le postazioni sono a 3.</li><li>Il RO entra nel 118 solo in estrema urgenza.</li></ul></article>
+              <article class="manual-card"><h3>Regole chiave</h3><ul><li>Le Libere entrano nel 118 secondo abilitazioni e sono neutrali rispetto ai gruppi.</li><li>Raschi svolge GRS; MGSE solo quando il minimo SE non è raggiungibile.</li><li>Sumirago non viene generata automaticamente: si inserisce manualmente.</li><li>Il sabato mattina ordinario copre G2, G3 e Somma; il sabato pomeriggio copre G2 e Somma. Di notte tutte le postazioni sono a 3.</li><li>Dopo ogni turno N o P+N, ATLAS inserisce RC nel giorno successivo e impedisce nuove attività lavorative, salvo forzatura manuale segnalata come errore.</li><li>Il RO entra nel 118 solo in estrema urgenza.</li></ul></article>
               <article class="manual-card"><h3>Inserire Sumirago</h3><ol><li>Apri la cella del dipendente e della data.</li><li>Scegli <strong>118</strong>.</li><li>Imposta fascia, sede <strong>Sumirago</strong> e ruolo A/C/S.</li><li>Salva le tre persone dell’equipaggio.</li><li>Verifica la pagina Coperture e l’alert informativo.</li></ol></article>
               <article class="manual-card"><h3>Anagrafiche</h3><p>L’ID resta tecnico e invisibile. Dalla pagina Anagrafiche puoi inserire o rimuovere persone, impostare gruppo, sesso, abilitazioni, responsabilità, sedi e monte ore mensile. Il sesso è usato solo dall’algoritmo e nella pagina Anagrafiche, non nel Calendario.</p></article>
               <article class="manual-card"><h3>Saldo ore nel Calendario</h3><p>Accanto al gruppo viene mostrato lo scostamento dal monte ore personale: il segno <strong>−</strong> indica le ore ancora mancanti, il segno <strong>+</strong> le ore in eccesso e <strong>0 h</strong> il raggiungimento del target. Passa il mouse sul valore per vedere ore programmate e obiettivo.</p></article>
@@ -697,9 +812,9 @@
           <div class="field full"><label>CSV Google Sheet · Matrice dipendenti</label><input id="setSheetCsv" class="input" /></div>
           <div class="field full"><label>CSV Google Sheet · Database turni</label><input id="setDatabaseCsv" class="input" /></div>
           <div class="field full"><label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0"><input id="setRotation" type="checkbox" /> Usa rotazione A/B settimanale (settimane pari A=M, B=P; dispari B=M, A=P)</label></div>
-          <div class="field full"><label>URL Web App Google Apps Script per salvataggio diretto (facoltativo)</label><input id="setAppsScript" class="input" placeholder="https://script.google.com/macros/s/AKfycbw8UWAzwaRWwNaQ2TlEwJzHaU7P5mHeqYOCmzbX-YP3fhi_9sTP1oM0wG1qjq_fcQur/exec" /></div>
+          <div class="field full"><label>URL Web App Google Apps Script per salvataggio diretto</label><input id="setAppsScript" class="input" placeholder="https://script.google.com/macros/s/.../exec" /></div>
         </div>
-        <div class="notice info">I due link CSV sono già configurati e vengono letti all’avvio. I CSV pubblicati sono in sola lettura: senza Apps Script le modifiche restano nel browser e si salvano con “Esporta DB”.</div>
+        <div class="notice info"><strong>Per scrivere sul Google Sheet:</strong> incolla l’URL della distribuzione Web App che termina in <code>/exec</code>. Dopo ogni modifica al codice Apps Script devi creare una nuova versione della distribuzione. Il pulsante verde “Salva calendario” aggiorna il foglio Database del mese visualizzato.</div>
         <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
           <button class="btn small" id="importEmployeesBtn">Ricarica Matrice + Database</button>
           <button class="btn small" id="downloadBackupBtn">Scarica backup JSON</button>
@@ -782,6 +897,17 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="saveResultModal">
+    <div class="modal sm">
+      <div class="modal-head"><div><div class="modal-title">Calendario salvato</div><div class="modal-sub">Sincronizzazione Google Sheet completata</div></div><button class="modal-close" data-close="saveResultModal">✕</button></div>
+      <div class="modal-body">
+        <div class="save-result-icon">✓</div>
+        <div class="save-result-summary" id="saveResultText"></div>
+      </div>
+      <div class="modal-foot"><button class="btn primary" data-close="saveResultModal">Chiudi</button></div>
+    </div>
+  </div>
+
   <div class="generation-overlay" id="generationOverlay" aria-live="polite" aria-busy="true">
     <div class="generation-box">
       <div class="generation-icon">✦</div>
@@ -838,10 +964,10 @@
     allowRoAuto: false
   };
 
-  const STORAGE_KEY = 'atlas-118-turnazione-v8';
-  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
-  const APP_VERSION = 8;
-  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8]);
+  const STORAGE_KEY = 'atlas-118-turnazione-v9';
+  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
+  const APP_VERSION = 9;
+  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8,9]);
   const DOW = ['dom','lun','mar','mer','gio','ven','sab'];
   const MONTHS = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
   const CREW_SLOTS = [
@@ -958,6 +1084,53 @@
   function appendTo(employeeId,day,item,{dirty=true,render=false}={}){ const arr=[...getAssignments(employeeId,day),item]; setAssignments(employeeId,day,arr,{dirty,render}); }
   function currentEmployee(){ return state.employees.find(e=>e.id===state.activeCell?.employeeId); }
 
+  function adjacentDayKey(day,offset){
+    const d=parseDateKey(day); d.setDate(d.getDate()+offset); return dateKey(d);
+  }
+  function isNight118(a){ return a?.category==='118' && ['N','PN'].includes(a.shift); }
+  function isWorkingAssignment(a){
+    return ['118','SE','RESP','AM','FORM','CUSTOM'].includes(a?.category);
+  }
+  function previousDayHasNight(employeeId,day){
+    const previous=adjacentDayKey(day,-1);
+    return getAssignments(employeeId,previous).some(isNight118);
+  }
+  function nextDayWorkAfterNight(employeeId,day){
+    const next=adjacentDayKey(day,1);
+    return getAssignments(employeeId,next).filter(isWorkingAssignment);
+  }
+  function ensurePostNightRest(employeeId,day,nightItem,{dirty=false}={}){
+    if(!isNight118(nightItem))return false;
+    const next=adjacentDayKey(day,1);
+    if(!next.startsWith(state.month))return false;
+    const existing=getAssignments(employeeId,next);
+    if(existing.length)return false;
+    const marker={
+      id:uid(), origin:nightItem.origin||'AUTOMATICA', locked:!!nightItem.locked,
+      status:nightItem.status||'PROPOSTO', coverage:'ORDINARIA',
+      category:'RC', type:'RC', code:'RC', hours:0, allDay:true,
+      postNight:true, linkedNightId:nightItem.id,
+      note:'Riposo obbligatorio dopo turno notturno',
+      createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()
+    };
+    state.assignments[assignmentKey(employeeId,next)]=[marker];
+    if(dirty)state.localDirty=true;
+    return true;
+  }
+  function removeLinkedPostNightRest(employeeId,nightDay,nightItem){
+    if(!isNight118(nightItem))return;
+    const next=adjacentDayKey(nightDay,1),key=assignmentKey(employeeId,next);
+    const items=getAssignments(employeeId,next);
+    const keep=items.filter(a=>!(a.postNight && a.linkedNightId===nightItem.id));
+    if(keep.length)state.assignments[key]=keep; else delete state.assignments[key];
+  }
+  function ensureAllPostNightRests(){
+    Object.entries(state.assignments).forEach(([key,items])=>{
+      const split=key.lastIndexOf('|'),employeeId=key.slice(0,split),day=key.slice(split+1);
+      items.forEach(a=>ensurePostNightRest(employeeId,day,a,{dirty:false}));
+    });
+  }
+
   function initRequirements(){ monthDates().forEach(d=>{const day=dateKey(d); ['M','P','N'].forEach(shift=>{const k=`${day}|${shift}`; if(state.requirements[k]==null){ if(d.getDay()>=1&&d.getDay()<=5&&['M','P'].includes(shift))state.requirements[k]='required'; else if(d.getDay()===6&&['M','P'].includes(shift))state.requirements[k]='required'; else state.requirements[k]='conditional'; }});}); }
   function recalcDefaultTarget(){ state.settings.targetHours=round2(workdays().length*7.6); }
 
@@ -1033,7 +1206,7 @@
   function renderExistingAssignments(){
     const {employeeId,day}=state.activeCell||{};if(!employeeId)return;const items=getAssignments(employeeId,day);
     $('#existingAssignments').innerHTML=items.length?items.map((a,i)=>{const t=assignmentTimes(a,day);return `<div class="assignment-item"><span class="assignment-code ${tagClass(a)}" style="padding:7px;border-radius:8px">${esc(normalizeCode(a))}</span><span class="assignment-time">${esc(t.startText)}${t.endText?'–'+esc(t.endText):''}</span><span class="assignment-hours">${fmt(t.hours)} h</span><span class="source-badge source-${sourceLabel(a).toLowerCase()}">${sourceLabel(a)}${a.locked?' 🔒':''}</span><button class="assignment-delete" data-lock-index="${i}" title="Blocca/sblocca">${a.locked?'Sblocca':'Blocca'}</button><button class="assignment-delete" data-index="${i}">Elimina</button></div>`;}).join(''):'<div class="notice info">Nessuna assegnazione presente. Seleziona una tipologia qui sotto.</div>';
-    $$('[data-index]').forEach(b=>b.addEventListener('click',()=>{const arr=[...getAssignments(employeeId,day)],a=arr[Number(b.dataset.index)]; if(a?.origin==='DATABASE'&&!confirm('Questa voce proviene dal Database. Eliminarla localmente?'))return;arr.splice(Number(b.dataset.index),1);setAssignments(employeeId,day,arr);state.activeCell={employeeId,day};renderExistingAssignments();openModal('assignmentModal');}));
+    $$('[data-index]').forEach(b=>b.addEventListener('click',()=>{const arr=[...getAssignments(employeeId,day)],a=arr[Number(b.dataset.index)]; if(a?.origin==='DATABASE'&&!confirm('Questa voce proviene dal Database. Eliminarla localmente?'))return;removeLinkedPostNightRest(employeeId,day,a);arr.splice(Number(b.dataset.index),1);setAssignments(employeeId,day,arr);state.activeCell={employeeId,day};renderExistingAssignments();openModal('assignmentModal');}));
     $$('[data-lock-index]').forEach(b=>b.addEventListener('click',()=>{const arr=[...getAssignments(employeeId,day)],i=Number(b.dataset.lockIndex);arr[i]={...arr[i],locked:!arr[i].locked,updatedAt:new Date().toISOString()};setAssignments(employeeId,day,arr);state.activeCell={employeeId,day};renderExistingAssignments();openModal('assignmentModal');}));
   }
 
@@ -1054,7 +1227,7 @@
   }
 
   function manualBase(){return{id:uid(),origin:'MANUALE',locked:true,status:'CONFERMATO',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};}
-  function appendAssignment(item){const {employeeId,day}=state.activeCell;const candidate={...manualBase(),...item};const check=checkCandidate(state.employees.find(e=>e.id===employeeId),day,candidate,{manual:true}); if(check.errors.length)return confirmDialog('Alert sulla modifica','Conferma assegnazione manuale',check.errors.concat(check.warnings).join(' '),()=>commit()); if(check.warnings.length)return confirmDialog('Avviso','Conferma assegnazione manuale',check.warnings.join(' '),()=>commit()); commit(); function commit(){appendTo(employeeId,day,candidate,{dirty:true,render:true});state.activeCell={employeeId,day};renderExistingAssignments();$('#assignmentFormHost').innerHTML='';openModal('assignmentModal');toast('Assegnazione aggiunta',normalizeCode(candidate));}}
+  function appendAssignment(item){const {employeeId,day}=state.activeCell;const candidate={...manualBase(),...item};const check=checkCandidate(state.employees.find(e=>e.id===employeeId),day,candidate,{manual:true}); if(check.errors.length)return confirmDialog('Alert sulla modifica','Conferma assegnazione manuale',check.errors.concat(check.warnings).join(' '),()=>commit()); if(check.warnings.length)return confirmDialog('Avviso','Conferma assegnazione manuale',check.warnings.join(' '),()=>commit()); commit(); function commit(){appendTo(employeeId,day,candidate,{dirty:true,render:false});ensurePostNightRest(employeeId,day,candidate,{dirty:true});saveState();renderAll();state.activeCell={employeeId,day};renderExistingAssignments();$('#assignmentFormHost').innerHTML='';openModal('assignmentModal');toast('Assegnazione aggiunta',isNight118(candidate)?`${normalizeCode(candidate)} · RC inserito il giorno successivo`:normalizeCode(candidate));}}
   function addSimple(item){appendAssignment(item);}
   function add118(){const e=currentEmployee(),shift=$('#fShift').value,site=$('#fSite').value,machine=(site==='G'&&!['N','PN'].includes(shift))?$('#fMachine').value:'3',role=$('#fRole').value; const item={category:'118',shift,site,machine,role,note:$('#fNote').value.trim(),locked:$('#fLocked').value==='SI'};const hard=[];if(e.turno==='Amministrazione')hard.push('Il personale amministrativo non può essere assegnato al 118.');if(site!=='G'&&e.sedeSolo==='G')hard.push('Galli Monica può lavorare solo a Gallarate.');if(role==='A'&&!e.autista)hard.push('Abilitazione Autista assente.');if(role==='C'&&!e.capo)hard.push('Abilitazione Capo equipaggio assente.');if(role==='S'&&!e.soccorritore)hard.push('Abilitazione Soccorritore assente.');if(hard.length)return toast('Assegnazione non consentita',hard.join(' '),'error');if(e.turno==='RO')return confirmDialog('Uso del Responsabile Operativo','Copertura 118 straordinaria',`Stai assegnando ${employeeName(e)} al 118. Conferma che non risultano altre risorse.`,()=>appendAssignment(item));appendAssignment(item);}
   function addResp(){const code=$('#fResp').value,e=currentEmployee(),allowed={GRA:'Autoparco',GRM:'Magazzino',GRS:'Secondari',GRO:'Operativo'}[code];if(e.responsabile!==allowed)return confirmDialog('Responsabilità non prevista','Conferma manuale',`${employeeName(e)} non è indicato come responsabile ${allowed}.`,()=>addSimple({category:'RESP',type:code,code}));addSimple({category:'RESP',type:code,code});}
@@ -1088,6 +1261,17 @@
     }
     if(item.type==='MGSE'&&isWeekend(d))errors.push('MGSE non è previsto nel weekend.');
     if(item.category==='SE'&&(e.turno==='RS'||slug(e.responsabile)==='secondari'))warnings.push('Il Responsabile Secondari viene impiegato nel servizio operativo SE solo per necessità.');
+
+    if(isWorkingAssignment(item) && previousDayHasNight(e.id,day)){
+      errors.push('Il giorno successivo a un turno notturno è riservato al riposo: non sono consentite attività lavorative.');
+    }
+    if(isNight118(item)){
+      const nextWork=nextDayWorkAfterNight(e.id,day);
+      if(nextWork.length){
+        errors.push(`Il turno notturno richiede riposo per l’intera giornata successiva, ma risultano già: ${nextWork.map(normalizeCode).join(', ')}.`);
+      }
+    }
+
     const same=getAssignments(e.id,day); if(item.category==='118'&&same.some(a=>a.category==='SE'))errors.push('Secondari e 118 non possono essere svolti nella stessa giornata.'); if(item.category==='SE'&&same.some(a=>a.category==='118'))errors.push('Secondari e 118 non possono essere svolti nella stessa giornata.');
     if(item.category==='118'&&same.some(a=>a.category==='RESP'))errors.push('Giornata di responsabilità e 118 non sono compatibili nello stesso giorno.');
     if(item.category==='SE'&&same.some(a=>a.category==='RESP'))errors.push('Giornata di responsabilità e Secondari operativi non sono compatibili nello stesso giorno.');
@@ -1103,7 +1287,11 @@
     const out=[],rows=allAssignmentRows();
     state.employees.forEach(e=>{
       const timed=rows.filter(r=>r.employeeId===e.id&&r.timed).sort((a,b)=>a.start-b.start);for(let i=1;i<timed.length;i++){const p=timed[i-1],a=timed[i],diff=(a.start-p.end)/36e5;if(a.start<p.end)out.push(validation('error','Sovrapposizione',`${employeeName(e)}: ${normalizeCode(p.a)} e ${normalizeCode(a.a)} si sovrappongono.`,e.id,a.day));else if(diff<state.settings.minRest)out.push(validation('error','Riposo insufficiente',`${employeeName(e)} ha ${fmt(diff)} ore tra ${normalizeCode(p.a)} e ${normalizeCode(a.a)}; minimo ${fmt(state.settings.minRest)}.`,e.id,a.day));}
-      monthDates().forEach(d=>{const day=dateKey(d),items=getAssignments(e.id,day),has118=items.some(a=>a.category==='118'),hasSE=items.some(a=>a.category==='SE'),hasResp=items.some(a=>a.category==='RESP'),hasAllAbs=items.some(isAllDayBlock);if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorno',`${employeeName(e)} è assegnato sia al 118 sia ai Secondari.`,e.id,day));if(has118&&hasResp)out.push(validation('error','118 e giornata responsabile',`${employeeName(e)} ha 118 e responsabilità nello stesso giorno.`,e.id,day));if(hasSE&&hasResp)out.push(validation('error','Secondari e giornata responsabile',`${employeeName(e)} ha servizio operativo SE e responsabilità nello stesso giorno.`,e.id,day));if(has118&&hasAllAbs)out.push(validation('error','Turno durante assenza',`${employeeName(e)} ha un turno 118 durante assenza/riposo.`,e.id,day));items.forEach(a=>{if(a.category==='118'){if(e.turno==='Amministrazione')out.push(validation('error','Amministrazione nel 118',`${employeeName(e)} può svolgere solo amministrazione.`,e.id,day));if(a.site!=='G'&&e.sedeSolo==='G')out.push(validation('error','Sede non consentita',`${employeeName(e)} può essere assegnata solo a Gallarate.`,e.id,day));if(['N','PN'].includes(a.shift)&&String(a.machine)==='2')out.push(validation('error','Macchina a 2 in turno notturno',`${employeeName(e)}: ${normalizeCode(a)} non è valido, di notte le macchine sono sempre a 3.`,e.id,day));if(a.site!=='G'&&String(a.machine)!=='3')out.push(validation('error','Equipaggio sede non valido',`${normalizeCode(a)}: Somma e Sumirago sono sempre equipaggi a 3.`,e.id,day));if(d.getDay()===6&&a.shift==='M'&&!['G2','G3','Somma'].includes(crewKey(a)))out.push(validation('warning','Copertura extra sabato mattina',`${employeeName(e)}: ${normalizeCode(a)} non rientra nella copertura ordinaria del sabato mattina, prevista per Gallarate macchina a 2, Gallarate macchina a 3 e Somma.`,e.id,day));if(d.getDay()===6&&a.shift==='P'&&!['G2','Somma'].includes(crewKey(a)))out.push(validation('warning','Copertura extra sabato pomeriggio',`${employeeName(e)}: ${normalizeCode(a)} non rientra nella copertura ordinaria del sabato pomeriggio, prevista per Gallarate macchina a 2 e Somma.`,e.id,day));if(a.site==='SU')out.push(validation('info','Sumirago inserita manualmente',`${employeeName(e)}: ${normalizeCode(a)} è una copertura al bisogno e non fa parte della generazione ordinaria.`,e.id,day));if(a.role==='A'&&!e.autista||a.role==='C'&&!e.capo||a.role==='S'&&!e.soccorritore)out.push(validation('error','Abilitazione mancante',`${employeeName(e)} non è abilitato al ruolo ${a.role}.`,e.id,day));if(e.turno==='RO')out.push(validation('warning','Responsabile Operativo impiegato nel 118',`${employeeName(e)} deve essere utilizzato solo in estrema urgenza.`,e.id,day));}if(a.type==='MGSE'&&isWeekend(d))out.push(validation('error','MGSE nel weekend','MGSE non è previsto il sabato o la domenica.',e.id,day));if(a.category==='SE'&&(e.turno==='RS'||slug(e.responsabile)==='secondari'))out.push(validation('warning','Raschi impiegato nei Secondari operativi',`${employeeName(e)} è stato utilizzato in MGSE per necessità; normalmente svolge GRS.`,e.id,day));});});
+      monthDates().forEach(d=>{const day=dateKey(d),items=getAssignments(e.id,day),has118=items.some(a=>a.category==='118'),hasSE=items.some(a=>a.category==='SE'),hasResp=items.some(a=>a.category==='RESP'),hasAllAbs=items.some(isAllDayBlock);
+        if(previousDayHasNight(e.id,day)){
+          const work=items.filter(isWorkingAssignment);
+          if(work.length)out.push(validation('error','Riposo post-notte non rispettato',`${employeeName(e)} ha lavorato di notte il giorno precedente e risulta assegnato a ${work.map(normalizeCode).join(', ')}. La giornata deve essere di riposo.`,e.id,day));
+        }if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorno',`${employeeName(e)} è assegnato sia al 118 sia ai Secondari.`,e.id,day));if(has118&&hasResp)out.push(validation('error','118 e giornata responsabile',`${employeeName(e)} ha 118 e responsabilità nello stesso giorno.`,e.id,day));if(hasSE&&hasResp)out.push(validation('error','Secondari e giornata responsabile',`${employeeName(e)} ha servizio operativo SE e responsabilità nello stesso giorno.`,e.id,day));if(has118&&hasAllAbs)out.push(validation('error','Turno durante assenza',`${employeeName(e)} ha un turno 118 durante assenza/riposo.`,e.id,day));items.forEach(a=>{if(a.category==='118'){if(e.turno==='Amministrazione')out.push(validation('error','Amministrazione nel 118',`${employeeName(e)} può svolgere solo amministrazione.`,e.id,day));if(a.site!=='G'&&e.sedeSolo==='G')out.push(validation('error','Sede non consentita',`${employeeName(e)} può essere assegnata solo a Gallarate.`,e.id,day));if(['N','PN'].includes(a.shift)&&String(a.machine)==='2')out.push(validation('error','Macchina a 2 in turno notturno',`${employeeName(e)}: ${normalizeCode(a)} non è valido, di notte le macchine sono sempre a 3.`,e.id,day));if(a.site!=='G'&&String(a.machine)!=='3')out.push(validation('error','Equipaggio sede non valido',`${normalizeCode(a)}: Somma e Sumirago sono sempre equipaggi a 3.`,e.id,day));if(d.getDay()===6&&a.shift==='M'&&!['G2','G3','Somma'].includes(crewKey(a)))out.push(validation('warning','Copertura extra sabato mattina',`${employeeName(e)}: ${normalizeCode(a)} non rientra nella copertura ordinaria del sabato mattina, prevista per Gallarate macchina a 2, Gallarate macchina a 3 e Somma.`,e.id,day));if(d.getDay()===6&&a.shift==='P'&&!['G2','Somma'].includes(crewKey(a)))out.push(validation('warning','Copertura extra sabato pomeriggio',`${employeeName(e)}: ${normalizeCode(a)} non rientra nella copertura ordinaria del sabato pomeriggio, prevista per Gallarate macchina a 2 e Somma.`,e.id,day));if(a.site==='SU')out.push(validation('info','Sumirago inserita manualmente',`${employeeName(e)}: ${normalizeCode(a)} è una copertura al bisogno e non fa parte della generazione ordinaria.`,e.id,day));if(a.role==='A'&&!e.autista||a.role==='C'&&!e.capo||a.role==='S'&&!e.soccorritore)out.push(validation('error','Abilitazione mancante',`${employeeName(e)} non è abilitato al ruolo ${a.role}.`,e.id,day));if(e.turno==='RO')out.push(validation('warning','Responsabile Operativo impiegato nel 118',`${employeeName(e)} deve essere utilizzato solo in estrema urgenza.`,e.id,day));}if(a.type==='MGSE'&&isWeekend(d))out.push(validation('error','MGSE nel weekend','MGSE non è previsto il sabato o la domenica.',e.id,day));if(a.category==='SE'&&(e.turno==='RS'||slug(e.responsabile)==='secondari'))out.push(validation('warning','Raschi impiegato nei Secondari operativi',`${employeeName(e)} è stato utilizzato in MGSE per necessità; normalmente svolge GRS.`,e.id,day));});});
       const stats=employeeStats(e),target=targetHoursFor(e),delta=stats.hours-target;if(delta>15)out.push(validation('warning','Monte ore elevato',`${employeeName(e)} è a +${fmt(delta)} ore rispetto al target ${fmt(target)}.`,e.id,null));else if(delta<-25)out.push(validation('info','Monte ore da completare',`${employeeName(e)} è a ${fmt(delta)} ore rispetto al target ${fmt(target)}.`,e.id,null));
       const eligible=qualifiedRoles(e),counts=roleCountsFor(e.id);if(eligible.length>1){const values=eligible.map(r=>counts[r]),total=values.reduce((a,b)=>a+b,0),max=Math.max(...values),min=Math.min(...values);if(total>=6&&max-min>=5){const detail=eligible.map(r=>`${r} ${counts[r]}`).join(' · ');out.push(validation('warning','Ruoli poco bilanciati',`${employeeName(e)}: ${detail}. Alternare i ruoli quando la copertura lo consente.`,e.id,null));}const ordered=rows.filter(r=>r.employeeId===e.id&&r.a.category==='118').sort((a,b)=>a.start-b.start);let streak=1;for(let i=1;i<ordered.length;i++){if(ordered[i].a.role===ordered[i-1].a.role)streak++;else streak=1;if(streak===3){out.push(validation('warning','Ruolo ripetuto consecutivamente',`${employeeName(e)} ha svolto il ruolo ${ordered[i].a.role} per tre turni 118 consecutivi.`,e.id,ordered[i].day));break;}}}
     });
@@ -1142,7 +1330,7 @@
   function autoItem(item){return{id:uid(),origin:'AUTOMATICA',locked:false,status:'PROPOSTO',coverage:'ORDINARIA',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),...item};}
   function removeAutoProposals(){Object.keys(state.assignments).forEach(k=>{const keep=state.assignments[k].filter(a=>!(sourceLabel(a)==='AUTO'&&!a.locked));if(keep.length)state.assignments[k]=keep;else delete state.assignments[k];});}
   function dayHasCategory(e,day,pred){return getAssignments(e.id,day).some(pred);}
-  function addAuto(e,day,item){const a=autoItem(item),k=assignmentKey(e.id,day);state.assignments[k]=[...(state.assignments[k]||[]),a];cacheAutoAssignment(e,day,a);}
+  function addAuto(e,day,item){const a=autoItem(item),k=assignmentKey(e.id,day);state.assignments[k]=[...(state.assignments[k]||[]),a];cacheAutoAssignment(e,day,a);ensurePostNightRest(e.id,day,a,{dirty:false});}
 
   function scheduleAdmin(){let added=0;workdays().forEach(d=>{const day=dateKey(d);state.employees.filter(e=>e.turno==='Amministrazione').forEach(e=>{if(getAssignments(e.id,day).length)return;const dow=d.getDay();let code='AM7';if(slug(e.cognome)==='praderio')code=dow===5?'AM4':'AM8,5';else if(slug(e.cognome)==='vescera')code=[1,5].includes(dow)?'AM4':'AM7';addAuto(e,day,{category:'AM',type:code,code});added++;});});return added;}
   function scheduleFixedResponsibles(){let added=0;const bosetti=state.employees.find(e=>slug(e.responsabile)==='operativo'||e.turno==='RO');if(bosetti)workdays().forEach(d=>{const day=dateKey(d);if(!getAssignments(bosetti.id,day).length){addAuto(bosetti,day,{category:'RESP',type:'GRO',code:'GRO'});added++;}});const raschi=state.employees.find(e=>slug(e.responsabile)==='secondari'||e.turno==='RS');if(raschi)workdays().forEach(d=>{const day=dateKey(d);if(!getAssignments(raschi.id,day).length){addAuto(raschi,day,{category:'RESP',type:'GRS',code:'GRS'});added++;}});const responsibles=[...state.employees.filter(e=>slug(e.responsabile)==='autoparco').map(e=>[e,'GRA']),...state.employees.filter(e=>slug(e.responsabile)==='magazzino').map(e=>[e,'GRM'])];responsibles.forEach(([e,code],idx)=>{let count=allAssignmentRows().filter(r=>r.employeeId===e.id&&r.a.type===code).length;const candidates=workdays().filter((d,i)=>i%Math.max(1,Math.floor(workdays().length/state.settings.respGoal))===idx%2).concat(workdays());for(const d of candidates){if(count>=state.settings.respGoal)break;const day=dateKey(d);if(getAssignments(e.id,day).length)continue;const item={category:'RESP',type:code,code};if(checkCandidate(e,day,item).errors.length)continue;addAuto(e,day,item);count++;added++;}});return added;}
@@ -1175,7 +1363,7 @@
     item.category=category;item.type=code;item.code=sigla||code;if(category==='118'){const rawCode=String(sigla||code||'').toUpperCase();item.shift=(fascia||(rawCode.startsWith('PN')?'PN':rawCode.slice(0,1))).toUpperCase();item.site=(sede||siteFromCode(rawCode)||'G').toUpperCase();item.machine=item.site!=='G'?'3':String(mezzo||rawCode.match(/G([23])/)?.[1]||'3');item.role=(ruolo||roleFromCode(rawCode,item.site)).toUpperCase();}
     const st=parseTimeFromDate(startRaw)||(/^[0-2]?\d:\d{2}$/.test(startRaw)?startRaw.padStart(5,'0'):''),en=parseTimeFromDate(endRaw)||(/^[0-2]?\d:\d{2}$/.test(endRaw)?endRaw.padStart(5,'0'):'');if(st&&en){item.start=st;item.end=en;item.nextDay=shiftWindow('CUSTOM',day,st,en).nextDay;}item.hours=ore||undefined;item.allDay=['ABS','RC'].includes(category)&&!st;return{employeeId:empId,day,item};
   }
-  function applyDbRecordsToMonth({replace=true}={}){if(replace){state.assignments={};state.requirements={};initRequirements();}state.dbRecords.forEach(r=>{if(r.requirement){if(r.day.startsWith(state.month))state.requirements[`${r.day}|${r.shift}`]='required';return;}if(!r.day.startsWith(state.month))return;let emp=state.employees.find(e=>e.id===r.employeeId);if(!emp){const simple=slug(r.employeeId);emp=state.employees.find(e=>slug(e.id)===simple);}if(emp)appendTo(emp.id,r.day,r.item,{dirty:false,render:false});});if(replace)state.localDirty=false;}
+  function applyDbRecordsToMonth({replace=true}={}){if(replace){state.assignments={};state.requirements={};initRequirements();}state.dbRecords.forEach(r=>{if(r.requirement){if(r.day.startsWith(state.month))state.requirements[`${r.day}|${r.shift}`]='required';return;}if(!r.day.startsWith(state.month))return;let emp=state.employees.find(e=>e.id===r.employeeId);if(!emp){const simple=slug(r.employeeId);emp=state.employees.find(e=>slug(e.id)===simple);}if(emp)appendTo(emp.id,r.day,r.item,{dirty:false,render:false});});ensureAllPostNightRests();if(replace)state.localDirty=false;}
   function importDatabaseFromText(text,{replace=true}={}){const objects=csvObjects(text),records=objects.map(mapDatabaseObject).filter(Boolean);state.dbRecords=records;state.dbLoaded=true;applyDbRecordsToMonth({replace});return records.length;}
   async function fetchCsv(url){const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),8000);try{const res=await fetch(url,{cache:'no-store',signal:controller.signal});if(!res.ok)throw new Error(`HTTP ${res.status}`);return await res.text();}catch(e){if(e.name==='AbortError')throw new Error('timeout collegamento');throw e;}finally{clearTimeout(timer);}}
   async function reloadSheets({replaceDb=true,silent=false}={}){updateSyncStatus('Caricamento Google Sheet…','sync');let matrixCount=0,dbCount=0;try{const [m,d]=await Promise.all([fetchCsv(state.settings.matrixCsvUrl),fetchCsv(state.settings.databaseCsvUrl)]);matrixCount=importEmployeesFromText(m);dbCount=importDatabaseFromText(d,{replace:replaceDb});saveState();renderAll();updateSyncStatus(`Matrice ${matrixCount} · Database ${dbCount}`,'local');if(!silent)toast('Dati caricati',`${matrixCount} dipendenti · ${dbCount} record database.`);}catch(e){console.error(e);updateSyncStatus('Sheet non raggiungibile · uso dati locali','error');if(!silent)toast('Caricamento non riuscito',`${e.message}. Restano disponibili i dati locali/fallback.`,'error');}}
@@ -1197,7 +1385,81 @@
   function exportSummaryCsv(){const rows=[['Dipendente','Gruppo','Target','Ore','Saldo','Mattini','Pomeriggi','Notti/P+N','Ruolo A','Ruolo C','Ruolo S','Weekend','Secondari','GRA','GRM','GRO','FORM','Assenze','AM']];state.employees.forEach(e=>{const s=employeeStats(e),target=targetHoursFor(e);rows.push([employeeName(e),e.turno,target,s.hours,s.hours-target,s.M,s.P,s.N,s.roleA,s.roleC,s.roleS,s.weekends,s.se,s.gra,s.grm,s.gro,s.form,s.abs,s.am]);});download(`Riepilogo_${state.month}.csv`,'\uFEFF'+rows.map(r=>r.map(csvEscape).join(';')).join('\n'),'text/csv;charset=utf-8');}
   function downloadBackup(){download(`Backup_turnazione_${state.month}.json`,JSON.stringify({version:APP_VERSION,exportedAt:new Date().toISOString(),month:state.month,employees:state.employees,assignments:state.assignments,requirements:state.requirements,settings:state.settings},null,2),'application/json');}
   function importBackupFile(file){const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(!d.assignments)throw new Error('Formato non valido');state.month=d.month||state.month;state.employees=d.employees||state.employees;state.assignments=d.assignments||{};state.requirements=d.requirements||{};state.settings={...DEFAULT_SETTINGS,...(d.settings||{})};state.localDirty=true;$('#monthPicker').value=state.month;saveState();renderAll();toast('Backup importato');}catch(e){toast('Importazione fallita',e.message,'error');}};reader.readAsText(file);}
-  async function syncGoogle(){const url=state.settings.appsScriptUrl.trim();if(!url){exportDatabaseCsv();return toast('Database CSV esportato','Il CSV pubblicato è in sola lettura. Per il salvataggio diretto configura la Web App Apps Script.');}updateSyncStatus('Salvataggio completo su Google Sheet…','sync');try{const payload={action:'saveAll',month:state.month,employees:state.employees.map(employeeSheetObject),rows:allAssignmentRows().map(r=>({employeeId:r.employeeId,day:r.day,assignment:r.a})),requirements:state.requirements,updatedAt:new Date().toISOString()};const res=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});const data=await res.json();if(!data.ok)throw new Error(data.error||'Risposta non valida');state.localDirty=false;saveState();updateSyncStatus('Google Sheet sincronizzato','local');toast('Sincronizzazione completata',`${data.rows||0} turni · ${data.employees||state.employees.length} anagrafiche.`);}catch(e){updateSyncStatus('Errore sincronizzazione','error');toast('Sincronizzazione fallita',e.message,'error');}}
+  function setCalendarSaveUi(active){
+    const button=$('#syncBtn'),text=$('#syncBtnText');
+    if(button){button.disabled=active;button.classList.toggle('saving',active);}
+    if(text)text.textContent=active?'Salvataggio…':'Salva calendario';
+  }
+
+  function requestCalendarSave(){
+    const url=state.settings.appsScriptUrl.trim();
+    if(!url){
+      openSettings();
+      setTimeout(()=>$('#setAppsScript')?.focus(),120);
+      return toast('Collegamento Apps Script mancante','Inserisci nelle Impostazioni l’URL Web App che termina con /exec.','error');
+    }
+    const count=allAssignmentRows().length;
+    confirmDialog(
+      'Salvare il calendario su Google Sheet?',
+      `${monthLabel()} · foglio Database`,
+      `Saranno scritti ${count} record. I record già presenti per ${state.month} verranno sostituiti; gli altri mesi resteranno invariati.`,
+      syncCalendarGoogle
+    );
+  }
+
+  async function syncCalendarGoogle(){
+    const url=state.settings.appsScriptUrl.trim();
+    if(!url)return requestCalendarSave();
+    if(!/\/exec(?:\?|$)/.test(url)){
+      return toast('URL Apps Script non valido','Usa l’indirizzo della Web App che termina con /exec, non quello dell’editor Apps Script.','error');
+    }
+
+    setCalendarSaveUi(true);
+    updateSyncStatus(`Salvataggio ${monthLabel()}…`,'sync');
+
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),30000);
+    try{
+      const payload={
+        action:'savePlan',
+        month:state.month,
+        rows:allAssignmentRows().map(r=>({employeeId:r.employeeId,day:r.day,assignment:r.a})),
+        requirements:state.requirements,
+        updatedAt:new Date().toISOString(),
+        clientVersion:APP_VERSION
+      };
+      const res=await fetch(url,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify(payload),
+        redirect:'follow',
+        signal:controller.signal
+      });
+      const raw=await res.text();
+      let data;
+      try{data=JSON.parse(raw);}catch(_){throw new Error('La Web App non ha restituito JSON valido. Verifica distribuzione e autorizzazioni.');}
+      if(!res.ok||!data.ok)throw new Error(data.error||`Errore HTTP ${res.status}`);
+
+      state.localDirty=false;
+      saveState();
+      const savedAt=data.savedAt||new Date().toISOString();
+      const localTime=new Date(savedAt).toLocaleString('it-IT',{dateStyle:'short',timeStyle:'medium'});
+      updateSyncStatus(`Calendario salvato · ${localTime}`,'local');
+      $('#saveResultText').innerHTML=`<strong>${esc(monthLabel())}</strong><br>${Number(data.rows||0)} record scritti nel foglio <strong>${esc(data.sheet||'Database')}</strong>.<br><span class="muted">Conferma ricevuta alle ${esc(localTime)}.</span>`;
+      openModal('saveResultModal');
+      toast('Calendario salvato correttamente',`${Number(data.rows||0)} record sincronizzati.`,'success');
+    }catch(e){
+      console.error(e);
+      const message=e.name==='AbortError'
+        ? 'Tempo scaduto. Verifica connessione e distribuzione Apps Script.'
+        : (e.message||'Errore imprevisto');
+      updateSyncStatus('Calendario non salvato','error');
+      toast('Scrittura Google Sheet non riuscita',`${message} Controlla che la Web App sia distribuita come nuova versione, eseguita dal proprietario e accessibile a chiunque disponga del link.`,'error');
+    }finally{
+      clearTimeout(timeout);
+      setCalendarSaveUi(false);
+    }
+  }
 
 
   function openSettings(){ $('#setTargetHours').value=state.settings.targetHours;$('#setMinRest').value=state.settings.minRest;$('#setSeMin').value=state.settings.seMin;$('#setSeMax').value=state.settings.seMax;$('#setRespMin').value=state.settings.respMin;$('#setRespGoal').value=state.settings.respGoal;$('#setSheetCsv').value=state.settings.matrixCsvUrl;$('#setDatabaseCsv').value=state.settings.databaseCsvUrl;$('#setAppsScript').value=state.settings.appsScriptUrl;$('#setRotation').checked=state.settings.useABRotation;openModal('settingsModal'); }
@@ -1209,7 +1471,7 @@
   function bindEvents(){
     $$('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));$$('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.close)));$$('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);}));$$('.preset').forEach(b=>b.addEventListener('click',()=>renderAssignmentForm(b.dataset.preset)));
     ['searchEmployee','groupFilter','issuesOnly'].forEach(id=>$('#'+id).addEventListener(id==='searchEmployee'?'input':'change',renderCalendar));$('#resetFilters').addEventListener('click',()=>{$('#searchEmployee').value='';$('#groupFilter').value='all';$('#issuesOnly').checked=false;renderCalendar();});$('#coverageFilter').addEventListener('change',renderCoverage);$('#anomalyFilter').addEventListener('change',renderAnomalies);
-    $('#settingsBtn').addEventListener('click',openSettings);$('#saveSettingsBtn').addEventListener('click',saveSettings);$('#importEmployeesBtn').addEventListener('click',()=>reloadSheets({replaceDb:true}));$('#downloadBackupBtn').addEventListener('click',downloadBackup);$('#syncBtn').addEventListener('click',syncGoogle);$('#exportBtn').addEventListener('click',exportDatabaseCsv);$('#exportSummaryBtn').addEventListener('click',exportSummaryCsv);$('#printBtn').addEventListener('click',()=>window.print());
+    $('#settingsBtn').addEventListener('click',openSettings);$('#saveSettingsBtn').addEventListener('click',saveSettings);$('#importEmployeesBtn').addEventListener('click',()=>reloadSheets({replaceDb:true}));$('#downloadBackupBtn').addEventListener('click',downloadBackup);$('#syncBtn').addEventListener('click',requestCalendarSave);$('#exportBtn').addEventListener('click',exportDatabaseCsv);$('#exportSummaryBtn').addEventListener('click',exportSummaryCsv);$('#printBtn').addEventListener('click',()=>window.print());
     $('#addStaffBtn').addEventListener('click',()=>openStaffModal());$('#saveStaffBtn').addEventListener('click',saveStaffRecord);$('#exportStaffBtn').addEventListener('click',exportEmployeesCsv);$('#syncStaffBtn').addEventListener('click',syncEmployeesGoogle);$('#staffSearch').addEventListener('input',renderStaff);$('#staffGroupFilter').addEventListener('change',renderStaff);
     $('#reloadSheetBtn').addEventListener('click',()=>confirmDialog('Ricaricare Matrice e Database?','Le modifiche locali del mese saranno sostituite','Scarica prima il CSV o un backup se vuoi conservarle.',()=>reloadSheets({replaceDb:true})));$('#autoBtn').addEventListener('click',openAutoModal);$('#autoToolbarBtn').addEventListener('click',openAutoModal);$('#generateAutoBtn').addEventListener('click',generateAutomatic);$('#absenceBtn').addEventListener('click',openAbsenceModal);$('#absMode').addEventListener('change',toggleAbsenceMode);$('#saveAbsenceBtn').addEventListener('click',declareAbsence);
     $('#importBtn').addEventListener('click',()=>$('#fileInput').click());$('#fileInput').addEventListener('change',e=>{if(e.target.files[0])importBackupFile(e.target.files[0]);e.target.value='';});$('#clearAutoBtn').addEventListener('click',()=>confirmDialog('Rimuovere le proposte automatiche?','Le voci manuali, bloccate e importate restano','La turnazione potrà essere rigenerata successivamente.',clearAuto));$('#clearMonthBtn').addEventListener('click',()=>confirmDialog('Svuotare il mese?','Operazione irreversibile','Tutte le assegnazioni locali saranno eliminate.',clearMonth));$('#resetAppBtn').addEventListener('click',()=>confirmDialog('Ripristinare l’app?','Cancellazione dati locali','Saranno eliminati turni, impostazioni e collegamenti salvati nel browser.',resetApp));$('#confirmActionBtn').addEventListener('click',()=>{const fn=state.confirmAction;state.confirmAction=null;closeModal('confirmModal');if(fn)fn();});
