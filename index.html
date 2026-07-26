@@ -10,7 +10,7 @@
       document.documentElement.dataset.theme = (hour >= 18 || hour < 6) ? 'dark' : 'light';
     })();
   </script>
-  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v14</title>
+  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v15</title>
   <style>
     :root {
       --bg: #060a12;
@@ -32,7 +32,7 @@
       --shadow: 0 22px 70px rgba(0,0,0,.38);
       --radius: 18px;
       --radius-sm: 11px;
-      --header-h: 76px;
+      --header-h: 132px;
       --sidebar-w: 302px;
       --name-w: 196px;
       --group-w: 132px;
@@ -63,8 +63,10 @@
     .app { position: relative; z-index: 1; height: 100%; display: grid; grid-template-rows: var(--header-h) 1fr; }
 
     .topbar {
-      display: flex; align-items: center; gap: 18px; padding: 12px 18px 12px 22px;
-      background: linear-gradient(180deg, rgba(8,15,27,.92), rgba(8,15,27,.72));
+      display: grid;
+      grid-template-columns: auto auto auto minmax(20px,1fr) auto;
+      align-items: center; gap: 10px 14px; padding: 9px 16px 8px 20px;
+      background: linear-gradient(180deg, rgba(8,15,27,.94), rgba(8,15,27,.78));
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(18px);
       box-shadow: 0 10px 30px rgba(0,0,0,.25);
@@ -98,8 +100,27 @@
     }
     .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 14px rgba(52,211,153,.8); }
 
-    .top-spacer { flex: 1; min-width: 12px; }
-    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .top-spacer { min-width: 12px; }
+    .top-actions {
+      grid-column: 1 / -1;
+      display: flex; align-items: stretch; justify-content: flex-end; gap: 8px;
+      min-width: 0; padding-top: 7px; border-top: 1px solid rgba(148,180,220,.09);
+    }
+    .action-group {
+      display: flex; align-items: center; gap: 7px; min-width: 0;
+      padding: 5px 6px 5px 9px; border: 1px solid var(--border); border-radius: 14px;
+      background: rgba(255,255,255,.025);
+    }
+    .action-group-label {
+      color: var(--muted); font-size: 8px; line-height: 1.1; font-weight: 900;
+      letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+    }
+    .action-buttons { display: flex; align-items: center; gap: 5px; }
+    .action-group .btn { padding: 8px 10px; border-radius: 10px; font-size: 11px; }
+    .action-planning { border-color: rgba(56,189,248,.2); }
+    .action-output { border-color: rgba(52,211,153,.2); }
+    .action-data { border-color: rgba(167,139,250,.18); }
+    .action-system { border-color: rgba(148,163,184,.18); }
     .btn {
       border: 1px solid var(--border); background: rgba(255,255,255,.045); color: var(--text);
       padding: 9px 12px; border-radius: 12px; cursor: pointer; transition: .18s ease;
@@ -499,30 +520,31 @@
     html[data-theme="dark"] { color-scheme: dark; }
     html[data-theme="light"] {
       color-scheme: light;
-      --bg: #f4f7fb;
-      --bg-2: #e9eff7;
-      --panel: rgba(255,255,255,.88);
-      --panel-solid: #ffffff;
-      --panel-soft: rgba(15,23,42,.035);
-      --border: rgba(30,55,82,.14);
-      --border-strong: rgba(2,132,199,.38);
-      --text: #142236;
-      --muted: #62758a;
-      --shadow: 0 18px 52px rgba(24,48,76,.12);
+      --bg: #e5ebf2;
+      --bg-2: #d8e1eb;
+      --panel: rgba(224,232,241,.96);
+      --panel-solid: #e2e9f1;
+      --panel-soft: rgba(29,48,68,.065);
+      --border: rgba(31,52,74,.22);
+      --border-strong: rgba(2,119,178,.5);
+      --text: #102338;
+      --muted: #4a6076;
+      --shadow: 0 16px 42px rgba(34,55,79,.14);
     }
     html[data-theme="light"] body {
       background:
-        radial-gradient(circle at 7% -12%, rgba(14,165,233,.13), transparent 34%),
-        radial-gradient(circle at 94% 2%, rgba(34,211,238,.08), transparent 29%),
-        linear-gradient(145deg, #ffffff, var(--bg) 55%, var(--bg-2));
+        radial-gradient(circle at 7% -12%, rgba(14,165,233,.105), transparent 34%),
+        radial-gradient(circle at 94% 2%, rgba(34,211,238,.065), transparent 29%),
+        linear-gradient(145deg, #edf2f7, var(--bg) 55%, var(--bg-2));
     }
-    html[data-theme="light"] .noise { opacity: .022; }
+    html[data-theme="light"] .noise { opacity: .017; }
     html[data-theme="light"] .topbar {
-      background: linear-gradient(180deg, rgba(255,255,255,.97), rgba(247,250,254,.91));
-      box-shadow: 0 9px 28px rgba(37,65,94,.11);
+      background: linear-gradient(180deg, rgba(231,237,244,.98), rgba(219,228,237,.96));
+      border-bottom-color: rgba(31,52,74,.2);
+      box-shadow: 0 9px 25px rgba(37,65,94,.13);
     }
     html[data-theme="light"] .sidebar {
-      background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(241,246,252,.82));
+      background: linear-gradient(180deg, rgba(220,229,239,.98), rgba(210,221,232,.94));
     }
     html[data-theme="light"] .month-control,
     html[data-theme="light"] .operator-pill,
@@ -535,99 +557,154 @@
     html[data-theme="light"] .replacement-section,
     html[data-theme="light"] .replacement-candidate,
     html[data-theme="light"] .preset,
-    html[data-theme="light"] .auto-option {
-      background: rgba(255,255,255,.82);
+    html[data-theme="light"] .auto-option,
+    html[data-theme="light"] .action-group {
+      background: #d5dfe9;
+      color: #13283f;
+    }
+    html[data-theme="light"] .action-group {
+      background: rgba(207,219,231,.8);
     }
     html[data-theme="light"] .btn:hover,
     html[data-theme="light"] .nav-btn:hover,
     html[data-theme="light"] .preset:hover,
     html[data-theme="light"] .replacement-candidate:hover {
-      background: #f0f7fc;
+      background: #c7d5e2;
     }
     html[data-theme="light"] .btn.primary,
     html[data-theme="light"] .btn.save-calendar,
     html[data-theme="light"] .btn.danger {
       color: #fff;
     }
+    html[data-theme="light"] .btn.primary {
+      background: linear-gradient(135deg, #078fca, #1d4ed8);
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(14,116,179,.22);
+    }
+    html[data-theme="light"] .btn.save-calendar {
+      background: linear-gradient(135deg, #0b9f70, #047857);
+      border-color: rgba(4,120,87,.25);
+      box-shadow: 0 8px 20px rgba(4,120,87,.18);
+    }
     html[data-theme="light"] .btn.danger {
-      background: linear-gradient(135deg, #ef4761, #c81e3a);
+      background: linear-gradient(135deg, #e53e59, #b91c36);
       border-color: transparent;
     }
     html[data-theme="light"] .card {
-      background: linear-gradient(160deg, rgba(255,255,255,.96), rgba(244,248,252,.93));
+      background: linear-gradient(160deg, rgba(219,228,237,.98), rgba(208,220,232,.96));
     }
     html[data-theme="light"] .view-toolbar,
     html[data-theme="light"] .day-card,
     html[data-theme="light"] .summary-table-wrap,
-    html[data-theme="light"] .staff-table-wrap,
+    html[data-theme="light"] .staff-table-wrap {
+      background: #d9e3ed;
+    }
     html[data-theme="light"] .calendar-wrap {
-      background: rgba(255,255,255,.9);
+      background: #cbd7e3;
+      border-color: rgba(31,52,74,.26);
     }
     html[data-theme="light"] .input,
     html[data-theme="light"] select.input,
     html[data-theme="light"] textarea.input {
-      background: #ffffff;
-      color: var(--text);
+      background: #edf2f7;
+      color: #102338;
+      border-color: rgba(31,52,74,.24);
     }
-    html[data-theme="light"] select.input option { background: #ffffff; color: #142236; }
+    html[data-theme="light"] select.input option { background: #edf2f7; color: #102338; }
     html[data-theme="light"] input[type="month"]::-webkit-calendar-picker-indicator { filter: none; opacity: .75; }
-    html[data-theme="light"] .calendar thead th { background: #edf3f8; color: #17263a; }
+
+    html[data-theme="light"] .calendar thead th {
+      background: #bccbd9;
+      color: #102338;
+      box-shadow: inset 0 -1px 0 rgba(16,35,56,.12);
+    }
     html[data-theme="light"] .calendar tbody td:first-child,
     html[data-theme="light"] .calendar tbody td:nth-child(2),
-    html[data-theme="light"] .calendar tbody td:nth-child(3) { background: #ffffff; }
-    html[data-theme="light"] .calendar tbody tr:hover td { background-color: #f0f8fd; }
-    html[data-theme="light"] .calendar tbody tr:hover td:nth-child(-n+3) { background: #eaf4fb; }
-    html[data-theme="light"] .calendar td.day-cell { background: rgba(255,255,255,.9); }
-    html[data-theme="light"] .calendar .weekend { background: rgba(139,92,246,.045); }
-    html[data-theme="light"] .calendar .sunday { background: rgba(244,63,94,.045); }
-    html[data-theme="light"] .cell-button.empty::after { color: rgba(68,91,116,.28); }
+    html[data-theme="light"] .calendar tbody td:nth-child(3) {
+      background: #d1dce7;
+    }
+    html[data-theme="light"] .calendar tbody tr:hover td { background-color: #d5e4ef; }
+    html[data-theme="light"] .calendar tbody tr:hover td:nth-child(-n+3) { background: #c4d6e4; }
+    html[data-theme="light"] .calendar td.day-cell { background: #e0e7ef; }
+    html[data-theme="light"] .calendar .weekend { background: #d8deeb; }
+    html[data-theme="light"] .calendar .sunday { background: #eadce1; }
+    html[data-theme="light"] .day-head .dow,
+    html[data-theme="light"] .emp-meta,
+    html[data-theme="light"] .legend-item,
+    html[data-theme="light"] .crew-title,
+    html[data-theme="light"] .role-person,
+    html[data-theme="light"] .view-sub { color: #4a6076; }
+    html[data-theme="light"] .emp-index { color: #45637e; }
+    html[data-theme="light"] .cell-button.empty::after { color: rgba(33,57,81,.34); }
+
+    /* I colori identificativi restano invariati; il fondo scuro evita la perdita di contrasto. */
+    html[data-theme="light"] .shift-tag,
     html[data-theme="light"] .group-badge,
-    html[data-theme="light"] .hours-balance { background: #f5f8fb; }
-    html[data-theme="light"] .modal-backdrop { background: rgba(23,39,58,.38); }
+    html[data-theme="light"] .hours-balance {
+      background-color: #1a2a3d;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.035);
+    }
+    html[data-theme="light"] .tag-m { background: linear-gradient(rgba(14,165,233,.20),rgba(14,165,233,.20)),#18283b; color:#8de1ff; }
+    html[data-theme="light"] .tag-p { background: linear-gradient(rgba(167,139,250,.18),rgba(167,139,250,.18)),#18283b; color:#d3c8ff; }
+    html[data-theme="light"] .tag-n,
+    html[data-theme="light"] .tag-pn { background: linear-gradient(rgba(37,99,235,.25),rgba(37,99,235,.25)),#18283b; color:#a9c4ff; }
+    html[data-theme="light"] .tag-se { background: linear-gradient(rgba(34,211,238,.17),rgba(34,211,238,.17)),#18283b; color:#8cebf8; }
+    html[data-theme="light"] .tag-resp { background: linear-gradient(rgba(251,191,36,.16),rgba(251,191,36,.16)),#18283b; color:#ffe18a; }
+    html[data-theme="light"] .tag-am { background: linear-gradient(rgba(244,114,182,.15),rgba(244,114,182,.15)),#18283b; color:#ffc0df; }
+    html[data-theme="light"] .tag-absence { background: linear-gradient(rgba(251,113,133,.16),rgba(251,113,133,.16)),#18283b; color:#ffb1be; }
+    html[data-theme="light"] .tag-rc { background: linear-gradient(rgba(148,163,184,.14),rgba(148,163,184,.14)),#18283b; color:#b8c7d4; }
+    html[data-theme="light"] .tag-form { background: linear-gradient(rgba(52,211,153,.15),rgba(52,211,153,.15)),#18283b; color:#a0f1cb; }
+
+    html[data-theme="light"] .modal-backdrop { background: rgba(34,51,69,.45); }
     html[data-theme="light"] .modal {
-      background: linear-gradient(165deg, rgba(255,255,255,.99), rgba(244,248,252,.99));
-      box-shadow: 0 30px 95px rgba(30,55,82,.22);
+      background: linear-gradient(165deg, #e4ebf2, #d4dfe9);
+      box-shadow: 0 30px 95px rgba(30,55,82,.27);
     }
     html[data-theme="light"] .modal-head,
-    html[data-theme="light"] .modal-foot { background: rgba(255,255,255,.97); }
-    html[data-theme="light"] .modal-close { background: #eef3f7; }
-    html[data-theme="light"] .toast { background: rgba(255,255,255,.97); }
-    html[data-theme="light"] .generation-overlay { background: rgba(222,232,242,.72); }
+    html[data-theme="light"] .modal-foot { background: rgba(218,228,237,.98); }
+    html[data-theme="light"] .modal-close { background: #cbd7e2; color:#173047; }
+    html[data-theme="light"] .toast { background: rgba(220,229,238,.98); }
+    html[data-theme="light"] .generation-overlay { background: rgba(194,207,220,.78); }
     html[data-theme="light"] .generation-box {
-      background: linear-gradient(160deg, #ffffff, #edf4f9);
-      box-shadow: 0 30px 95px rgba(30,55,82,.22);
+      background: linear-gradient(160deg, #e2eaf1, #d1dce6);
+      box-shadow: 0 30px 95px rgba(30,55,82,.25);
     }
+
     html[data-theme="light"] .auth-screen {
       background:
-        radial-gradient(circle at 12% 6%, rgba(14,165,233,.16), transparent 34%),
-        radial-gradient(circle at 90% 88%, rgba(239,68,68,.09), transparent 31%),
-        linear-gradient(145deg, #ffffff, #eef4fa 58%, #e8eff7);
+        radial-gradient(circle at 12% 6%, rgba(14,165,233,.12), transparent 34%),
+        radial-gradient(circle at 90% 88%, rgba(239,68,68,.065), transparent 31%),
+        linear-gradient(145deg, #e9eff5, #dfe7ef 58%, #d5e0ea);
     }
     html[data-theme="light"] .auth-shell {
-      background: rgba(255,255,255,.9);
-      border-color: rgba(48,89,124,.18);
-      box-shadow: 0 40px 110px rgba(30,55,82,.18), inset 0 1px 0 rgba(255,255,255,.8);
+      background: rgba(222,231,240,.96);
+      border-color: rgba(48,89,124,.22);
+      box-shadow: 0 40px 110px rgba(30,55,82,.2), inset 0 1px 0 rgba(255,255,255,.55);
     }
     html[data-theme="light"] .auth-visual {
       background:
-        linear-gradient(135deg, rgba(14,165,233,.11), rgba(255,255,255,.58) 52%, rgba(239,68,68,.055)),
-        rgba(244,249,253,.88);
-      border-right-color: rgba(48,89,124,.12);
+        linear-gradient(135deg, rgba(14,165,233,.095), rgba(221,231,240,.72) 52%, rgba(239,68,68,.045)),
+        rgba(211,223,234,.94);
+      border-right-color: rgba(48,89,124,.16);
     }
     html[data-theme="light"] .auth-copy p,
     html[data-theme="light"] .auth-card-head p,
-    html[data-theme="light"] .auth-security { color: #65798d; }
+    html[data-theme="light"] .auth-security { color: #50677d; }
     html[data-theme="light"] .auth-feature {
-      background: rgba(255,255,255,.68);
-      border-color: rgba(48,89,124,.13);
+      background: rgba(202,215,228,.8);
+      border-color: rgba(48,89,124,.16);
     }
     html[data-theme="light"] .auth-feature b { color: #17263a; }
-    html[data-theme="light"] .auth-feature span { color: #6a7d90; }
+    html[data-theme="light"] .auth-feature span { color: #536a80; }
     html[data-theme="light"] .auth-input {
-      background: #ffffff; color: #142236; border-color: rgba(48,89,124,.2);
+      background: #edf2f7; color: #102338; border-color: rgba(48,89,124,.24);
     }
-    html[data-theme="light"] .auth-input:focus { background: #ffffff; }
-    html[data-theme="light"] .password-toggle { background: #eef3f7; color: #61758a; }
+    html[data-theme="light"] .auth-input:focus { background: #f1f5f9; }
+    html[data-theme="light"] .password-toggle { background: #cedae5; color: #415a71; }
+
+    html[data-theme="light"] .pre-gen-choice,
+    html[data-theme="light"] .pre-gen-entry,
+    html[data-theme="light"] .pre-gen-recap-block { background: #d7e1eb; }
 
     .pre-gen-intro {
       padding: 15px; border-radius: 15px; border: 1px solid rgba(56,189,248,.24);
@@ -683,9 +760,9 @@
     @media (max-width: 768px) {
       html[data-theme="light"] .topbar,
       html[data-theme="light"] .sidebar,
-      html[data-theme="light"] .top-actions { background: rgba(255,255,255,.96); }
+      html[data-theme="light"] .top-actions { background: rgba(219,228,237,.98); }
       html[data-theme="light"] .top-actions { box-shadow: 0 -12px 32px rgba(30,55,82,.13); }
-      html[data-theme="light"] .auth-shell { background: rgba(255,255,255,.96); }
+      html[data-theme="light"] .auth-shell { background: rgba(222,231,240,.98); }
       .pre-gen-choice-grid { grid-template-columns: 1fr; }
       .pre-gen-choice { min-height: 88px; }
       .pre-gen-stage-actions .btn { flex: 1 1 auto; min-height: 42px; }
@@ -908,6 +985,9 @@
         scrollbar-width: none;
       }
       .top-actions::-webkit-scrollbar { display: none; }
+      .top-actions .action-group,
+      .top-actions .action-buttons { display: contents; }
+      .top-actions .action-group-label { display: none; }
       .top-actions .btn {
         flex: 0 0 auto; width: auto; min-width: 72px; height: 54px; padding: 6px 8px;
         flex-direction: column; gap: 3px; border-radius: 12px; font-size: 16px;
@@ -1025,7 +1105,10 @@
 
     :root {
       --print-scale: 1;
-      --print-natural-width: 414mm;
+      --print-natural-width-px: 1600px;
+      --print-natural-height-px: 1000px;
+      --print-left: 0mm;
+      --print-top: 0mm;
       --print-scaled-height: 270mm;
     }
 
@@ -1035,15 +1118,16 @@
       html, body {
         width: 414mm !important;
         height: 291mm !important;
-        margin: 0 auto !important;
+        margin: 0 !important;
         padding: 0 !important;
         background: #fff !important;
         color: #000 !important;
         overflow: hidden !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
-      body { display: flex !important; justify-content: center !important; align-items: flex-start !important; }
+      body { display: block !important; }
+
       .noise, .topbar, .sidebar, .modal-backdrop, .generation-overlay, .toast-stack,
       .view-toolbar .toolbar-spacer, .view-toolbar .chip, .view-toolbar button,
       .hours-balance, .emp-meta { display: none !important; }
@@ -1053,7 +1137,7 @@
         width: 414mm !important;
         height: auto !important;
         min-height: 0 !important;
-        margin: 0 auto !important;
+        margin: 0 !important;
         padding: 0 !important;
         overflow: visible !important;
         background: #fff !important;
@@ -1062,101 +1146,103 @@
       }
       .view:not(#calendarView) { display: none !important; }
       #calendarView {
+        width: 414mm !important;
         page-break-inside: avoid !important;
         break-inside: avoid-page !important;
-        width: 414mm !important;
       }
 
       .view-toolbar {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        min-height: 0 !important;
         width: 414mm !important;
-        margin: 0 0 2mm 0 !important;
+        height: 9mm !important;
+        min-height: 9mm !important;
+        margin: 0 !important;
         padding: 0 !important;
         border: 0 !important;
         text-align: center !important;
         background: #fff !important;
       }
       .view-toolbar > div:first-child { width: 100% !important; text-align: center !important; }
-      .view-title { color:#000 !important; font-size: 11pt !important; line-height:1.05 !important; }
-      .view-sub { color:#333 !important; font-size: 6pt !important; margin-top:.7mm !important; }
+      .view-title { color:#000 !important; font-size: 10.5pt !important; line-height:1 !important; }
+      .view-sub { color:#333 !important; font-size: 5.8pt !important; margin-top:.5mm !important; }
 
       .calendar-wrap {
         position: relative !important;
         width: 414mm !important;
-        height: var(--print-scaled-height) !important;
-        max-height: none !important;
-        margin: 0 auto !important;
-        overflow: visible !important;
+        height: 279mm !important;
+        min-height: 279mm !important;
+        max-height: 279mm !important;
+        margin: 0 !important;
+        overflow: hidden !important;
         border: 0 !important;
         border-radius: 0 !important;
         box-shadow: none !important;
         background: #fff !important;
       }
+
       table.calendar {
         position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: var(--print-natural-width) !important;
-        min-width: 0 !important;
+        top: var(--print-top) !important;
+        left: var(--print-left) !important;
+        width: var(--print-natural-width-px) !important;
+        min-width: var(--print-natural-width-px) !important;
         max-width: none !important;
-        height: auto !important;
+        height: var(--print-natural-height-px) !important;
         margin: 0 !important;
         table-layout: fixed !important;
         border-collapse: collapse !important;
+        border-spacing: 0 !important;
         transform: scale(var(--print-scale)) !important;
         transform-origin: top left !important;
-        font-size: 5pt !important;
-        line-height: 1 !important;
         page-break-inside: avoid !important;
         break-inside: avoid-page !important;
+        font-size: 10px !important;
+        line-height: 1 !important;
         background: #fff !important;
       }
+
       .calendar thead { display: table-header-group !important; }
       .calendar tr { page-break-inside: avoid !important; break-inside: avoid !important; }
-      .calendar thead th, .calendar tbody td:nth-child(-n+3) {
+      .calendar thead th,
+      .calendar tbody td:nth-child(-n+3) {
         position: static !important;
         background: #fff !important;
         color: #000 !important;
         box-shadow: none !important;
       }
       .calendar th, .calendar td {
-        min-width: 0 !important;
-        width: auto !important;
-        height: 5.25mm !important;
-        max-height: 5.25mm !important;
-        padding: .18mm .12mm !important;
-        border: .16mm solid #8f8f8f !important;
+        border: 1px solid #8f98a1 !important;
         overflow: hidden !important;
         color: #000 !important;
-        background: #fff !important;
         vertical-align: middle !important;
       }
-      .calendar th:nth-child(1), .calendar td:nth-child(1) { width: 5mm !important; }
-      .calendar th:nth-child(2), .calendar td:nth-child(2) { width: 31mm !important; }
-      .calendar th:nth-child(3), .calendar td:nth-child(3) { width: 14mm !important; }
-      .calendar th:nth-child(n+4), .calendar td:nth-child(n+4) { width: auto !important; }
+      .calendar thead th { height: 52px !important; padding: 4px 2px !important; }
+      .calendar tbody td { height: 45px !important; padding: 2px !important; }
 
-      .emp-name { font-size: 5.2pt !important; line-height: 1 !important; color:#000 !important; }
-      .emp-index { font-size: 4.7pt !important; min-width:0 !important; padding:0 !important; background:none !important; color:#000 !important; }
-      .group-cell { min-height:0 !important; padding:0 !important; }
+      .calendar th:nth-child(1), .calendar td:nth-child(1) { width: 34px !important; min-width:34px !important; }
+      .calendar th:nth-child(2), .calendar td:nth-child(2) { width: 178px !important; min-width:178px !important; padding-left:8px !important; }
+      .calendar th:nth-child(3), .calendar td:nth-child(3) { width: 92px !important; min-width:92px !important; }
+      .calendar th:nth-child(n+4), .calendar td:nth-child(n+4) { width: 56px !important; min-width:56px !important; }
+
+      .emp-name { color:#000 !important; font-size:10px !important; line-height:1 !important; }
+      .emp-index { color:#000 !important; font-size:9px !important; min-width:0 !important; padding:0 !important; background:none !important; }
+      .group-cell { min-height:0 !important; height:100% !important; padding:0 !important; }
       .group-badge {
-        padding: .25mm .65mm !important; border-radius: .8mm !important;
-        font-size: 4.8pt !important; color:#000 !important;
-        background:#f2f2f2 !important; border:.14mm solid #aaa !important;
+        padding:3px 5px !important; border-radius:4px !important;
+        font-size:9px !important; color:#000 !important;
+        background:#e8edf2 !important; border:1px solid #9ba5ae !important;
       }
       .cell-button {
-        min-height: 0 !important; height: 100% !important; padding: 0 !important;
+        min-height:0 !important; height:100% !important; padding:0 !important;
         display:flex !important; align-items:center !important; justify-content:center !important;
-        gap:.15mm !important; overflow:hidden !important; background:#fff !important;
+        gap:1px !important; overflow:hidden !important;
       }
       .shift-tag {
         display:inline-block !important; min-width:0 !important; max-width:100% !important;
-        padding:.14mm .2mm !important; margin:0 !important; border-radius:.6mm !important;
-        font-size: 4.2pt !important; line-height:1 !important; font-weight:800 !important;
-        color:#000 !important; background:#f0f0f0 !important; border:.11mm solid #aaa !important;
+        padding:2px 2px !important; margin:0 !important; border-radius:3px !important;
+        font-size:8.5px !important; line-height:1 !important; font-weight:850 !important;
         white-space:nowrap !important; overflow:hidden !important; text-overflow:clip !important;
       }
       .cell-source, .cell-plus { display:none !important; }
@@ -1165,7 +1251,7 @@
 </head>
 <body class="auth-locked">
 
-  <section class="auth-screen" id="authScreen" aria-label="Accesso ATLAS 118">
+  <section class="auth-screen" id="authScreen" aria-label="Accesso utenti ATLAS 118">
     <div class="auth-shell" id="authShell">
       <div class="auth-visual">
         <div class="auth-logos">
@@ -1177,9 +1263,9 @@
         </div>
 
         <div class="auth-copy">
-          <div class="auth-eyebrow">Area riservata</div>
+          <div class="auth-eyebrow">Piattaforma turnazioni</div>
           <h1>Turnazione sanitaria, sotto controllo.</h1>
-          <p>Accesso dedicato al Responsabile Operativo per la pianificazione degli equipaggi, la gestione delle assenze e il controllo delle coperture.</p>
+          <p>Accesso alla piattaforma ATLAS 118 per la pianificazione degli equipaggi, la gestione delle indisponibilità e il controllo delle coperture.</p>
         </div>
 
         <div class="auth-feature-grid">
@@ -1193,8 +1279,8 @@
         <form class="auth-card" id="loginForm" novalidate>
           <div class="auth-card-head">
             <div class="auth-mini-title">ATLAS 118</div>
-            <h2>Accesso Responsabile Operativo</h2>
-            <p>Inserisci le credenziali autorizzate per aprire il pannello di gestione.</p>
+            <h2>Accesso utenti</h2>
+            <p>Inserisci le credenziali assegnate per accedere alla piattaforma.</p>
           </div>
 
           <div class="auth-field">
@@ -1227,7 +1313,7 @@
 
           <div class="auth-security">
             <span>◈</span>
-            <span>La sessione resta attiva durante l’utilizzo della scheda e viene chiusa tramite il comando “Esci”.</span>
+            <span>La sessione utente resta attiva durante l’utilizzo della scheda e viene chiusa tramite il comando “Esci”.</span>
           </div>
         </form>
       </div>
@@ -1241,7 +1327,7 @@
         <div class="brand-mark"><img src="logo.png" alt="Logo ATLAS 118" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" /><span class="brand-fallback">✚</span></div>
         <div>
           <div class="brand-title">ATLAS 118</div>
-          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v14</div>
+          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v15</div>
         </div>
       </div>
 
@@ -1265,16 +1351,39 @@
       </div>
 
       <div class="top-spacer"></div>
-      <div class="top-actions">
-        <button class="btn" id="reloadSheetBtn" title="Ricarica Matrice e Database dai CSV Google Sheet">↻ <span>Ricarica Sheet</span></button>
-        <button class="btn" id="absenceBtn" title="Dichiarazione ferie, permessi e assenze a ore">◷ <span>Assenze / ore</span></button>
-        <button class="btn primary" id="autoBtn" title="Genera la proposta automatica">✦ <span>Genera automatico</span></button>
-        <button class="btn" id="importBtn" title="Importa backup JSON">⇩ <span>Importa</span></button>
-        <button class="btn" id="exportBtn" title="Esporta il Database Turni in CSV">⇧ <span>Esporta DB</span></button>
-        <button class="btn" id="printBtn" title="Stampa calendario in A3 orizzontale su una sola pagina">⎙ <span>Stampa A3</span></button>
-        <button class="btn" id="settingsBtn" title="Impostazioni">⚙ <span>Impostazioni</span></button>
-        <button class="btn save-calendar" id="syncBtn" title="Salva il calendario del mese nel foglio Database">💾 <span id="syncBtnText">Salva calendario</span></button>
-        <button class="btn danger" id="logoutBtn" title="Chiudi la sessione del Responsabile Operativo">⇥ <span>Esci</span></button>
+      <div class="top-actions" aria-label="Comandi principali">
+        <div class="action-group action-planning">
+          <span class="action-group-label">Pianificazione</span>
+          <div class="action-buttons">
+            <button class="btn primary" id="autoBtn" title="Genera la proposta automatica">✦ <span>Genera automatico</span></button>
+            <button class="btn" id="absenceBtn" title="Dichiarazione ferie, permessi e assenze a ore">◷ <span>Assenze / ore</span></button>
+          </div>
+        </div>
+
+        <div class="action-group action-output">
+          <span class="action-group-label">Salvataggio e output</span>
+          <div class="action-buttons">
+            <button class="btn save-calendar" id="syncBtn" title="Salva il calendario del mese nel foglio Database">💾 <span id="syncBtnText">Salva calendario</span></button>
+            <button class="btn" id="printBtn" title="Stampa calendario in A3 orizzontale su una sola pagina">⎙ <span>Stampa A3</span></button>
+          </div>
+        </div>
+
+        <div class="action-group action-data">
+          <span class="action-group-label">Dati</span>
+          <div class="action-buttons">
+            <button class="btn" id="reloadSheetBtn" title="Ricarica Matrice e Database dai CSV Google Sheet">↻ <span>Ricarica Sheet</span></button>
+            <button class="btn" id="importBtn" title="Importa backup JSON">⇩ <span>Importa</span></button>
+            <button class="btn" id="exportBtn" title="Esporta il Database Turni in CSV">⇧ <span>Esporta DB</span></button>
+          </div>
+        </div>
+
+        <div class="action-group action-system">
+          <span class="action-group-label">Sistema</span>
+          <div class="action-buttons">
+            <button class="btn" id="settingsBtn" title="Impostazioni">⚙ <span>Impostazioni</span></button>
+            <button class="btn danger" id="logoutBtn" title="Chiudi la sessione utente">⇥ <span>Esci</span></button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -1740,10 +1849,10 @@
     allowRoAuto: false
   };
 
-  const STORAGE_KEY = 'atlas-118-turnazione-v14';
-  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v13','atlas-118-turnazione-v12','atlas-118-turnazione-v11','atlas-118-turnazione-v10','atlas-118-turnazione-v9','atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
-  const APP_VERSION = 14;
-  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8,9,10,11,12,13,14]);
+  const STORAGE_KEY = 'atlas-118-turnazione-v15';
+  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v14','atlas-118-turnazione-v13','atlas-118-turnazione-v12','atlas-118-turnazione-v11','atlas-118-turnazione-v10','atlas-118-turnazione-v9','atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
+  const APP_VERSION = 15;
+  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8,9,10,11,12,13,14,15]);
   const PROTECTED_STORAGE_KEY = 'atlas-118-assenze-permanenti-v1';
   const AUTH_SESSION_KEY = 'atlas-118-ro-session-v1';
   const AUTH_USERNAME = 'bosetti.danilo';
@@ -2927,15 +3036,28 @@
   function prepareA3Print(){
     const table=$('#calendarTable');
     if(!table)return;
-    const bodyRows=table.tBodies?.[0]?.rows?.length||0;
-    const requiredHeight=8+(bodyRows*5.25);
-    const availableHeight=274;
-    const scale=Math.min(1,availableHeight/Math.max(requiredHeight,1));
-    const naturalWidth=414/Math.max(scale,.1);
-    const scaledHeight=Math.min(availableHeight,requiredHeight*scale);
-    document.documentElement.style.setProperty('--print-scale',scale.toFixed(4));
-    document.documentElement.style.setProperty('--print-natural-width',`${naturalWidth.toFixed(2)}mm`);
-    document.documentElement.style.setProperty('--print-scaled-height',`${scaledHeight.toFixed(2)}mm`);
+
+    const PX_PER_MM=96/25.4;
+    const availableWidthMm=414;
+    const availableHeightMm=279;
+    const naturalWidthPx=Math.max(table.scrollWidth,table.getBoundingClientRect().width,1);
+    const naturalHeightPx=Math.max(table.scrollHeight,table.getBoundingClientRect().height,1);
+
+    const widthScale=(availableWidthMm*PX_PER_MM)/naturalWidthPx;
+    const heightScale=(availableHeightMm*PX_PER_MM)/naturalHeightPx;
+    const scale=Math.min(1,widthScale,heightScale);
+
+    const scaledWidthMm=(naturalWidthPx/PX_PER_MM)*scale;
+    const scaledHeightMm=(naturalHeightPx/PX_PER_MM)*scale;
+    const leftMm=Math.max(0,(availableWidthMm-scaledWidthMm)/2);
+    const topMm=Math.max(0,(availableHeightMm-scaledHeightMm)/2);
+
+    document.documentElement.style.setProperty('--print-scale',scale.toFixed(6));
+    document.documentElement.style.setProperty('--print-natural-width-px',`${naturalWidthPx.toFixed(2)}px`);
+    document.documentElement.style.setProperty('--print-natural-height-px',`${naturalHeightPx.toFixed(2)}px`);
+    document.documentElement.style.setProperty('--print-left',`${leftMm.toFixed(3)}mm`);
+    document.documentElement.style.setProperty('--print-top',`${topMm.toFixed(3)}mm`);
+    document.documentElement.style.setProperty('--print-scaled-height',`${scaledHeightMm.toFixed(3)}mm`);
   }
   function printCalendarA3(){
     if(printSnapshot)return;
@@ -2951,8 +3073,7 @@
     $('#issuesOnly').checked=false;
     switchView('calendarView');
     renderCalendar();
-    prepareA3Print();
-    requestAnimationFrame(()=>requestAnimationFrame(()=>window.print()));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{prepareA3Print();setTimeout(()=>window.print(),80);}));
   }
   function restoreAfterPrint(){
     if(!printSnapshot)return;
@@ -2962,7 +3083,10 @@
     const activeView=printSnapshot.activeView;
     printSnapshot=null;
     document.documentElement.style.removeProperty('--print-scale');
-    document.documentElement.style.removeProperty('--print-natural-width');
+    document.documentElement.style.removeProperty('--print-natural-width-px');
+    document.documentElement.style.removeProperty('--print-natural-height-px');
+    document.documentElement.style.removeProperty('--print-left');
+    document.documentElement.style.removeProperty('--print-top');
     document.documentElement.style.removeProperty('--print-scaled-height');
     renderCalendar();
     switchView(activeView);
