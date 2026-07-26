@@ -3,8 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="color-scheme" content="dark" />
-  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v13</title>
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    (() => {
+      const hour = new Date().getHours();
+      document.documentElement.dataset.theme = (hour >= 18 || hour < 6) ? 'dark' : 'light';
+    })();
+  </script>
+  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v14</title>
   <style>
     :root {
       --bg: #060a12;
@@ -486,6 +492,204 @@
       .sidebar .card:first-of-type { display: block; }
       .content { min-height: 720px; }
       .preset-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+
+
+    html[data-theme="dark"] { color-scheme: dark; }
+    html[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --bg-2: #e9eff7;
+      --panel: rgba(255,255,255,.88);
+      --panel-solid: #ffffff;
+      --panel-soft: rgba(15,23,42,.035);
+      --border: rgba(30,55,82,.14);
+      --border-strong: rgba(2,132,199,.38);
+      --text: #142236;
+      --muted: #62758a;
+      --shadow: 0 18px 52px rgba(24,48,76,.12);
+    }
+    html[data-theme="light"] body {
+      background:
+        radial-gradient(circle at 7% -12%, rgba(14,165,233,.13), transparent 34%),
+        radial-gradient(circle at 94% 2%, rgba(34,211,238,.08), transparent 29%),
+        linear-gradient(145deg, #ffffff, var(--bg) 55%, var(--bg-2));
+    }
+    html[data-theme="light"] .noise { opacity: .022; }
+    html[data-theme="light"] .topbar {
+      background: linear-gradient(180deg, rgba(255,255,255,.97), rgba(247,250,254,.91));
+      box-shadow: 0 9px 28px rgba(37,65,94,.11);
+    }
+    html[data-theme="light"] .sidebar {
+      background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(241,246,252,.82));
+    }
+    html[data-theme="light"] .month-control,
+    html[data-theme="light"] .operator-pill,
+    html[data-theme="light"] .chip,
+    html[data-theme="light"] .btn,
+    html[data-theme="light"] .nav-btn,
+    html[data-theme="light"] .kpi,
+    html[data-theme="light"] .assignment-item,
+    html[data-theme="light"] .replacement-source,
+    html[data-theme="light"] .replacement-section,
+    html[data-theme="light"] .replacement-candidate,
+    html[data-theme="light"] .preset,
+    html[data-theme="light"] .auto-option {
+      background: rgba(255,255,255,.82);
+    }
+    html[data-theme="light"] .btn:hover,
+    html[data-theme="light"] .nav-btn:hover,
+    html[data-theme="light"] .preset:hover,
+    html[data-theme="light"] .replacement-candidate:hover {
+      background: #f0f7fc;
+    }
+    html[data-theme="light"] .btn.primary,
+    html[data-theme="light"] .btn.save-calendar,
+    html[data-theme="light"] .btn.danger {
+      color: #fff;
+    }
+    html[data-theme="light"] .btn.danger {
+      background: linear-gradient(135deg, #ef4761, #c81e3a);
+      border-color: transparent;
+    }
+    html[data-theme="light"] .card {
+      background: linear-gradient(160deg, rgba(255,255,255,.96), rgba(244,248,252,.93));
+    }
+    html[data-theme="light"] .view-toolbar,
+    html[data-theme="light"] .day-card,
+    html[data-theme="light"] .summary-table-wrap,
+    html[data-theme="light"] .staff-table-wrap,
+    html[data-theme="light"] .calendar-wrap {
+      background: rgba(255,255,255,.9);
+    }
+    html[data-theme="light"] .input,
+    html[data-theme="light"] select.input,
+    html[data-theme="light"] textarea.input {
+      background: #ffffff;
+      color: var(--text);
+    }
+    html[data-theme="light"] select.input option { background: #ffffff; color: #142236; }
+    html[data-theme="light"] input[type="month"]::-webkit-calendar-picker-indicator { filter: none; opacity: .75; }
+    html[data-theme="light"] .calendar thead th { background: #edf3f8; color: #17263a; }
+    html[data-theme="light"] .calendar tbody td:first-child,
+    html[data-theme="light"] .calendar tbody td:nth-child(2),
+    html[data-theme="light"] .calendar tbody td:nth-child(3) { background: #ffffff; }
+    html[data-theme="light"] .calendar tbody tr:hover td { background-color: #f0f8fd; }
+    html[data-theme="light"] .calendar tbody tr:hover td:nth-child(-n+3) { background: #eaf4fb; }
+    html[data-theme="light"] .calendar td.day-cell { background: rgba(255,255,255,.9); }
+    html[data-theme="light"] .calendar .weekend { background: rgba(139,92,246,.045); }
+    html[data-theme="light"] .calendar .sunday { background: rgba(244,63,94,.045); }
+    html[data-theme="light"] .cell-button.empty::after { color: rgba(68,91,116,.28); }
+    html[data-theme="light"] .group-badge,
+    html[data-theme="light"] .hours-balance { background: #f5f8fb; }
+    html[data-theme="light"] .modal-backdrop { background: rgba(23,39,58,.38); }
+    html[data-theme="light"] .modal {
+      background: linear-gradient(165deg, rgba(255,255,255,.99), rgba(244,248,252,.99));
+      box-shadow: 0 30px 95px rgba(30,55,82,.22);
+    }
+    html[data-theme="light"] .modal-head,
+    html[data-theme="light"] .modal-foot { background: rgba(255,255,255,.97); }
+    html[data-theme="light"] .modal-close { background: #eef3f7; }
+    html[data-theme="light"] .toast { background: rgba(255,255,255,.97); }
+    html[data-theme="light"] .generation-overlay { background: rgba(222,232,242,.72); }
+    html[data-theme="light"] .generation-box {
+      background: linear-gradient(160deg, #ffffff, #edf4f9);
+      box-shadow: 0 30px 95px rgba(30,55,82,.22);
+    }
+    html[data-theme="light"] .auth-screen {
+      background:
+        radial-gradient(circle at 12% 6%, rgba(14,165,233,.16), transparent 34%),
+        radial-gradient(circle at 90% 88%, rgba(239,68,68,.09), transparent 31%),
+        linear-gradient(145deg, #ffffff, #eef4fa 58%, #e8eff7);
+    }
+    html[data-theme="light"] .auth-shell {
+      background: rgba(255,255,255,.9);
+      border-color: rgba(48,89,124,.18);
+      box-shadow: 0 40px 110px rgba(30,55,82,.18), inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    html[data-theme="light"] .auth-visual {
+      background:
+        linear-gradient(135deg, rgba(14,165,233,.11), rgba(255,255,255,.58) 52%, rgba(239,68,68,.055)),
+        rgba(244,249,253,.88);
+      border-right-color: rgba(48,89,124,.12);
+    }
+    html[data-theme="light"] .auth-copy p,
+    html[data-theme="light"] .auth-card-head p,
+    html[data-theme="light"] .auth-security { color: #65798d; }
+    html[data-theme="light"] .auth-feature {
+      background: rgba(255,255,255,.68);
+      border-color: rgba(48,89,124,.13);
+    }
+    html[data-theme="light"] .auth-feature b { color: #17263a; }
+    html[data-theme="light"] .auth-feature span { color: #6a7d90; }
+    html[data-theme="light"] .auth-input {
+      background: #ffffff; color: #142236; border-color: rgba(48,89,124,.2);
+    }
+    html[data-theme="light"] .auth-input:focus { background: #ffffff; }
+    html[data-theme="light"] .password-toggle { background: #eef3f7; color: #61758a; }
+
+    .pre-gen-intro {
+      padding: 15px; border-radius: 15px; border: 1px solid rgba(56,189,248,.24);
+      background: linear-gradient(135deg, rgba(56,189,248,.09), rgba(37,99,235,.045));
+    }
+    .pre-gen-intro strong { display: block; margin-bottom: 5px; font-size: 13px; }
+    .pre-gen-intro p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+    .pre-gen-choice-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-top: 13px; }
+    .pre-gen-choice {
+      min-height: 110px; padding: 15px; text-align: left; cursor: pointer;
+      border: 1px solid var(--border); border-radius: 15px; color: var(--text);
+      background: rgba(255,255,255,.035); transition: .18s ease;
+    }
+    .pre-gen-choice:hover { border-color: var(--border-strong); transform: translateY(-1px); background: rgba(56,189,248,.07); }
+    .pre-gen-choice b { display: block; font-size: 13px; }
+    .pre-gen-choice span { display: block; margin-top: 6px; color: var(--muted); font-size: 9.5px; line-height: 1.45; }
+    .pre-gen-choice.yes { border-color: rgba(52,211,153,.3); }
+    .pre-gen-choice.no { border-color: rgba(148,180,220,.2); }
+    .pre-gen-stage-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 13px; flex-wrap: wrap; }
+    .pre-gen-pending { display: grid; gap: 7px; margin-top: 10px; }
+    .pre-gen-entry {
+      display: grid; grid-template-columns: 1fr auto; gap: 9px; align-items: center;
+      padding: 10px 11px; border: 1px solid var(--border); border-radius: 12px;
+      background: rgba(255,255,255,.025);
+    }
+    .pre-gen-entry strong { display: block; font-size: 10.5px; }
+    .pre-gen-entry span { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; line-height: 1.4; }
+    .pre-gen-remove {
+      border: 0; border-radius: 9px; padding: 7px 9px; cursor: pointer;
+      color: #ffc1cb; background: rgba(251,113,133,.1); font-size: 9px; font-weight: 800;
+    }
+    .pre-gen-recap {
+      display: grid; gap: 7px; max-height: 340px; overflow: auto; padding-right: 3px; margin-top: 10px;
+    }
+    .pre-gen-recap-block {
+      padding: 11px; border: 1px solid var(--border); border-radius: 13px;
+      background: rgba(255,255,255,.025);
+    }
+    .pre-gen-recap-block.new { border-color: rgba(52,211,153,.3); background: rgba(52,211,153,.055); }
+    .pre-gen-recap-block.existing { border-color: rgba(56,189,248,.23); }
+    .pre-gen-recap-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 10.5px; font-weight: 850; }
+    .pre-gen-recap-meta { margin-top: 4px; color: var(--muted); font-size: 9px; line-height: 1.45; }
+    .pre-gen-confirm-row {
+      display: flex; align-items: flex-start; gap: 9px; margin-top: 13px; padding: 11px;
+      border: 1px solid rgba(251,191,36,.24); border-radius: 12px; background: rgba(251,191,36,.065);
+      color: var(--muted); font-size: 9.5px; line-height: 1.45;
+    }
+    .pre-gen-confirm-row input { margin-top: 2px; }
+    html[data-theme="light"] .pre-gen-choice,
+    html[data-theme="light"] .pre-gen-entry,
+    html[data-theme="light"] .pre-gen-recap-block { background: rgba(255,255,255,.82); }
+
+    @media (max-width: 768px) {
+      html[data-theme="light"] .topbar,
+      html[data-theme="light"] .sidebar,
+      html[data-theme="light"] .top-actions { background: rgba(255,255,255,.96); }
+      html[data-theme="light"] .top-actions { box-shadow: 0 -12px 32px rgba(30,55,82,.13); }
+      html[data-theme="light"] .auth-shell { background: rgba(255,255,255,.96); }
+      .pre-gen-choice-grid { grid-template-columns: 1fr; }
+      .pre-gen-choice { min-height: 88px; }
+      .pre-gen-stage-actions .btn { flex: 1 1 auto; min-height: 42px; }
+      .pre-gen-recap { max-height: 280px; }
     }
 
 
@@ -1037,7 +1241,7 @@
         <div class="brand-mark"><img src="logo.png" alt="Logo ATLAS 118" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" /><span class="brand-fallback">✚</span></div>
         <div>
           <div class="brand-title">ATLAS 118</div>
-          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v13</div>
+          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v14</div>
         </div>
       </div>
 
@@ -1293,9 +1497,114 @@
   </div>
 
 
+
+  <div class="modal-backdrop" id="preGenerationModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="preGenTitle">Prima di generare il calendario</div>
+          <div class="modal-sub" id="preGenSubtitle">Verifica preventivamente ferie, permessi e indisponibilità</div>
+        </div>
+        <button class="modal-close" data-close="preGenerationModal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <section id="preGenQuestion">
+          <div class="pre-gen-intro">
+            <strong>Vuoi inserire dei permessi per qualcuno prima della generazione?</strong>
+            <p>Puoi registrare ferie, Legge 104, malattia, infortunio, AVIS, congedi, permessi, riposi compensativi e assenze per festività. ATLAS li proteggerà e non assegnerà turni nelle giornate interessate.</p>
+          </div>
+          <div class="pre-gen-choice-grid">
+            <button class="pre-gen-choice yes" id="preGenYesBtn" type="button">
+              <b>Sì, inserisci indisponibilità</b>
+              <span>Aggiungi una o più persone e controlla il riepilogo prima di procedere.</span>
+            </button>
+            <button class="pre-gen-choice no" id="preGenNoBtn" type="button">
+              <b>No, vai al riepilogo</b>
+              <span>Prosegui usando le assenze e i permessi già registrati nel mese.</span>
+            </button>
+          </div>
+        </section>
+
+        <section id="preGenFormStage" class="hidden">
+          <div class="form-grid">
+            <div class="field full"><label>Dipendente</label><select id="preGenEmployee" class="input"></select></div>
+            <div class="field"><label>Dal</label><input id="preGenFrom" class="input" type="date" /></div>
+            <div class="field"><label>Al</label><input id="preGenTo" class="input" type="date" /></div>
+            <div class="field"><label>Causale</label>
+              <select id="preGenCode" class="input">
+                <option value="F">Ferie</option>
+                <option value="PERM">Permesso</option>
+                <option value="L104/92">Permesso 104</option>
+                <option value="AVIS">Permesso AVIS</option>
+                <option value="CONG">Congedo parentale</option>
+                <option value="MAL">Malattia</option>
+                <option value="INF">Infortunio</option>
+                <option value="A">Assenza festività</option>
+                <option value="RC">Riposo compensativo</option>
+              </select>
+            </div>
+            <div class="field"><label>Modalità</label>
+              <select id="preGenMode" class="input">
+                <option value="GIORNATA">Giornata intera</option>
+                <option value="ORE">A ore</option>
+              </select>
+            </div>
+            <div class="field"><label>Ora inizio</label><input id="preGenStart" class="input" type="time" value="08:00" /></div>
+            <div class="field"><label>Ora fine</label><input id="preGenEnd" class="input" type="time" value="12:00" /></div>
+            <div class="field"><label>Ore riconosciute per giorno</label><input id="preGenHours" class="input" type="number" step="0.25" value="7.6" /></div>
+            <div class="field"><label>Stato</label>
+              <select id="preGenStatus" class="input">
+                <option value="APPROVATO">Approvato</option>
+                <option value="RICHIESTO">Richiesto</option>
+              </select>
+            </div>
+            <div class="field full"><label>Note</label><textarea id="preGenNote" class="input" rows="2" placeholder="Facoltative"></textarea></div>
+          </div>
+
+          <div class="pre-gen-stage-actions">
+            <button class="btn ghost" id="preGenBackQuestionBtn" type="button">← Indietro</button>
+            <button class="btn primary" id="preGenAddBtn" type="button">＋ Aggiungi al riepilogo</button>
+          </div>
+
+          <div class="section-label">Indisponibilità da registrare</div>
+          <div class="pre-gen-pending" id="preGenPendingList"></div>
+
+          <div class="pre-gen-stage-actions">
+            <span class="muted" id="preGenPendingCount">Nessuna voce aggiunta</span>
+            <button class="btn save-calendar" id="preGenGoRecapBtn" type="button">Vai al riepilogo →</button>
+          </div>
+        </section>
+
+        <section id="preGenRecapStage" class="hidden">
+          <div class="pre-gen-intro">
+            <strong>Riepilogo prima della generazione</strong>
+            <p>Controlla sia le indisponibilità già presenti nel calendario sia quelle appena preparate. Solo dopo la conferma ATLAS le registra e apre l’ultima verifica delle opzioni di generazione.</p>
+          </div>
+
+          <div class="pre-gen-recap" id="preGenRecapList"></div>
+
+          <label class="pre-gen-confirm-row">
+            <input id="preGenConfirmCheck" type="checkbox" />
+            <span>Confermo di avere verificato il riepilogo e autorizzo la registrazione delle nuove indisponibilità prima della generazione.</span>
+          </label>
+
+          <div class="pre-gen-stage-actions">
+            <button class="btn ghost" id="preGenBackFormBtn" type="button">← Modifica</button>
+            <button class="btn primary" id="preGenConfirmBtn" type="button" disabled>Conferma e prepara la generazione</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="modal-foot">
+        <button class="btn ghost" data-close="preGenerationModal">Annulla</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-backdrop" id="autoModal">
     <div class="modal sm">
-      <div class="modal-head"><div><div class="modal-title">Generazione automatica</div><div class="modal-sub">Crea una proposta modificabile, senza superare i vincoli rigidi</div></div><button class="modal-close" data-close="autoModal">✕</button></div>
+      <div class="modal-head"><div><div class="modal-title">Conferma e genera il calendario</div><div class="modal-sub">Ultima verifica delle opzioni prima dell’avvio</div></div><button class="modal-close" data-close="autoModal">✕</button></div>
       <div class="modal-body">
         <div id="autoInfo" class="notice info"></div>
         <div class="auto-grid" style="margin-top:12px">
@@ -1306,7 +1615,7 @@
           <label class="auto-option"><input id="autoRo" type="checkbox" /><div><strong>Consenti il RO come ultima risorsa nel 118</strong><span>Disattivato per impostazione predefinita. L’uso genera comunque un alert.</span></div></label>
         </div>
       </div>
-      <div class="modal-foot"><button class="btn ghost" data-close="autoModal">Annulla</button><button class="btn primary" id="generateAutoBtn">Avvia generazione</button></div>
+      <div class="modal-foot"><button class="btn ghost" data-close="autoModal">Annulla</button><button class="btn primary" id="generateAutoBtn">Conferma e genera</button></div>
     </div>
   </div>
 
@@ -1431,10 +1740,10 @@
     allowRoAuto: false
   };
 
-  const STORAGE_KEY = 'atlas-118-turnazione-v13';
-  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v12','atlas-118-turnazione-v11','atlas-118-turnazione-v10','atlas-118-turnazione-v9','atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
-  const APP_VERSION = 13;
-  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8,9,10,11,12,13]);
+  const STORAGE_KEY = 'atlas-118-turnazione-v14';
+  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v13','atlas-118-turnazione-v12','atlas-118-turnazione-v11','atlas-118-turnazione-v10','atlas-118-turnazione-v9','atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
+  const APP_VERSION = 14;
+  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8,9,10,11,12,13,14]);
   const PROTECTED_STORAGE_KEY = 'atlas-118-assenze-permanenti-v1';
   const AUTH_SESSION_KEY = 'atlas-118-ro-session-v1';
   const AUTH_USERNAME = 'bosetti.danilo';
@@ -1652,7 +1961,7 @@
   function updateSyncStatus(text,mode='local'){ const el=$('#syncText'); if(el)el.textContent=text; const pill=$('#syncPill'); if(pill)pill.style.borderColor=mode==='error'?'rgba(251,113,133,.35)':mode==='sync'?'rgba(56,189,248,.35)':'rgba(52,211,153,.25)'; }
   function toast(title,text='',type='success'){ const el=document.createElement('div');el.className=`toast ${type}`;el.innerHTML=`<strong>${esc(title)}</strong>${text?`<span class="muted">${esc(text)}</span>`:''}`;$('#toastStack').appendChild(el);setTimeout(()=>el.remove(),4200); }
   function openModal(id){ $('#'+id)?.classList.add('open'); }
-  function closeModal(id){ $('#'+id)?.classList.remove('open'); if(id==='assignmentModal'){state.activeCell=null;replacementContext=null;} }
+  function closeModal(id){ $('#'+id)?.classList.remove('open'); if(id==='assignmentModal'){state.activeCell=null;replacementContext=null;} if(id==='preGenerationModal'){preGenerationDraft=[];} }
   function confirmDialog(title,subtitle,text,action){$('#confirmTitle').textContent=title;$('#confirmSubtitle').textContent=subtitle;$('#confirmText').textContent=text;state.confirmAction=action;openModal('confirmModal');}
   function switchView(id){$$('.view').forEach(v=>v.classList.toggle('active',v.id===id));$$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));}
 
@@ -2237,13 +2546,269 @@
 
   function chooseShiftGroup(d,shift){const existing=shiftRows(dateKey(d),shift).map(r=>r.employee.turno).filter(g=>['A','B'].includes(g));if(existing.length)return existing[0];const pref=preferredGroup(d,shift);if(pref)return pref;const score=g=>state.employees.filter(e=>e.turno===g&&e.attivo!==false).reduce((s,e)=>s+employeeStats(e).hours/Math.max(1,targetHoursFor(e)),0);return score('A')<=score('B')?'A':'B';}
   const yieldUi=()=>new Promise(resolve=>{const raf=globalThis.requestAnimationFrame||((cb)=>setTimeout(cb,0));raf(()=>resolve());});
+
+  let automaticThemeTimer=null;
+  let preGenerationDraft=[];
+
+  function applyAutomaticTheme(now=new Date()){
+    const hour=now.getHours();
+    const theme=(hour>=18||hour<6)?'dark':'light';
+    document.documentElement.dataset.theme=theme;
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(meta)meta.content=theme==='dark'?'#060a12':'#f4f7fb';
+    return theme;
+  }
+
+  function startAutomaticTheme(){
+    applyAutomaticTheme();
+    if(automaticThemeTimer)clearInterval(automaticThemeTimer);
+    automaticThemeTimer=setInterval(applyAutomaticTheme,60000);
+  }
+
+  function preGenDefaultDay(){
+    const today=dateKey(new Date());
+    return today.startsWith(state.month)?today:`${state.month}-01`;
+  }
+
+  function setPreGenStage(stage){
+    $('#preGenQuestion').classList.toggle('hidden',stage!=='question');
+    $('#preGenFormStage').classList.toggle('hidden',stage!=='form');
+    $('#preGenRecapStage').classList.toggle('hidden',stage!=='recap');
+
+    const titles={
+      question:['Prima di generare il calendario','Verifica preventivamente ferie, permessi e indisponibilità'],
+      form:['Inserisci ferie, permessi e indisponibilità','Puoi aggiungere più persone prima di passare al riepilogo'],
+      recap:['Riepilogo prima della generazione','Controlla e autorizza la registrazione']
+    };
+    $('#preGenTitle').textContent=titles[stage][0];
+    $('#preGenSubtitle').textContent=titles[stage][1];
+
+    if(stage==='form')renderPreGenerationDraft();
+    if(stage==='recap')renderPreGenerationRecap();
+  }
+
+  function openPreGenerationWizard(){
+    if(state.generating)return toast('Generazione già in corso','Attendi il completamento.','info');
+    preGenerationDraft=[];
+    const employee=$('#preGenEmployee');
+    employee.innerHTML=state.employees
+      .filter(e=>e.attivo!==false)
+      .sort((a,b)=>a.cognome.localeCompare(b.cognome)||a.nome.localeCompare(b.nome))
+      .map(e=>`<option value="${e.id}">${esc(employeeName(e))} · ${esc(e.turno)}</option>`).join('');
+
+    const day=preGenDefaultDay();
+    $('#preGenFrom').value=day;
+    $('#preGenTo').value=day;
+    $('#preGenCode').value='F';
+    $('#preGenMode').value='GIORNATA';
+    $('#preGenHours').value='7.6';
+    $('#preGenStart').value='08:00';
+    $('#preGenEnd').value='12:00';
+    $('#preGenStatus').value='APPROVATO';
+    $('#preGenNote').value='';
+    $('#preGenConfirmCheck').checked=false;
+    $('#preGenConfirmBtn').disabled=true;
+    togglePreGenMode();
+    setPreGenStage('question');
+    openModal('preGenerationModal');
+  }
+
+  function togglePreGenMode(){
+    const hourly=$('#preGenMode').value==='ORE';
+    ['#preGenStart','#preGenEnd'].forEach(sel=>{$(sel).disabled=!hourly;});
+    $('#preGenHours').disabled=false;
+  }
+
+  function preGenCodeLabel(code){
+    const labels={
+      F:'Ferie',PERM:'Permesso','L104/92':'Permesso 104',AVIS:'Permesso AVIS',
+      CONG:'Congedo parentale',MAL:'Malattia',INF:'Infortunio',
+      A:'Assenza festività',RC:'Riposo compensativo'
+    };
+    return labels[code]||code;
+  }
+
+  function formatDateIt(day){
+    const d=parseDateKey(day);
+    return new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'}).format(d);
+  }
+
+  function draftDateLabel(entry){
+    const range=entry.from===entry.to?formatDateIt(entry.from):`${formatDateIt(entry.from)} → ${formatDateIt(entry.to)}`;
+    const mode=entry.mode==='ORE'?`${entry.start}–${entry.end} · ${fmt(entry.hours)} h`:`giornata intera · ${fmt(entry.hours)} h/giorno`;
+    return `${range} · ${mode}`;
+  }
+
+  function addPreGenerationDraft(){
+    const employeeId=$('#preGenEmployee').value;
+    const from=$('#preGenFrom').value;
+    const to=$('#preGenTo').value;
+    const code=$('#preGenCode').value;
+    const mode=$('#preGenMode').value;
+    const start=$('#preGenStart').value;
+    const end=$('#preGenEnd').value;
+    const hours=numeric($('#preGenHours').value);
+    const status=$('#preGenStatus').value;
+    const note=$('#preGenNote').value.trim();
+
+    if(!employeeId||!from||!to)return toast('Dati incompleti','Seleziona dipendente e intervallo.','error');
+    if(!from.startsWith(state.month)||!to.startsWith(state.month)){
+      return toast('Mese non coerente',`Le date devono appartenere a ${monthLabel()}.`,'error');
+    }
+    if(to<from)return toast('Intervallo non valido','La data finale precede quella iniziale.','error');
+    if(mode==='ORE'&&(!start||!end||hours<=0)){
+      return toast('Dati orari incompleti','Inserisci inizio, fine e ore riconosciute.','error');
+    }
+    if(mode==='GIORNATA'&&hours<0)return toast('Ore non valide','','error');
+
+    preGenerationDraft.push({
+      id:uid(),employeeId,from,to,code,mode,start,end,hours,status,note
+    });
+    $('#preGenNote').value='';
+    renderPreGenerationDraft();
+    toast('Voce aggiunta al riepilogo',`${preGenCodeLabel(code)} · ${employeeName(state.employees.find(e=>e.id===employeeId))}`,'success');
+  }
+
+  function renderPreGenerationDraft(){
+    const host=$('#preGenPendingList');
+    if(!preGenerationDraft.length){
+      host.innerHTML='<div class="empty-state" style="min-height:90px"><div><strong>Nessuna nuova indisponibilità</strong>Puoi comunque proseguire e controllare quelle già registrate.</div></div>';
+      $('#preGenPendingCount').textContent='Nessuna voce aggiunta';
+      return;
+    }
+    host.innerHTML=preGenerationDraft.map(entry=>{
+      const employee=state.employees.find(e=>e.id===entry.employeeId);
+      return `<div class="pre-gen-entry">
+        <div>
+          <strong>${esc(employeeName(employee))} · ${esc(preGenCodeLabel(entry.code))}</strong>
+          <span>${esc(draftDateLabel(entry))}${entry.note?` · ${esc(entry.note)}`:''}</span>
+        </div>
+        <button class="pre-gen-remove" type="button" data-pre-gen-remove="${entry.id}">Rimuovi</button>
+      </div>`;
+    }).join('');
+    $('#preGenPendingCount').textContent=`${preGenerationDraft.length} ${preGenerationDraft.length===1?'voce pronta':'voci pronte'}`;
+    $$('[data-pre-gen-remove]').forEach(button=>button.addEventListener('click',()=>{
+      preGenerationDraft=preGenerationDraft.filter(entry=>entry.id!==button.dataset.preGenRemove);
+      renderPreGenerationDraft();
+    }));
+  }
+
+  function existingProtectedForRecap(){
+    const rows=[];
+    Object.entries(state.assignments).forEach(([key,items])=>{
+      const split=key.lastIndexOf('|');
+      const employeeId=key.slice(0,split),day=key.slice(split+1);
+      if(!day.startsWith(state.month))return;
+      const employee=state.employees.find(e=>e.id===employeeId);
+      (items||[]).filter(isProtectedCalendarRecord).forEach(item=>{
+        rows.push({
+          employeeId,employee,day,item,
+          label:preGenCodeLabel(item.code||item.type),
+          time:item.allDay?'giornata intera':`${item.start||'--:--'}–${item.end||'--:--'}`
+        });
+      });
+    });
+    return rows.sort((a,b)=>a.day.localeCompare(b.day)||employeeName(a.employee).localeCompare(employeeName(b.employee)));
+  }
+
+  function renderPreGenerationRecap(){
+    const existing=existingProtectedForRecap();
+    const host=$('#preGenRecapList');
+    const blocks=[];
+
+    if(existing.length){
+      blocks.push(`<div class="section-label" style="margin-top:0">Già registrati nel calendario · ${existing.length}</div>`);
+      existing.forEach(row=>{
+        blocks.push(`<div class="pre-gen-recap-block existing">
+          <div class="pre-gen-recap-title"><span>${esc(employeeName(row.employee))}</span><span>${esc(row.label)}</span></div>
+          <div class="pre-gen-recap-meta">${esc(formatDateIt(row.day))} · ${esc(row.time)} · ${fmt(row.item.hours||0)} h${row.item.note?` · ${esc(row.item.note)}`:''}</div>
+        </div>`);
+      });
+    }else{
+      blocks.push('<div class="notice info">Nel mese non risultano ancora ferie, malattie, permessi o altre indisponibilità protette.</div>');
+    }
+
+    if(preGenerationDraft.length){
+      blocks.push(`<div class="section-label">Nuovi da registrare · ${preGenerationDraft.length}</div>`);
+      preGenerationDraft.forEach(entry=>{
+        const employee=state.employees.find(e=>e.id===entry.employeeId);
+        blocks.push(`<div class="pre-gen-recap-block new">
+          <div class="pre-gen-recap-title"><span>${esc(employeeName(employee))}</span><span>${esc(preGenCodeLabel(entry.code))}</span></div>
+          <div class="pre-gen-recap-meta">${esc(draftDateLabel(entry))}${entry.note?` · ${esc(entry.note)}`:''}</div>
+        </div>`);
+      });
+    }else{
+      blocks.push('<div class="notice">Non sono state aggiunte nuove indisponibilità in questa procedura.</div>');
+    }
+
+    host.innerHTML=blocks.join('');
+    $('#preGenConfirmCheck').checked=false;
+    $('#preGenConfirmBtn').disabled=true;
+  }
+
+  function commitPreGenerationDraft(){
+    let created=0,skipped=0;
+    preGenerationDraft.forEach(entry=>{
+      const from=parseDateKey(entry.from),to=parseDateKey(entry.to);
+      for(let d=new Date(from);d<=to;d.setDate(d.getDate()+1)){
+        const day=dateKey(d);
+        let hours=entry.hours;
+        if(entry.mode==='GIORNATA'&&isWeekend(d)&&!['MAL','INF'].includes(entry.code))hours=0;
+
+        const duplicate=getAssignments(entry.employeeId,day).some(a=>
+          isProtectedCalendarRecord(a)&&
+          (a.code||a.type)===entry.code&&
+          !!a.allDay===(entry.mode==='GIORNATA')&&
+          (a.start||'')===(entry.mode==='ORE'?entry.start:'')&&
+          (a.end||'')===(entry.mode==='ORE'?entry.end:'')
+        );
+        if(duplicate){skipped++;continue;}
+
+        const item={
+          ...manualBase(),
+          category:entry.code==='RC'||entry.code==='A'?'RC':'ABS',
+          type:entry.code,code:entry.code,hours,
+          allDay:entry.mode==='GIORNATA',
+          start:entry.mode==='ORE'?entry.start:'',
+          end:entry.mode==='ORE'?entry.end:'',
+          nextDay:entry.mode==='ORE'?shiftWindow('CUSTOM',day,entry.start,entry.end).nextDay:false,
+          note:entry.note,status:entry.status,locked:true,
+          preGeneration:true
+        };
+        appendTo(entry.employeeId,day,item,{dirty:true,render:false});
+        created++;
+      }
+    });
+
+    if(created||skipped){
+      state.localDirty=true;
+      saveState();
+      renderAll();
+    }
+    preGenerationDraft=[];
+    return {created,skipped};
+  }
+
+  function confirmPreGeneration(){
+    if(!$('#preGenConfirmCheck').checked)return;
+    const result=commitPreGenerationDraft();
+    closeModal('preGenerationModal');
+    openAutoModal();
+    const detail=[
+      result.created?`${result.created} record registrati`:'',
+      result.skipped?`${result.skipped} duplicati ignorati`:''
+    ].filter(Boolean).join(' · ');
+    if(detail)toast('Riepilogo confermato',detail,'success');
+  }
+
+
   function setGenerationUi(active,percent=0,label='Preparazione…'){state.generating=active;['#generateAutoBtn','#autoBtn'].forEach(sel=>{const b=$(sel);if(b)b.disabled=active;});const overlay=$('#generationOverlay');if(overlay)overlay.classList.toggle('open',active);const bar=$('#generationProgressBar');if(bar)bar.style.width=`${Math.max(0,Math.min(100,percent))}%`;const pct=$('#generationProgressPct');if(pct)pct.textContent=`${Math.round(percent)}%`;const stage=$('#generationStage');if(stage)stage.textContent=label;}
   function updateGeneration(percent,label){setGenerationUi(true,percent,label);}
   async function schedule118({allowRo=false,onProgress=null}={}){let added=0,missing=0,cross=0;const dates=monthDates();for(let i=0;i<dates.length;i++){const d=dates[i],day=dateKey(d);for(const shift of ['M','P','N']){if(state.requirements[`${day}|${shift}`]!=='required')continue;const targetGroup=chooseShiftGroup(d,shift),other=targetGroup==='A'?'B':'A',activeCrews=[...new Set(crewSlotsForDayShift(d,shift).map(s=>s.crew))];for(const slot of crewSlotsForDayShift(d,shift)){if(currentSlotOccupied(day,shift,slot))continue;const item={category:'118',shift,site:slot.site,machine:slot.machine,role:slot.role,plannedGroup:targetGroup};const currentRows=shiftRows(day,shift),crewRows=currentRows.filter(r=>crewKey(r.a)===slot.crew),hasMale=crewRows.some(r=>isMale(r.employee)),requireMale=slot.crew==='G2'&&crewRows.length>=1&&!hasMale,otherCrewNeedsMale=activeCrews.some(crew=>crew!==slot.crew&&!currentRows.filter(r=>crewKey(r.a)===crew).some(r=>isMale(r.employee))),preserveMale=hasMale&&otherCrewNeedsMale;let e=chooseCandidate(day,item,{preferred:targetGroup,allowRo,pool:state.employees.filter(x=>x.turno===targetGroup||x.turno==='Libera'),preferMale:!hasMale,preserveMale,requireMale});if(!e){e=chooseCandidate(day,item,{preferred:targetGroup,allowRo,pool:state.employees.filter(x=>x.turno===other),preferMale:!hasMale,preserveMale,requireMale});if(e){item.crossGroup=true;cross++;}}if(!e&&allowRo)e=chooseCandidate(day,item,{preferred:targetGroup,allowRo:true,pool:state.employees.filter(x=>x.turno==='RO'),preferMale:!hasMale,preserveMale,requireMale});if(!e){missing++;continue;}addAuto(e,day,item);added++;}}if(i%2===1||i===dates.length-1){if(onProgress)onProgress(i+1,dates.length);await yieldUi();}}return{added,missing,cross};}
 
   async function generateAutomatic(){if(state.generating)return toast('Generazione già in corso','Attendi il completamento della proposta.','info');const preserve=$('#autoPreserve')?.checked!==false,admin=$('#autoAdmin')?.checked!==false,resp=$('#autoResp')?.checked!==false,se=$('#autoSe')?.checked!==false,allowRo=$('#autoRo')?.checked===true;closeModal('autoModal');setGenerationUi(true,2,'Avvio del motore di turnazione…');await yieldUi();let added=0,r={added:0,missing:0,cross:0};try{if(!preserve)state.assignments={};else removeAutoProposals();updateGeneration(8,'Indicizzazione disponibilità e vincoli…');beginAutoCache();await yieldUi();if(admin){updateGeneration(15,'Pianificazione amministrazione…');added+=scheduleAdmin();await yieldUi();}if(resp){updateGeneration(24,'Pianificazione giornate responsabili…');added+=scheduleFixedResponsibles();await yieldUi();}if(se){updateGeneration(34,'Pianificazione Secondari…');added+=scheduleSecondari();await yieldUi();}updateGeneration(42,'Composizione equipaggi 118…');r=await schedule118({allowRo,onProgress:(done,total)=>updateGeneration(42+(done/total)*34,`Composizione equipaggi 118 · giorno ${done}/${total}`)});added+=r.added;endAutoCache();updateGeneration(78,'Riequilibrio della composizione equipaggi…');const genderSwaps=rebalanceCrewGender();await yieldUi();updateGeneration(84,'Salvataggio della proposta…');state.localDirty=true;state.lastAutoSummary={at:new Date().toISOString(),added,missing:r.missing,cross:r.cross,genderSwaps};saveState();await yieldUi();updateGeneration(90,'Verifica riposi, ruoli e coperture…');renderAll();await yieldUi();updateGeneration(100,'Proposta pronta');toast('ATLAS ha generato la proposta',`${added} assegnazioni proposte · ${r.missing} ruoli scoperti · ${r.cross} inserimenti fuori gruppo · ${genderSwaps} riequilibri equipaggio.`,r.missing?'error':'success');switchView('anomaliesView');}catch(err){console.error(err);toast('Generazione non completata',err.message||'Errore imprevisto','error');}finally{endAutoCache();setGenerationUi(false);}}
 
-  function openAutoModal(){if(state.generating)return toast('Generazione già in corso','Attendi il completamento.','info');const req=Object.values(state.requirements).filter(v=>v==='required').length;$('#autoInfo').innerHTML=`<strong>ATLAS</strong> mantiene separati i gruppi <strong>A/B</strong>; le <strong>Libere</strong> partecipano come risorse neutrali secondo le abilitazioni. Alterna i ruoli A/C/S, distribuisce gli uomini tra gli equipaggi che ne sono privi e applica la regola rigida: <strong>la macchina a 2 non può avere due donne</strong>. La generazione ordinaria comprende <strong>Gallarate e Somma</strong>; <strong>Sumirago è inserita solo manualmente al bisogno</strong>. Il sabato mattina pianifica <strong>Gallarate macchina a 2, Gallarate macchina a 3 e Somma</strong>; il sabato pomeriggio pianifica <strong>Gallarate macchina a 2 e Somma</strong>; di notte usa soltanto equipaggi a 3. Raschi resta in <strong>GRS</strong> salvo necessità MGSE. Saranno completate ${req} fasce richieste.`;openModal('autoModal');}
+  function openAutoModal(){if(state.generating)return toast('Generazione già in corso','Attendi il completamento.','info');const req=Object.values(state.requirements).filter(v=>v==='required').length;const protectedCount=existingProtectedForRecap().length;$('#autoInfo').innerHTML=`Sono state verificate <strong>${protectedCount} indisponibilità protette</strong> per ${monthLabel()}. <strong>ATLAS</strong> mantiene separati i gruppi <strong>A/B</strong>; le <strong>Libere</strong> partecipano come risorse neutrali secondo le abilitazioni. Alterna i ruoli A/C/S, distribuisce gli uomini tra gli equipaggi che ne sono privi e applica la regola rigida: <strong>la macchina a 2 non può avere due donne</strong>. La generazione ordinaria comprende <strong>Gallarate e Somma</strong>; <strong>Sumirago è inserita solo manualmente al bisogno</strong>. Il sabato mattina pianifica <strong>Gallarate macchina a 2, Gallarate macchina a 3 e Somma</strong>; il sabato pomeriggio pianifica <strong>Gallarate macchina a 2 e Somma</strong>; di notte usa soltanto equipaggi a 3. Raschi resta in <strong>GRS</strong> salvo necessità MGSE. Saranno completate ${req} fasce richieste.`;openModal('autoModal');}
 
   function openAbsenceModal(){const sel=$('#absEmployee');sel.innerHTML=state.employees.map(e=>`<option value="${e.id}">${esc(employeeName(e))} · ${esc(e.turno)}</option>`).join('');$('#absFrom').value=`${state.month}-01`;$('#absTo').value=`${state.month}-01`;openModal('absenceModal');toggleAbsenceMode();}
   function toggleAbsenceMode(){const hourly=$('#absMode').value==='ORE';$('#absStart').disabled=!hourly;$('#absEnd').disabled=!hourly;$('#absHours').value=hourly?'4':'7.6';}
@@ -2423,11 +2988,20 @@
   function resetApp(){localStorage.removeItem(STORAGE_KEY);LEGACY_STORAGE_KEYS.forEach(k=>localStorage.removeItem(k));localStorage.removeItem(PROTECTED_STORAGE_KEY);location.reload();}
 
   function bindEvents(){
+    $('#preGenYesBtn').addEventListener('click',()=>setPreGenStage('form'));
+    $('#preGenNoBtn').addEventListener('click',()=>setPreGenStage('recap'));
+    $('#preGenBackQuestionBtn').addEventListener('click',()=>setPreGenStage('question'));
+    $('#preGenAddBtn').addEventListener('click',addPreGenerationDraft);
+    $('#preGenGoRecapBtn').addEventListener('click',()=>setPreGenStage('recap'));
+    $('#preGenBackFormBtn').addEventListener('click',()=>setPreGenStage('form'));
+    $('#preGenMode').addEventListener('change',togglePreGenMode);
+    $('#preGenConfirmCheck').addEventListener('change',e=>{$('#preGenConfirmBtn').disabled=!e.target.checked;});
+    $('#preGenConfirmBtn').addEventListener('click',confirmPreGeneration);
     $$('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));$$('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.close)));$$('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);}));$$('.preset').forEach(b=>b.addEventListener('click',()=>renderAssignmentForm(b.dataset.preset)));
     ['searchEmployee','groupFilter','issuesOnly'].forEach(id=>$('#'+id).addEventListener(id==='searchEmployee'?'input':'change',renderCalendar));$('#resetFilters').addEventListener('click',()=>{$('#searchEmployee').value='';$('#groupFilter').value='all';$('#issuesOnly').checked=false;renderCalendar();});$('#coverageFilter').addEventListener('change',renderCoverage);$('#anomalyFilter').addEventListener('change',renderAnomalies);
     $('#settingsBtn').addEventListener('click',openSettings);$('#saveSettingsBtn').addEventListener('click',saveSettings);$('#importEmployeesBtn').addEventListener('click',()=>reloadSheets({replaceDb:true}));$('#downloadBackupBtn').addEventListener('click',downloadBackup);$('#syncBtn').addEventListener('click',requestCalendarSave);$('#exportBtn').addEventListener('click',exportDatabaseCsv);$('#exportSummaryBtn').addEventListener('click',exportSummaryCsv);$('#printBtn').addEventListener('click',printCalendarA3);
     $('#addStaffBtn').addEventListener('click',()=>openStaffModal());$('#saveStaffBtn').addEventListener('click',saveStaffRecord);$('#exportStaffBtn').addEventListener('click',exportEmployeesCsv);$('#syncStaffBtn').addEventListener('click',syncEmployeesGoogle);$('#staffSearch').addEventListener('input',renderStaff);$('#staffGroupFilter').addEventListener('change',renderStaff);
-    $('#reloadSheetBtn').addEventListener('click',()=>confirmDialog('Ricaricare Matrice e Database?','Turni e coperture saranno riletti dal foglio','Ferie, malattie, permessi e altre assenze locali protette resteranno registrate.',()=>reloadSheets({replaceDb:true})));$('#autoBtn').addEventListener('click',openAutoModal);$('#generateAutoBtn').addEventListener('click',generateAutomatic);$('#absenceBtn').addEventListener('click',openAbsenceModal);$('#absMode').addEventListener('change',toggleAbsenceMode);$('#saveAbsenceBtn').addEventListener('click',declareAbsence);
+    $('#reloadSheetBtn').addEventListener('click',()=>confirmDialog('Ricaricare Matrice e Database?','Turni e coperture saranno riletti dal foglio','Ferie, malattie, permessi e altre assenze locali protette resteranno registrate.',()=>reloadSheets({replaceDb:true})));$('#autoBtn').addEventListener('click',openPreGenerationWizard);$('#generateAutoBtn').addEventListener('click',generateAutomatic);$('#absenceBtn').addEventListener('click',openAbsenceModal);$('#absMode').addEventListener('change',toggleAbsenceMode);$('#saveAbsenceBtn').addEventListener('click',declareAbsence);
     $('#importBtn').addEventListener('click',()=>$('#fileInput').click());$('#fileInput').addEventListener('change',e=>{if(e.target.files[0])importBackupFile(e.target.files[0]);e.target.value='';});$('#clearAutoBtn').addEventListener('click',()=>confirmDialog('Rimuovere le proposte automatiche?','Le voci manuali, bloccate e importate restano','La turnazione potrà essere rigenerata successivamente.',clearAuto));$('#clearMonthBtn').addEventListener('click',()=>confirmDialog('Cancellare la turnazione?','Assenze e indisponibilità restano protette','Saranno rimossi turni 118, Secondari, responsabilità, amministrazione, formazione e riposi post-notte. Ferie, malattia, infortunio, 104, AVIS, congedi, permessi e RC manuali resteranno registrati.',clearMonth));$('#resetAppBtn').addEventListener('click',()=>confirmDialog('Ripristinare l’app?','Cancellazione dati locali','Saranno eliminati turni, impostazioni e collegamenti salvati nel browser.',resetApp));$('#confirmActionBtn').addEventListener('click',()=>{const fn=state.confirmAction;state.confirmAction=null;closeModal('confirmModal');if(fn)fn();});
     $('#monthPicker').addEventListener('change',e=>{state.month=e.target.value;recalcDefaultTarget();if(state.dbRecords.length)applyDbRecordsToMonth({replace:true});else{state.assignments={};state.requirements={};initRequirements();restoreProtectedRecordsForCurrentMonth();}state.localDirty=false;saveState();renderAll();});document.addEventListener('keydown',e=>{if(e.key==='Escape')$$('.modal-backdrop.open').forEach(m=>closeModal(m.id));});window.addEventListener('beforeprint',prepareA3Print);window.addEventListener('afterprint',restoreAfterPrint);
   }
@@ -2531,6 +3105,7 @@
   }
 
   function bootAuthentication(){
+    startAutomaticTheme();
     bindAuthentication();
     if(sessionStorage.getItem(AUTH_SESSION_KEY)==='authorized'){
       unlockAtlas();
