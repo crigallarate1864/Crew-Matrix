@@ -10,7 +10,7 @@
       document.documentElement.dataset.theme = (hour >= 18 || hour < 6) ? 'dark' : 'light';
     })();
   </script>
-  <title>ATLAS 118 · Turnazione intelligente CRI Gallarate · v15</title>
+  <title>ATLAS 118 · Turnazione personale, sotto controllo · Release v1</title>
   <style>
     :root {
       --bg: #060a12;
@@ -419,6 +419,19 @@
     @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
     .hidden { display: none !important; }
+
+
+    .brand-credit {
+      margin-top: 2px; color: #89a1b4; font-size: 8px; font-weight: 750;
+      letter-spacing: .025em;
+    }
+    .auth-developed {
+      display: inline-flex; align-items: center; gap: 5px; margin-top: 15px;
+      padding: 7px 10px; border: 1px solid rgba(56,189,248,.18); border-radius: 10px;
+      color: #8fa8bb; background: rgba(255,255,255,.025); font-size: 9px;
+    }
+    .auth-developed strong { color: #9de5ff; }
+    html[data-theme="light"] .auth-developed strong { color: #075f8e; }
 
     .brand-mark { overflow: hidden; }
     .brand-mark img { width: 100%; height: 100%; object-fit: contain; padding: 4px; display: block; }
@@ -1103,6 +1116,283 @@
       .toast { width: 100%; max-width: none; }
     }
 
+
+    /* RELEASE V1 - MODALITÀ GIORNO RIBILANCIATA */
+    html[data-theme="light"] {
+      --bg: #e7ebf0;
+      --bg-2: #dde3e9;
+      --panel: #f1f4f7;
+      --panel-solid: #f3f5f7;
+      --panel-soft: #e6ebf0;
+      --border: #bdc7d1;
+      --border-strong: #8297aa;
+      --text: #1e2b38;
+      --muted: #586878;
+      --shadow: 0 12px 34px rgba(41,58,76,.13);
+    }
+    html[data-theme="light"] body {
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% -8%, rgba(44,139,197,.08), transparent 34%),
+        linear-gradient(145deg, #edf0f3, var(--bg) 58%, var(--bg-2));
+    }
+    html[data-theme="light"] .topbar {
+      background: linear-gradient(180deg, #e8edf2, #dde4ea);
+      border-color: #b9c4ce;
+    }
+    html[data-theme="light"] .sidebar {
+      background: linear-gradient(180deg, #e0e6ec, #d8e0e7);
+      border-color: #b9c4ce;
+    }
+    html[data-theme="light"] .content { background: transparent; }
+
+    html[data-theme="light"] .card,
+    html[data-theme="light"] .view-toolbar,
+    html[data-theme="light"] .day-card,
+    html[data-theme="light"] .summary-table-wrap,
+    html[data-theme="light"] .staff-table-wrap,
+    html[data-theme="light"] .manual-card,
+    html[data-theme="light"] .manual-hero,
+    html[data-theme="light"] .scroll-panel,
+    html[data-theme="light"] .replacement-section,
+    html[data-theme="light"] .replacement-source,
+    html[data-theme="light"] .replacement-candidate,
+    html[data-theme="light"] .assignment-item,
+    html[data-theme="light"] .pre-gen-entry,
+    html[data-theme="light"] .pre-gen-recap-block,
+    html[data-theme="light"] .pre-gen-choice,
+    html[data-theme="light"] .check-card {
+      background: #eef2f5;
+      color: var(--text);
+      border-color: #bcc7d1;
+      box-shadow: none;
+    }
+
+    html[data-theme="light"] .card-title,
+    html[data-theme="light"] .view-title,
+    html[data-theme="light"] .day-card-title,
+    html[data-theme="light"] .anomaly-title,
+    html[data-theme="light"] .manual-card h3,
+    html[data-theme="light"] .manual-hero h2,
+    html[data-theme="light"] .replacement-candidate-name,
+    html[data-theme="light"] .assignment-code,
+    html[data-theme="light"] .emp-name,
+    html[data-theme="light"] .crew-title,
+    html[data-theme="light"] .pre-gen-choice b,
+    html[data-theme="light"] .pre-gen-entry strong,
+    html[data-theme="light"] .pre-gen-recap-title {
+      color: #1c2936;
+    }
+
+    html[data-theme="light"] .view-sub,
+    html[data-theme="light"] .day-card-date,
+    html[data-theme="light"] .anomaly-text,
+    html[data-theme="light"] .manual-card p,
+    html[data-theme="light"] .manual-card li,
+    html[data-theme="light"] .role-person,
+    html[data-theme="light"] .replacement-candidate-meta,
+    html[data-theme="light"] .replacement-toolbar span,
+    html[data-theme="light"] .assignment-time,
+    html[data-theme="light"] .emp-meta,
+    html[data-theme="light"] .pre-gen-choice span,
+    html[data-theme="light"] .pre-gen-entry span,
+    html[data-theme="light"] .pre-gen-recap-meta,
+    html[data-theme="light"] .muted {
+      color: #596a7a;
+    }
+
+    html[data-theme="light"] .calendar-wrap {
+      background: #d7dfe7;
+      border-color: #aebac5;
+    }
+    html[data-theme="light"] .calendar thead th {
+      background: #cbd5de;
+      color: #1d2a37;
+      border-color: #aebac5;
+    }
+    html[data-theme="light"] .calendar tbody td:first-child,
+    html[data-theme="light"] .calendar tbody td:nth-child(2),
+    html[data-theme="light"] .calendar tbody td:nth-child(3) {
+      background: #e3e8ed;
+      color: #1d2a37;
+    }
+    html[data-theme="light"] .calendar td.day-cell {
+      background: #f0f3f6;
+      border-color: #c3ccd5;
+    }
+    html[data-theme="light"] .calendar .weekend { background: #e7e8f0; }
+    html[data-theme="light"] .calendar .sunday { background: #eee4e7; }
+    html[data-theme="light"] .calendar tbody tr:hover td { background-color: #dce9f2; }
+    html[data-theme="light"] .calendar tbody tr:hover td:nth-child(-n+3) { background: #d1e0ea; }
+
+    html[data-theme="light"] .summary-table th,
+    html[data-theme="light"] .staff-table th {
+      background: #cad4dd;
+      color: #344657;
+      border-color: #adb9c4;
+    }
+    html[data-theme="light"] .summary-table td,
+    html[data-theme="light"] .staff-table td {
+      color: #1e2b38;
+      border-color: #c5ced7;
+    }
+    html[data-theme="light"] .summary-table td:first-child {
+      background: #e2e8ed;
+      color: #1c2936;
+    }
+    html[data-theme="light"] .summary-table tr:hover td,
+    html[data-theme="light"] .staff-table tr:hover td { background: #dce8f0; }
+    html[data-theme="light"] .staff-table code { color: #075f8e; }
+
+    html[data-theme="light"] .anomaly {
+      background: #eef2f5;
+      border-color: #bcc7d1;
+      color: #1e2b38;
+    }
+    html[data-theme="light"] .empty-state {
+      color: #5b6c7c;
+      border-color: #aebac5;
+      background: rgba(238,242,245,.56);
+    }
+    html[data-theme="light"] .empty-state strong { color: #1c2936; }
+
+    html[data-theme="light"] .input,
+    html[data-theme="light"] select.input,
+    html[data-theme="light"] textarea.input,
+    html[data-theme="light"] .auth-input {
+      background: #f4f6f8;
+      color: #1b2835;
+      border-color: #aeb9c4;
+      box-shadow: none;
+    }
+    html[data-theme="light"] .input::placeholder,
+    html[data-theme="light"] .auth-input::placeholder { color: #788694; }
+    html[data-theme="light"] select.input option {
+      background: #f4f6f8;
+      color: #1b2835;
+    }
+
+    html[data-theme="light"] .btn,
+    html[data-theme="light"] .nav-btn,
+    html[data-theme="light"] .chip,
+    html[data-theme="light"] .month-control,
+    html[data-theme="light"] .operator-pill,
+    html[data-theme="light"] .action-group,
+    html[data-theme="light"] .kpi {
+      background: #e4e9ee;
+      color: #263746;
+      border-color: #b5c0ca;
+    }
+    html[data-theme="light"] .btn:hover,
+    html[data-theme="light"] .nav-btn:hover {
+      background: #d7e0e7;
+      color: #182734;
+    }
+    html[data-theme="light"] .nav-btn.active {
+      background: #d2e4f0;
+      color: #075f8e;
+      border-color: #83afc9;
+    }
+    html[data-theme="light"] .action-group-label,
+    html[data-theme="light"] .operator-role,
+    html[data-theme="light"] .brand-sub,
+    html[data-theme="light"] .brand-credit,
+    html[data-theme="light"] .kpi-label {
+      color: #526474;
+    }
+
+    html[data-theme="light"] .modal {
+      background: #e9eef2;
+      color: #1e2b38;
+      border-color: #9eafbd;
+      box-shadow: 0 26px 70px rgba(40,56,74,.24);
+    }
+    html[data-theme="light"] .modal-head,
+    html[data-theme="light"] .modal-foot {
+      background: #dfe6ec;
+      border-color: #b4c0ca;
+    }
+    html[data-theme="light"] .modal-close,
+    html[data-theme="light"] .password-toggle {
+      background: #cfd8e0;
+      color: #314759;
+    }
+    html[data-theme="light"] .generation-overlay { background: rgba(203,213,222,.76); }
+    html[data-theme="light"] .generation-box {
+      background: #e9eef2;
+      color: #1e2b38;
+      border-color: #9eafbd;
+    }
+
+    html[data-theme="light"] .notice {
+      color: #694b00;
+      background: #f1e7c8;
+      border-color: #d2b866;
+    }
+    html[data-theme="light"] .notice.info {
+      color: #154d6b;
+      background: #dceaf3;
+      border-color: #8bb4cb;
+    }
+    html[data-theme="light"] .notice.error {
+      color: #792c39;
+      background: #f0dde1;
+      border-color: #cc929d;
+    }
+    html[data-theme="light"] .toast {
+      background: #edf1f4;
+      color: #1e2b38;
+      border-color: #aebac5;
+    }
+
+    html[data-theme="light"] .auth-screen {
+      background:
+        radial-gradient(circle at 12% 6%, rgba(14,165,233,.08), transparent 34%),
+        linear-gradient(145deg, #e9edf1, #e0e6ec 58%, #d7dfe6);
+    }
+    html[data-theme="light"] .auth-shell {
+      background: #e9eef2;
+      border-color: #aebbc6;
+      box-shadow: 0 30px 80px rgba(41,58,76,.18);
+    }
+    html[data-theme="light"] .auth-visual {
+      background:
+        linear-gradient(135deg, rgba(36,139,198,.08), rgba(228,234,239,.72) 52%, rgba(208,55,77,.035)),
+        #dde5eb;
+      border-color: #b5c0ca;
+    }
+    html[data-theme="light"] .auth-copy h1,
+    html[data-theme="light"] .auth-card-head h2,
+    html[data-theme="light"] .auth-feature b { color: #1b2936; }
+    html[data-theme="light"] .auth-copy p,
+    html[data-theme="light"] .auth-card-head p,
+    html[data-theme="light"] .auth-feature span,
+    html[data-theme="light"] .auth-security,
+    html[data-theme="light"] .auth-developed { color: #536575; }
+    html[data-theme="light"] .auth-feature {
+      background: #e8edf1;
+      border-color: #b7c2cc;
+    }
+    html[data-theme="light"] .auth-panel { background: #e9eef2; }
+
+    /* Colori della legenda invariati, sempre su fondo scuro leggibile. */
+    html[data-theme="light"] .shift-tag,
+    html[data-theme="light"] .group-badge,
+    html[data-theme="light"] .hours-balance {
+      background-color: #17283a;
+    }
+
+    @media (max-width: 768px) {
+      html[data-theme="light"] .topbar,
+      html[data-theme="light"] .sidebar,
+      html[data-theme="light"] .top-actions {
+        background: rgba(224,230,236,.98);
+      }
+      html[data-theme="light"] .auth-shell,
+      html[data-theme="light"] .auth-panel { background: #e9eef2; }
+    }
+
+
     :root {
       --print-scale: 1;
       --print-natural-width-px: 1600px;
@@ -1264,8 +1554,8 @@
 
         <div class="auth-copy">
           <div class="auth-eyebrow">Piattaforma turnazioni</div>
-          <h1>Turnazione sanitaria, sotto controllo.</h1>
-          <p>Accesso alla piattaforma ATLAS 118 per la pianificazione degli equipaggi, la gestione delle indisponibilità e il controllo delle coperture.</p>
+          <h1>Turnazione personale, sotto controllo.</h1>
+          <p>Accesso alla piattaforma ATLAS 118 per la pianificazione degli equipaggi, la gestione delle indisponibilità e il controllo delle coperture.</p><div class="auth-developed">Software sviluppato da <strong>CRI Gallarate</strong></div>
         </div>
 
         <div class="auth-feature-grid">
@@ -1327,7 +1617,7 @@
         <div class="brand-mark"><img src="logo.png" alt="Logo ATLAS 118" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" /><span class="brand-fallback">✚</span></div>
         <div>
           <div class="brand-title">ATLAS 118</div>
-          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · v15</div>
+          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · Release v1</div><div class="brand-credit">Software sviluppato da CRI Gallarate</div>
         </div>
       </div>
 
@@ -1343,10 +1633,10 @@
 
 
       <div class="operator-pill" title="Utente autenticato">
-        <span class="operator-avatar">DB</span>
+        <span class="operator-avatar" id="operatorAvatar">UT</span>
         <span>
-          <div class="operator-name">Danilo Bosetti</div>
-          <div class="operator-role">Responsabile Operativo</div>
+          <div class="operator-name" id="operatorName">Utente ATLAS</div>
+          <div class="operator-role" id="operatorRole">Accesso autorizzato</div>
         </span>
       </div>
 
@@ -1519,12 +1809,12 @@
 
         <section id="manualView" class="view">
           <div class="view-toolbar">
-            <div><div class="view-title">Manuale del Responsabile Operativo</div><div class="view-sub">Procedura rapida, controlli e gestione delle deroghe</div></div>
+            <div><div class="view-title">Manuale operativo ATLAS 118</div><div class="view-sub">Procedure, controlli, sostituzioni e gestione della turnazione</div></div>
             <div class="toolbar-spacer"></div>
-            <a class="btn small" href="Manuale_ATLAS_118_RO.pdf" download>Scarica PDF</a>
+            <a class="btn small" href="Manuale_ATLAS_118_v1.pdf" download>Scarica PDF</a>
           </div>
           <div class="manual-scroll">
-            <div class="manual-hero"><h2>ATLAS 118</h2><p>Usa il generatore come proposta iniziale, non come approvazione automatica. Il Responsabile Operativo mantiene sempre il controllo finale: verifica gli alert, completa le coperture straordinarie note dal giorno 19 e salva il mese nel Google Sheet.</p></div>
+            <div class="manual-hero"><h2>ATLAS 118</h2><p>Usa il generatore come proposta iniziale, non come approvazione automatica. L’utente incaricato mantiene sempre il controllo finale: verifica gli alert, completa le coperture straordinarie note dal giorno 19 e salva il mese nel Google Sheet.</p></div>
             <div class="manual-grid">
               <article class="manual-card wide"><h3>Flusso operativo consigliato</h3>
                 <div class="manual-step"><b>1</b><p><strong>Ricarica Sheet</strong> per acquisire Matrice e Database aggiornati.</p></div>
@@ -1849,14 +2139,28 @@
     allowRoAuto: false
   };
 
-  const STORAGE_KEY = 'atlas-118-turnazione-v15';
-  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v14','atlas-118-turnazione-v13','atlas-118-turnazione-v12','atlas-118-turnazione-v11','atlas-118-turnazione-v10','atlas-118-turnazione-v9','atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
-  const APP_VERSION = 15;
-  const COMPATIBLE_STORAGE_VERSIONS = new Set([6,7,8,9,10,11,12,13,14,15]);
+  const STORAGE_KEY = 'atlas-118-turnazione-release-v1';
+  const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-v15','atlas-118-turnazione-v14','atlas-118-turnazione-v13','atlas-118-turnazione-v12','atlas-118-turnazione-v11','atlas-118-turnazione-v10','atlas-118-turnazione-v9','atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
+  const APP_VERSION = 1;
+  const COMPATIBLE_STORAGE_VERSIONS = new Set([1,6,7,8,9,10,11,12,13,14,15]);
   const PROTECTED_STORAGE_KEY = 'atlas-118-assenze-permanenti-v1';
-  const AUTH_SESSION_KEY = 'atlas-118-ro-session-v1';
-  const AUTH_USERNAME = 'bosetti.danilo';
-  const AUTH_PASSWORD_SHA256 = '5090f2606a3f554918e1b40034e463a9aeb3413b6090675f84a7d4f76b040229';
+  const AUTH_SESSION_KEY = 'atlas-118-user-session-release-v1';
+  const AUTH_USERS = Object.freeze({
+    'bosetti.danilo': {
+      username:'bosetti.danilo',
+      passwordHash:'5090f2606a3f554918e1b40034e463a9aeb3413b6090675f84a7d4f76b040229',
+      displayName:'Danilo Bosetti',
+      initials:'DB',
+      role:'Responsabile Operativo'
+    },
+    'admin': {
+      username:'Admin',
+      passwordHash:'57f54e340ed69d630da3fd610f4e6afb1e4ba6f474b9f7358999d9f2ae67b286',
+      displayName:'Admin',
+      initials:'AD',
+      role:'Amministratore'
+    }
+  });
   const DOW = ['dom','lun','mar','mer','gio','ven','sab'];
   const MONTHS = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
   const CREW_SLOTS = [
@@ -3139,8 +3443,10 @@
       const digest=await crypto.subtle.digest('SHA-256',bytes);
       return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
     }
-    /* Compatibilità per apertura locale su browser che non espongono SubtleCrypto. */
-    return value==='bosetti.danilo' ? AUTH_PASSWORD_SHA256 : '';
+    /* Compatibilità per apertura locale su browser senza SubtleCrypto. */
+    if(value==='bosetti.danilo')return AUTH_USERS['bosetti.danilo'].passwordHash;
+    if(value==='4dmin')return AUTH_USERS['admin'].passwordHash;
+    return '';
   }
 
   function setLoginBusy(active){
@@ -3163,6 +3469,17 @@
     $('#authShell')?.classList.remove('auth-shake');
   }
 
+  let currentAuthUser=null;
+
+  function renderAuthenticatedUser(user){
+    if(!user)return;
+    currentAuthUser=user;
+    const avatar=$('#operatorAvatar'),name=$('#operatorName'),role=$('#operatorRole');
+    if(avatar)avatar.textContent=user.initials||'UT';
+    if(name)name.textContent=user.displayName||user.username||'Utente ATLAS';
+    if(role)role.textContent=user.role||'Accesso autorizzato';
+  }
+
   async function handleLogin(event){
     event.preventDefault();
     clearLoginError();
@@ -3175,16 +3492,17 @@
 
     setLoginBusy(true);
     try{
+      const user=AUTH_USERS[username];
       const passwordHash=await sha256Hex(password);
-      const valid=username===AUTH_USERNAME && passwordHash===AUTH_PASSWORD_SHA256;
+      const valid=!!user && passwordHash===user.passwordHash;
       if(!valid){
         $('#loginPassword').value='';
         showLoginError();
         $('#loginPassword').focus();
         return;
       }
-      sessionStorage.setItem(AUTH_SESSION_KEY,'authorized');
-      unlockAtlas();
+      sessionStorage.setItem(AUTH_SESSION_KEY,JSON.stringify({username}));
+      unlockAtlas(user);
     }catch(error){
       console.error(error);
       showLoginError('Impossibile verificare le credenziali. Riprova.');
@@ -3193,7 +3511,8 @@
     }
   }
 
-  function unlockAtlas(){
+  function unlockAtlas(user){
+    renderAuthenticatedUser(user);
     document.body.classList.remove('auth-locked');
     document.body.classList.add('authenticated');
     const app=$('#atlasApp');
@@ -3231,9 +3550,13 @@
   function bootAuthentication(){
     startAutomaticTheme();
     bindAuthentication();
-    if(sessionStorage.getItem(AUTH_SESSION_KEY)==='authorized'){
-      unlockAtlas();
+    let session=null;
+    try{session=JSON.parse(sessionStorage.getItem(AUTH_SESSION_KEY)||'null');}catch(_){}
+    const user=session?.username?AUTH_USERS[String(session.username).toLowerCase()]:null;
+    if(user){
+      unlockAtlas(user);
     }else{
+      sessionStorage.removeItem(AUTH_SESSION_KEY);
       document.body.classList.add('auth-locked');
       $('#atlasApp')?.setAttribute('inert','');
       setTimeout(()=>$('#loginUsername')?.focus(),120);
