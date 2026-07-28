@@ -9,12 +9,12 @@
       document.documentElement.dataset.theme = 'dark';
     })();
   </script>
-  <title>ATLAS 118 · Turnazione personale, sotto controllo · Release 1.0</title>
+  <title>ATLAS 118 · Turnazione personale, sotto controllo · Release 1.1</title>
   <link rel="icon" type="image/png" href="logo.png" />
-    <link rel="stylesheet" href="atlas/css/core.css?v=1.0" />
-  <link rel="stylesheet" href="atlas/css/auth.css?v=1.0" />
-  <link rel="stylesheet" href="atlas/css/mobile.css?v=1.0" />
-  <link rel="stylesheet" href="atlas/css/print.css?v=1.0" />
+    <link rel="stylesheet" href="atlas/css/core.css?v=1.1" />
+  <link rel="stylesheet" href="atlas/css/auth.css?v=1.1" />
+  <link rel="stylesheet" href="atlas/css/mobile.css?v=1.1" />
+  <link rel="stylesheet" href="atlas/css/print.css?v=1.1" />
 </head>
 <body class="auth-locked">
 
@@ -71,17 +71,21 @@
             </div>
             <div class="auth-caps" id="capsWarning">Blocco maiuscole attivo</div>
           </div>
-
-          <div class="auth-field">
-            <label for="loginServerUrl">Collegamento server ATLAS</label>
-            <div class="auth-input-wrap">
-              <span class="auth-field-icon">⇄</span>
-              <input class="auth-input" id="loginServerUrl" name="serverUrl" type="url"
-                     autocomplete="url" autocapitalize="none" spellcheck="false"
-                     placeholder="URL Web App Apps Script che termina in /exec" required />
+          <details class="auth-server-advanced" id="authServerAdvanced">
+            <summary>Configurazione avanzata</summary>
+            <div class="auth-server-box">
+              <label for="loginServerUrl">Collegamento server ATLAS</label>
+              <div class="auth-input-wrap">
+                <span class="auth-field-icon">⇄</span>
+                <input class="auth-input" id="loginServerUrl" name="serverUrl" type="url"
+                       autocomplete="url" autocapitalize="none" spellcheck="false"
+                       placeholder="URL Web App Apps Script che termina in /exec" />
+              </div>
+              <div class="auth-server-help">
+                Necessario solo al primo accesso su un nuovo dispositivo o per cambiare server.
+              </div>
             </div>
-            <div class="auth-caps">Viene memorizzato soltanto su questo dispositivo.</div>
-          </div>
+          </details>
 
           <div class="auth-error" id="loginError" role="alert">
             Credenziali non valide. Controlla nome utente e password.
@@ -102,10 +106,13 @@
   <div class="app" id="atlasApp" inert>
     <header class="topbar">
       <div class="brand">
+        <button class="sidebar-menu-btn" id="sidebarMenuBtn" type="button"
+                aria-label="Apri menu laterale" aria-controls="atlasSidebar"
+                aria-expanded="false" title="Apri menu laterale">☰</button>
         <div class="brand-mark"><img src="logo.png" alt="Logo ATLAS 118" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" /><span class="brand-fallback">✚</span></div>
         <div>
           <div class="brand-title">ATLAS 118</div>
-          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · Release 1.0</div><div class="brand-credit">Software sviluppato da CRI Gallarate</div>
+          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · Release 1.1</div><div class="brand-credit">Software sviluppato da CRI Gallarate</div>
         </div>
       </div>
 
@@ -166,7 +173,21 @@
     </header>
 
     <div class="shell">
-      <aside class="sidebar">
+      <aside class="sidebar" id="atlasSidebar" aria-label="Menu laterale">
+        <div class="sidebar-toolbar">
+          <div>
+            <div class="sidebar-toolbar-title">Navigazione</div>
+            <div class="sidebar-toolbar-sub">Pagine, filtri e controlli</div>
+          </div>
+          <div class="sidebar-toolbar-actions">
+            <button class="sidebar-tool-btn sidebar-pin-btn" id="sidebarPinBtn"
+                    type="button" aria-pressed="false"
+                    title="Fissa la barra laterale">⌖</button>
+            <button class="sidebar-tool-btn sidebar-close-btn" id="sidebarCloseBtn"
+                    type="button" title="Chiudi la barra laterale"
+                    aria-label="Chiudi menu laterale">×</button>
+          </div>
+        </div>
         <div class="nav-tabs">
           <button class="nav-btn active" data-view="calendarView">Calendario</button>
           <button class="nav-btn" data-view="coverageView">Coperture</button>
@@ -243,6 +264,8 @@
           </div>
         </div>
       </aside>
+      <button class="sidebar-backdrop" id="sidebarBackdrop" type="button"
+              aria-label="Chiudi menu laterale" tabindex="-1"></button>
 
       <main class="content">
         <section id="calendarView" class="view active">
@@ -299,7 +322,7 @@
           <div class="view-toolbar">
             <div><div class="view-title">Manuale operativo ATLAS 118</div><div class="view-sub">Procedure, controlli, sostituzioni e gestione della turnazione</div></div>
             <div class="toolbar-spacer"></div>
-            <a class="btn small" href="Manuale_ATLAS_118_Release_1_0.pdf" download>Scarica PDF</a>
+            <a class="btn small" href="Manuale_ATLAS_118_Release_1_1.pdf" download>Scarica PDF</a>
           </div>
           <div class="manual-scroll">
             <div class="manual-hero"><h2>ATLAS 118</h2><p>Usa il generatore come proposta iniziale, non come approvazione automatica. L’utente incaricato mantiene sempre il controllo finale: verifica gli alert, completa le coperture straordinarie note dal giorno 19 e salva il mese nel Google Sheet.</p></div>
@@ -371,7 +394,7 @@
           <div class="field full"><label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0"><input id="setRotation" type="checkbox" /> Usa rotazione A/B settimanale (settimane pari A=M, B=P; dispari B=M, A=P)</label></div>
           <div class="field full"><label>URL Web App Apps Script per login, lettura e salvataggio protetti</label><input id="setAppsScript" class="input" placeholder="https://script.google.com/macros/s/AKfycbxbNUckXrc7U9W_kRM322w2yibgJ8aOtKuoUHUJtTWwm3F-_vaB9P1bQuuxKRuTX4c/exec" /></div>
         </div>
-        <div class="notice info"><strong>Release 1.0:</strong> configurazione, stato e persistenza separati. Tema scuro permanente. La stampa A3 resta su sfondo bianco.</div>
+        <div class="notice info"><strong>Release 1.1:</strong> configurazione, stato e persistenza separati. Tema scuro permanente. La stampa A3 resta su sfondo bianco.</div>
           <div class="notice info"><strong>Collegamento protetto:</strong> usa l’URL della Web App che termina in <code>/exec</code>. La stessa connessione viene utilizzata per login, lettura e scrittura. Dopo una modifica all’URL è necessario uscire ed effettuare nuovamente l’accesso.</div>
         <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
           <button class="btn small" id="importEmployeesBtn">Ricarica Matrice + Database</button>
@@ -584,6 +607,6 @@
   <input id="fileInput" type="file" accept="application/json,.json" class="hidden" />
   <div class="toast-stack" id="toastStack"></div>
 
-  <script type="module" src="atlas/js/atlas-app.js?v=1.0"></script>
+  <script type="module" src="atlas/js/atlas-app.js?v=1.1"></script>
 </body>
 </html>
