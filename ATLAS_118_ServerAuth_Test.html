@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ATLAS 118 · Test autenticazione server</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#070d16;--panel:#0f1a29;--soft:#152438;--border:#29445e;
+      --text:#eef7ff;--muted:#92a9bc;--blue:#1599e5;--green:#18b981;
+      --red:#ef4761;--amber:#f6bd3b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:24px;font-family:Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 0,rgba(21,153,229,.18),transparent 34%),
+        linear-gradient(145deg,#050910,var(--bg));
+    }
+    .wrap{width:min(920px,100%);margin:auto}
+    .hero,.card{
+      border:1px solid var(--border);border-radius:20px;background:rgba(15,26,41,.94);
+      box-shadow:0 24px 70px rgba(0,0,0,.35)
+    }
+    .hero{padding:24px;margin-bottom:14px}
+    h1{margin:0;font-size:28px}.sub{margin-top:7px;color:var(--muted);line-height:1.55}
+    .badge{display:inline-flex;margin-bottom:12px;padding:6px 9px;border-radius:999px;
+      background:rgba(21,153,229,.12);color:#8fdcff;font-size:11px;font-weight:800}
+    .card{padding:20px;margin-top:12px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .full{grid-column:1/-1}
+    label{display:block;margin-bottom:6px;color:#a8bfd2;font-size:11px;font-weight:800}
+    input{
+      width:100%;height:46px;padding:0 13px;border:1px solid var(--border);
+      border-radius:12px;background:#091321;color:var(--text);outline:none;font-size:15px
+    }
+    input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,153,229,.11)}
+    .buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+    button{
+      min-height:42px;padding:0 14px;border:1px solid var(--border);border-radius:11px;
+      background:var(--soft);color:var(--text);font-weight:800;cursor:pointer
+    }
+    button.primary{background:linear-gradient(135deg,#0e9adc,#2563eb);border:0}
+    button.good{background:linear-gradient(135deg,#12a875,#047857);border:0}
+    button.danger{background:rgba(239,71,97,.12);color:#ffb4c0;border-color:rgba(239,71,97,.3)}
+    button:disabled{opacity:.5;cursor:wait}
+    .status{
+      margin-top:14px;padding:12px;border:1px solid var(--border);
+      border-radius:12px;background:#091321;color:var(--muted);line-height:1.55
+    }
+    .status.ok{border-color:rgba(24,185,129,.45);color:#a5f3d4}
+    .status.error{border-color:rgba(239,71,97,.5);color:#ffc0ca}
+    .result{
+      margin-top:12px;max-height:360px;overflow:auto;padding:13px;border-radius:12px;
+      background:#050a12;border:1px solid #22384d;white-space:pre-wrap;
+      font-family:Consolas,monospace;font-size:12px;line-height:1.45
+    }
+    .notice{margin-top:12px;padding:12px;border-radius:12px;border:1px solid rgba(246,189,59,.3);
+      background:rgba(246,189,59,.07);color:#f7d980;font-size:12px;line-height:1.55}
+    @media(max-width:680px){body{padding:12px}.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="badge">PASSAGGIO 4A · BACKEND AUTH TEST</div>
+      <h1>ATLAS 118 — Test autenticazione server</h1>
+      <div class="sub">
+        Verifica il nuovo Apps Script v10 senza modificare ancora la Release v5.
+        Il test controlla connessione, login, sessione, lettura protetta e logout.
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="grid">
+        <div class="full">
+          <label for="serverUrl">URL Web App Apps Script terminante in /exec</label>
+          <input id="serverUrl" autocomplete="off" placeholder="https://script.google.com/macros/s/.../exec" />
+        </div>
+        <div>
+          <label for="username">Nome utente</label>
+          <input id="username" value="Admin" autocomplete="username" />
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input id="password" value="4dmin" type="password" autocomplete="current-password" />
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button id="pingBtn">1. Test connessione</button>
+        <button class="primary" id="loginBtn">2. Login server</button>
+        <button id="sessionBtn">3. Verifica sessione</button>
+        <button class="good" id="loadBtn">4. Carica dati protetti</button>
+        <button class="danger" id="logoutBtn">5. Logout</button>
+      </div>
+
+      <div class="notice">
+        Modalità prevista: <strong>TEST</strong>. La Release v5 continua a funzionare.
+        Non attivare ancora <code>enableAtlasSecurityEnforcement()</code>.
+      </div>
+
+      <div class="status" id="status">In attesa del test.</div>
+      <div class="result" id="result">Nessun risultato.</div>
+    </section>
+  </main>
+
+  <script>
+    const $ = selector => document.querySelector(selector);
+    const URL_KEY = 'atlas-auth-test-url';
+    const TOKEN_KEY = 'atlas-auth-test-token';
+
+    $('#serverUrl').value = localStorage.getItem(URL_KEY) || '';
+
+    function serverUrl(){
+      const url = $('#serverUrl').value.trim();
+      if(!/\/exec(?:\?|$)/.test(url)){
+        throw new Error('Inserisci un URL Web App valido che termini con /exec.');
+      }
+      localStorage.setItem(URL_KEY,url);
+      return url;
+    }
+
+    function token(){
+      return sessionStorage.getItem(TOKEN_KEY) || '';
+    }
+
+    function setStatus(message,type=''){
+      const node=$('#status');
+      node.textContent=message;
+      node.className='status'+(type?' '+type:'');
+    }
+
+    function show(data){
+      const safe={...data};
+      if(safe.token){
+        safe.token=safe.token.slice(0,8)+'…'+safe.token.slice(-6);
+      }
+      if(safe.matrixCsv){
+        safe.matrixCsv=`[CSV protetto: ${safe.matrixCsv.length} caratteri]`;
+      }
+      if(safe.databaseCsv){
+        safe.databaseCsv=`[CSV protetto: ${safe.databaseCsv.length} caratteri]`;
+      }
+      $('#result').textContent=JSON.stringify(safe,null,2);
+    }
+
+    async function post(payload){
+      const response=await fetch(serverUrl(),{
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify(payload),
+        redirect:'follow'
+      });
+
+      const raw=await response.text();
+      let data;
+      try{data=JSON.parse(raw);}
+      catch(_){throw new Error('Risposta non JSON: '+raw.slice(0,200));}
+
+      if(!response.ok||!data.ok){
+        throw new Error(data.error||`Errore HTTP ${response.status}`);
+      }
+      return data;
+    }
+
+    async function run(button,fn){
+      const old=button.textContent;
+      button.disabled=true;
+      setStatus('Operazione in corso…');
+      try{
+        const data=await fn();
+        show(data);
+        setStatus('Operazione completata correttamente.','ok');
+      }catch(error){
+        console.error(error);
+        $('#result').textContent=String(error.stack||error);
+        setStatus(error.message||String(error),'error');
+      }finally{
+        button.disabled=false;
+        button.textContent=old;
+      }
+    }
+
+    $('#pingBtn').addEventListener('click',event=>run(event.currentTarget,async()=>{
+      const response=await fetch(serverUrl(),{cache:'no-store',redirect:'follow'});
+      const data=await response.json();
+      if(!data.ok)throw new Error(data.error||'Connessione non riuscita.');
+      return data;
+    }));
+
+    $('#loginBtn').addEventListener('click',event=>run(event.currentTarget,async()=>{
+      const data=await post({
+        action:'login',
+        username:$('#username').value.trim(),
+        password:$('#password').value
+      });
+      sessionStorage.setItem(TOKEN_KEY,data.token);
+      return data;
+    }));
+
+    $('#sessionBtn').addEventListener('click',event=>run(event.currentTarget,async()=>{
+      if(!token())throw new Error('Esegui prima il login server.');
+      return post({action:'session',token:token()});
+    }));
+
+    $('#loadBtn').addEventListener('click',event=>run(event.currentTarget,async()=>{
+      if(!token())throw new Error('Esegui prima il login server.');
+      return post({action:'loadData',token:token()});
+    }));
+
+    $('#logoutBtn').addEventListener('click',event=>run(event.currentTarget,async()=>{
+      if(!token()){
+        return {ok:true,message:'Nessuna sessione locale presente.'};
+      }
+      const data=await post({action:'logout',token:token()});
+      sessionStorage.removeItem(TOKEN_KEY);
+      return data;
+    }));
+  </script>
+</body>
+</html>
