@@ -9,11 +9,67 @@
       document.documentElement.dataset.theme = 'dark';
     })();
   </script>
-  <title>ATLAS 118 · Turnazione personale, sotto controllo · Release 1.3.9</title>
+  <title>ATLAS 118 · Turnazione personale, sotto controllo · Release 1.4.0</title>
+
+  <!-- Configurazione server incorporata: questo index funziona senza modificare config.js -->
+  <script type="importmap">
+{
+  "imports": {
+    "./atlas/js/config.js": "data:text/javascript;base64,Y29uc3Qgc2x1ZyA9IHZhbHVlID0+IFN0cmluZyh2YWx1ZSB8fCAnJykKICAubm9ybWFsaXplKCdORkQnKQogIC5yZXBsYWNlKC9bXHUwMzAwLVx1MDM2Zl0vZywgJycpCiAgLnRvTG93ZXJDYXNlKCkKICAucmVwbGFjZSgvW15hLXowLTldKy9nLCAnLScpCiAgLnJlcGxhY2UoL14tfC0kL2csICcnKTsKCmV4cG9ydCBjb25zdCBBVExBU19TRVJWRVJfVVJMID0gJ2h0dHBzOi8vc2NyaXB0Lmdvb2dsZS5jb20vbWFjcm9zL3MvQUtmeWNid0M2d05VUmtvNlpaZUs3eVJXOXllUFZlLTM2NkpySDRCR1FOMzhGWS1IT2JCUldQSzZGYkJPZVFtR0ozN3dTQ1hxL2V4ZWMnOwpleHBvcnQgY29uc3QgTUFUUklYX0NTVl9VUkwgPSAnJzsKZXhwb3J0IGNvbnN0IERBVEFCQVNFX0NTVl9VUkwgPSAnJzsKZXhwb3J0IGNvbnN0IEZBTExCQUNLX0VNUExPWUVFUyA9IFtdOwpleHBvcnQgY29uc3QgREVGQVVMVF9TRVRUSU5HUyA9IHsKICAgIHRhcmdldEhvdXJzOiAxNjcuMiwKICAgIG1pblJlc3Q6IDExLAogICAgc2VNaW46IDEsCiAgICBzZU1heDogMiwKICAgIHNlVGFyZ2V0OiAyLAogICAgcmVzcE1pbjogNCwKICAgIHJlc3BHb2FsOiA1LAogICAgbWF0cml4Q3N2VXJsOiBNQVRSSVhfQ1NWX1VSTCwKICAgIGRhdGFiYXNlQ3N2VXJsOiBEQVRBQkFTRV9DU1ZfVVJMLAogICAgYXBwc1NjcmlwdFVybDogQVRMQVNfU0VSVkVSX1VSTCwKICAgIGF1dG9BZG1pbjogdHJ1ZSwKICAgIGF1dG9SZXNwb25zYWJpbGk6IHRydWUsCiAgICBhdXRvU2Vjb25kYXJpOiB0cnVlLAogICAgdXNlQUJSb3RhdGlvbjogdHJ1ZSwKICAgIGFsbG93Um9BdXRvOiBmYWxzZSwKICAgIHdlZWtseVN0YW5kYXJkSG91cnM6IDM4LAogICAgd2Vla2x5TWluSG91cnM6IDI4LAogICAgd2Vla2x5TWF4SG91cnM6IDQ0LAogICAgd2Vla2x5QXZlcmFnZU1heDogNDgsCiAgICB3ZWVrbHlSZXN0SG91cnM6IDM1LAogICAgd2Vla2x5UmVzdE9jY3VycmVuY2VzMTQ6IDIsCiAgICBhbm51YWxPdmVydGltZUxpbWl0OiAxNTAsCiAgICBhbm51YWxPdmVydGltZUV4dGVuZGVkOiAyNTAsCiAgICB2YWNhdGlvbkFubnVhbEhvdXJzOiAxOTAsCiAgICBzdXBwcmVzc2VkSG9saWRheUFubnVhbEhvdXJzOiAyNiwKICAgIHBlcnNvbmFsUGVybWl0QW5udWFsSG91cnM6IDM2LAogICAgcGVyc29uYWxQZXJtaXRSZWNvdmVyeU1vbnRoczogMiwKICAgIGhvbGlkYXlSZWNvdmVyeURheXM6IDMwLAogICAgYmFua0hvdXJzTWluQmxvY2s6IDQsCiAgICBwYXRyb25Ib2xpZGF5OiAnJywKICAgIGVuZm9yY2VOb1NwbGl0RGF5OiB0cnVlLAogICAgYXV0b0NvbXBlbnNhdG9yeVJlc3REZWZhdWx0OiBmYWxzZQogIH07CmV4cG9ydCBjb25zdCBTVE9SQUdFX0tFWSA9ICdhdGxhcy0xMTgtdHVybmF6aW9uZS1wcm9kdWN0aW9uLXYxLTQtMCc7CmV4cG9ydCBjb25zdCBMRUdBQ1lfU1RPUkFHRV9LRVlTID0gWydhdGxhcy0xMTgtdHVybmF6aW9uZS1wcm9kdWN0aW9uLXYxLTMtOScsJ2F0bGFzLTExOC10dXJuYXppb25lLXByb2R1Y3Rpb24tdjEtMy04JywnYXRsYXMtMTE4LXR1cm5hemlvbmUtcHJvZHVjdGlvbi12MS0zLTcnLCdhdGxhcy0xMTgtdHVybmF6aW9uZS1wcm9kdWN0aW9uLXYxLTMtNicsJ2F0bGFzLTExOC10dXJuYXppb25lLXByb2R1Y3Rpb24tdjEtMy01JywnYXRsYXMtMTE4LXR1cm5hemlvbmUtcHJvZHVjdGlvbi12MS0zLTQnLCdhdGxhcy0xMTgtdHVybmF6aW9uZS1wcm9kdWN0aW9uLXYxLTMtMycsJ2F0bGFzLTExOC10dXJuYXppb25lLXByb2R1Y3Rpb24tdjEtMy0xJywnYXRsYXMtMTE4LXR1cm5hemlvbmUtcHJvZHVjdGlvbi12MS0zJywnYXRsYXMtMTE4LXR1cm5hemlvbmUtcHJvZHVjdGlvbi12MS0yJywnYXRsYXMtMTE4LXR1cm5hemlvbmUtcHJvZHVjdGlvbi12MS0xJywnYXRsYXMtMTE4LXR1cm5hemlvbmUtcHJvZHVjdGlvbi12MScsJ2F0bGFzLTExOC10dXJuYXppb25lLXJlbGVhc2UtdjYnLCdhdGxhcy0xMTgtdHVybmF6aW9uZS1yZWxlYXNlLXY1JywnYXRsYXMtMTE4LXR1cm5hemlvbmUtcmVsZWFzZS12NCcsJ2F0bGFzLTExOC10dXJuYXppb25lLXJlbGVhc2UtdjMnLCdhdGxhcy0xMTgtdHVybmF6aW9uZS1yZWxlYXNlLXYyJywnYXRsYXMtMTE4LXR1cm5hemlvbmUtcmVsZWFzZS12MScsJ2F0bGFzLTExOC10dXJuYXppb25lLXYxNScsJ2F0bGFzLTExOC10dXJuYXppb25lLXYxNCcsJ2F0bGFzLTExOC10dXJuYXppb25lLXYxMycsJ2F0bGFzLTExOC10dXJuYXppb25lLXYxMicsJ2F0bGFzLTExOC10dXJuYXppb25lLXYxMScsJ2F0bGFzLTExOC10dXJuYXppb25lLXYxMCcsJ2F0bGFzLTExOC10dXJuYXppb25lLXY5JywnYXRsYXMtMTE4LXR1cm5hemlvbmUtdjgnLCdhdGxhcy0xMTgtdHVybmF6aW9uZS12NycsJ2F0bGFzLTExOC10dXJuYXppb25lLXY2JywnYWVnaXMtMTE4LXR1cm5hemlvbmUtdjYnXTsKZXhwb3J0IGNvbnN0IEFQUF9WRVJTSU9OID0gMTQwOwpleHBvcnQgY29uc3QgQ09NUEFUSUJMRV9TVE9SQUdFX1ZFUlNJT05TID0gbmV3IFNldChbMSwyLDMsNCw1LDYsNyw4LDksMTAsMTEsMTIsMTMsMTQsMTUsMTAwLDExMCwxMjAsMTMwLDEzMSwxMzMsMTM0LDEzNSwxMzYsMTM3LDEzOCwxMzksMTQwXSk7CmV4cG9ydCBjb25zdCBQUk9URUNURURfU1RPUkFHRV9LRVkgPSAnYXRsYXMtMTE4LWFzc2VuemUtcGVybWFuZW50aS12MSc7CmV4cG9ydCBjb25zdCBTRVJWRVJfU0VTU0lPTl9LRVkgPSAnYXRsYXMtMTE4LXNlcnZlci1zZXNzaW9uLXYxJzsKZXhwb3J0IGNvbnN0IFNFUlZFUl9VUkxfU1RPUkFHRV9LRVkgPSAnYXRsYXMtMTE4LXNlcnZlci11cmwtdjEnOwoKCmV4cG9ydCBjb25zdCBPUEVSQVRJT05BTF9TSElGVF9DQVRBTE9HID0gT2JqZWN0LmZyZWV6ZSh7CiAgR006IHsKICAgIGxhYmVsOidHYWxsYXJhdGUgbWF0dGluYScsCiAgICBzaXRlOidHJywKICAgIHNoaWZ0OidNJywKICAgIHN0YXJ0OicwODowMCcsCiAgICBlbmQ6JzE0OjAwJywKICAgIGhvdXJzOjYsCiAgICB0YWc6J00nCiAgfSwKICBHUDogewogICAgbGFiZWw6J0dhbGxhcmF0ZSBwb21lcmlnZ2lvJywKICAgIHNpdGU6J0cnLAogICAgc2hpZnQ6J1AnLAogICAgc3RhcnQ6JzE0OjAwJywKICAgIGVuZDonMjA6MDAnLAogICAgaG91cnM6NiwKICAgIHRhZzonUCcKICB9LAogIEdOOiB7CiAgICBsYWJlbDonR2FsbGFyYXRlIG5vdHRlJywKICAgIHNpdGU6J0cnLAogICAgc2hpZnQ6J04nLAogICAgc3RhcnQ6JzIwOjAwJywKICAgIGVuZDonMDg6MDAnLAogICAgaG91cnM6MTIsCiAgICBuZXh0RGF5OnRydWUsCiAgICBuaWdodDp0cnVlLAogICAgdGFnOidOJwogIH0sCiAgR0c6IHsKICAgIGxhYmVsOidHYWxsYXJhdGUgZ2lvcm5hdGEnLAogICAgc2l0ZTonRycsCiAgICBzaGlmdDonRycsCiAgICBzdGFydDonMDg6MDAnLAogICAgZW5kOicyMDowMCcsCiAgICBob3VyczoxMiwKICAgIHRhZzonRycKICB9LAogIEdTQTogewogICAgbGFiZWw6J0dpb3JuYXRhIFNvbW1hIExvbWJhcmRvIMK3IEF1dGlzdGEnLAogICAgc2l0ZTonUycsCiAgICByb2xlOidBJywKICAgIHNoaWZ0OidHJywKICAgIHN0YXJ0OicwODowMCcsCiAgICBlbmQ6JzIwOjAwJywKICAgIGhvdXJzOjEyLAogICAgdGFnOidHJwogIH0sCiAgR1NDOiB7CiAgICBsYWJlbDonR2lvcm5hdGEgU29tbWEgTG9tYmFyZG8gwrcgQ2FwbyBlcXVpcGFnZ2lvJywKICAgIHNpdGU6J1MnLAogICAgcm9sZTonQycsCiAgICBzaGlmdDonRycsCiAgICBzdGFydDonMDg6MDAnLAogICAgZW5kOicyMDowMCcsCiAgICBob3VyczoxMiwKICAgIHRhZzonRycKICB9LAogIEdTUzogewogICAgbGFiZWw6J0dpb3JuYXRhIFNvbW1hIExvbWJhcmRvIMK3IFNvY2NvcnJpdG9yZScsCiAgICBzaXRlOidTJywKICAgIHJvbGU6J1MnLAogICAgc2hpZnQ6J0cnLAogICAgc3RhcnQ6JzA4OjAwJywKICAgIGVuZDonMjA6MDAnLAogICAgaG91cnM6MTIsCiAgICB0YWc6J0cnCiAgfSwKICBOOiB7CiAgICBsYWJlbDonTm90dGUnLAogICAgc2l0ZTonJywKICAgIHNoaWZ0OidOJywKICAgIHN0YXJ0OicyMDowMCcsCiAgICBlbmQ6JzA4OjAwJywKICAgIGhvdXJzOjEyLAogICAgbmV4dERheTp0cnVlLAogICAgbmlnaHQ6dHJ1ZSwKICAgIHRhZzonTicKICB9LAogIE5TOiB7CiAgICBsYWJlbDonTm90dGUgU29tbWEgTG9tYmFyZG8nLAogICAgc2l0ZTonUycsCiAgICBzaGlmdDonTicsCiAgICBzdGFydDonMjA6MDAnLAogICAgZW5kOicwODowMCcsCiAgICBob3VyczoxMiwKICAgIG5leHREYXk6dHJ1ZSwKICAgIG5pZ2h0OnRydWUsCiAgICB0YWc6J04nCiAgfQp9KTsKCmV4cG9ydCBjb25zdCBvcGVyYXRpb25hbFNoaWZ0TWV0YSA9IGNvZGUgPT4KICBPUEVSQVRJT05BTF9TSElGVF9DQVRBTE9HW1N0cmluZyhjb2RlIHx8ICcnKS50cmltKCkudG9VcHBlckNhc2UoKV0gfHwgbnVsbDsKCmV4cG9ydCBjb25zdCBET1cgPSBbJ2RvbScsJ2x1bicsJ21hcicsJ21lcicsJ2dpbycsJ3ZlbicsJ3NhYiddOwpleHBvcnQgY29uc3QgTU9OVEhTID0gWydnZW5uYWlvJywnZmViYnJhaW8nLCdtYXJ6bycsJ2FwcmlsZScsJ21hZ2dpbycsJ2dpdWdubycsJ2x1Z2xpbycsJ2Fnb3N0bycsJ3NldHRlbWJyZScsJ290dG9icmUnLCdub3ZlbWJyZScsJ2RpY2VtYnJlJ107CmV4cG9ydCBjb25zdCBDUkVXX1NMT1RTID0gWwogICAge2NyZXc6J0cyJyxzaXRlOidHJyxtYWNoaW5lOicyJyxyb2xlOidBJ30sIHtjcmV3OidHMicsc2l0ZTonRycsbWFjaGluZTonMicscm9sZTonQyd9LAogICAge2NyZXc6J0czJyxzaXRlOidHJyxtYWNoaW5lOiczJyxyb2xlOidBJ30sIHtjcmV3OidHMycsc2l0ZTonRycsbWFjaGluZTonMycscm9sZTonQyd9LCB7Y3JldzonRzMnLHNpdGU6J0cnLG1hY2hpbmU6JzMnLHJvbGU6J1MnfSwKICAgIHtjcmV3OidTb21tYScsc2l0ZTonUycsbWFjaGluZTonMycscm9sZTonQSd9LCB7Y3JldzonU29tbWEnLHNpdGU6J1MnLG1hY2hpbmU6JzMnLHJvbGU6J0MnfSwge2NyZXc6J1NvbW1hJyxzaXRlOidTJyxtYWNoaW5lOiczJyxyb2xlOidTJ30sCiAgICB7Y3JldzonU3VtaXJhZ28nLHNpdGU6J1NVJyxtYWNoaW5lOiczJyxyb2xlOidBJ30sIHtjcmV3OidTdW1pcmFnbycsc2l0ZTonU1UnLG1hY2hpbmU6JzMnLHJvbGU6J0MnfSwge2NyZXc6J1N1bWlyYWdvJyxzaXRlOidTVScsbWFjaGluZTonMycscm9sZTonUyd9CiAgXTsKZXhwb3J0IGNvbnN0IE9SRElOQVJZX0NSRVdfU0xPVFMgPSBDUkVXX1NMT1RTLmZpbHRlcihzbG90ID0+IHNsb3QuY3JldyE9PSdTdW1pcmFnbycpOwpleHBvcnQgY29uc3QgY3Jld1Nsb3RzRm9yRGF5U2hpZnQgPSAoZGF5LHNoaWZ0KSA9PiB7CiAgICBjb25zdCBkID0gZGF5IGluc3RhbmNlb2YgRGF0ZSA/IGRheSA6IG5ldyBEYXRlKGAke2RheX1UMDA6MDA6MDBgKTsKCiAgICAvLyBTYWJhdG8gbWF0dGluYTogR2FsbGFyYXRlIG1hY2NoaW5hIGEgMiwgR2FsbGFyYXRlIG1hY2NoaW5hIGEgMyBlIFNvbW1hLgogICAgaWYoZC5nZXREYXkoKT09PTYgJiYgc2hpZnQ9PT0nTScpewogICAgICByZXR1cm4gT1JESU5BUllfQ1JFV19TTE9UUy5maWx0ZXIoc2xvdCA9PiBbJ0cyJywnRzMnLCdTb21tYSddLmluY2x1ZGVzKHNsb3QuY3JldykpOwogICAgfQoKICAgIC8vIFNhYmF0byBwb21lcmlnZ2lvOiBHYWxsYXJhdGUgbWFjY2hpbmEgYSAyIGUgU29tbWEuCiAgICBpZihkLmdldERheSgpPT09NiAmJiBzaGlmdD09PSdQJyl7CiAgICAgIHJldHVybiBPUkRJTkFSWV9DUkVXX1NMT1RTLmZpbHRlcihzbG90ID0+IFsnRzInLCdTb21tYSddLmluY2x1ZGVzKHNsb3QuY3JldykpOwogICAgfQoKICAgIC8vIERpIG5vdHRlIGxlIHBvc3Rhemlvbmkgb3JkaW5hcmllIHNvbm8gc2VtcHJlIGEgMy4KICAgIGlmKHNoaWZ0PT09J04nKXsKICAgICAgcmV0dXJuIE9SRElOQVJZX0NSRVdfU0xPVFMuZmlsdGVyKHNsb3QgPT4gc2xvdC5jcmV3IT09J0cyJyk7CiAgICB9CgogICAgcmV0dXJuIE9SRElOQVJZX0NSRVdfU0xPVFM7CiAgfTsK"
+  }
+}
+  </script>
+  <script>
+    (() => {
+      const SERVER_URL = "https://script.google.com/macros/s/AKfycbwC6wNURko6ZZeK7yRW9yePVe-366JrH4BGQN38FY-HObBRWPK6FbBOeQmGJ37wSCXq/exec";
+
+      // Aggiorna eventuali snapshot locali creati con il precedente /exec.
+      for (let i = 0; i < localStorage.length; i += 1) {
+        const key = localStorage.key(i);
+        if (!key || !key.startsWith('atlas-118-turnazione')) continue;
+
+        try {
+          const snapshot = JSON.parse(localStorage.getItem(key) || 'null');
+          if (!snapshot || typeof snapshot !== 'object') continue;
+
+          if (snapshot.settings && typeof snapshot.settings === 'object') {
+            snapshot.settings.appsScriptUrl = SERVER_URL;
+          }
+
+          localStorage.setItem(key, JSON.stringify(snapshot));
+        } catch (_) {
+          // Un valore locale non JSON viene ignorato.
+        }
+      }
+
+      localStorage.setItem(
+        'atlas-118-server-url-v1',
+        SERVER_URL
+      );
+
+      // Mantiene la sessione, ma ne aggiorna il riferimento al nuovo server.
+      try {
+        const sessionKey = 'atlas-118-server-session-v1';
+        const session = JSON.parse(
+          sessionStorage.getItem(sessionKey) || 'null'
+        );
+
+        if (session && typeof session === 'object') {
+          session.serverUrl = SERVER_URL;
+          sessionStorage.setItem(
+            sessionKey,
+            JSON.stringify(session)
+          );
+        }
+      } catch (_) {
+        // La verifica della sessione sarà gestita normalmente da ATLAS.
+      }
+    })();
+  </script>
 
   <script>
     (() => {
-      const VERSION = '1.3.9';
+      const VERSION = '1.4.0';
 
       const FILES = {
         vertical: [
@@ -142,10 +198,10 @@
     })();
   </script>
   <link id="atlasFavicon" rel="icon" type="image/png" href="data:," />
-    <link rel="stylesheet" href="atlas/css/core.css?v=1.3.9" />
-  <link rel="stylesheet" href="atlas/css/auth.css?v=1.3.9" />
-  <link rel="stylesheet" href="atlas/css/mobile.css?v=1.3.9" />
-  <link rel="stylesheet" href="atlas/css/print.css?v=1.3.9" />
+    <link rel="stylesheet" href="atlas/css/core.css?v=1.4.0" />
+  <link rel="stylesheet" href="atlas/css/auth.css?v=1.4.0" />
+  <link rel="stylesheet" href="atlas/css/mobile.css?v=1.4.0" />
+  <link rel="stylesheet" href="atlas/css/print.css?v=1.4.0" />
 </head>
 <body class="auth-locked">
 
@@ -243,7 +299,7 @@
         </div>
         <div>
           <div class="brand-title">ATLAS 118</div>
-          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · Release 1.3.9</div><div class="brand-credit">Software sviluppato da CRI Gallarate</div>
+          <div class="brand-sub">Algoritmo Turnazioni, Logistica e Anagrafiche Sanitari · Release 1.4.0</div><div class="brand-credit">Software sviluppato da CRI Gallarate</div>
         </div>
       </div>
 
@@ -559,11 +615,11 @@
           <div class="field"><label>Blocco minimo banca ore (ore)</label><input id="setBankHoursMinBlock" class="input" type="number" step="0.5" /></div>
           <div class="field"><label>Santo patrono (MM-GG)</label><input id="setPatronHoliday" class="input" placeholder="es. 07-25" /></div>
           <div class="field full"><label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0"><input id="setNoSplitDay" type="checkbox" /> Blocca le giornate lavorative frazionate, salvo autorizzazione esplicita</label></div>
-          <div class="field full"><div class="notice info"><strong>Lettura protetta:</strong> Matrice e Database vengono caricati esclusivamente tramite la sessione Apps Script. I collegamenti CSV pubblici non sono utilizzati dalla Release 1.3.9.</div></div>
+          <div class="field full"><div class="notice info"><strong>Lettura protetta:</strong> Matrice e Database vengono caricati esclusivamente tramite la sessione Apps Script. I collegamenti CSV pubblici non sono utilizzati dalla Release 1.4.0.</div></div>
           <div class="field full"><label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0"><input id="setRotation" type="checkbox" /> Usa rotazione A/B settimanale (settimane pari A=M, B=P; dispari B=M, A=P)</label></div>
-          <div class="field full"><label>Server ATLAS preconfigurato</label><input id="setAppsScript" class="input" value="https://script.google.com/macros/s/AKfycbxbNUckXrc7U9W_kRM322w2yibgJ8aOtKuoUHUJtTWwm3F-_vaB9P1bQuuxKRuTX4c/exec" readonly aria-readonly="true" /></div>
+          <div class="field full"><label>Server ATLAS preconfigurato</label><input id="setAppsScript" class="input" value="https://script.google.com/macros/s/AKfycbwC6wNURko6ZZeK7yRW9yePVe-366JrH4BGQN38FY-HObBRWPK6FbBOeQmGJ37wSCXq/exec" readonly aria-readonly="true" /></div>
         </div>
-        <div class="notice info"><strong>Release 1.3.9:</strong> configurazione, stato e persistenza separati. Tema scuro permanente. La stampa A3 resta su sfondo bianco.</div>
+        <div class="notice info"><strong>Release 1.4.0:</strong> configurazione, stato e persistenza separati. Tema scuro permanente. La stampa A3 resta su sfondo bianco.</div>
           <div class="notice info"><strong>Collegamento protetto:</strong> il server ATLAS è configurato direttamente nel software e viene utilizzato automaticamente per login, lettura e scrittura.</div>
         <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
           <button class="btn small" id="importEmployeesBtn">Ricarica Matrice + Database</button>
@@ -710,7 +766,7 @@
           <label class="auto-option"><input id="autoResp" type="checkbox" checked /><div><strong>Pianifica responsabili</strong><span>GRO feriali, GRS feriali e 5 giornate obiettivo per GRA/GRM.</span></div></label>
           <label class="auto-option"><input id="autoSe" type="checkbox" checked /><div><strong>Porta i Secondari a 2 risorse feriali</strong><span>GRS non conta come risorsa operativa. Raschi passa a MGSE soltanto se non si raggiunge il minimo con altri dipendenti.</span></div></label>
           <label class="auto-option"><input id="autoRo" type="checkbox" /><div><strong>Consenti il RO come ultima risorsa nel 118</strong><span>Disattivato per impostazione predefinita. L’uso genera comunque un alert.</span></div></label>
-          <label class="auto-option auto-option-rc"><input id="autoRc" type="checkbox" /><div><strong>Inserisci automaticamente i riposi compensativi</strong><span>Protegge i riposi settimanali e pianifica i recuperi delle deroghe art. 27. Gli RFS vengono gestiti separatamente con una scelta dedicata del RO.</span></div></label>
+          <label class="auto-option auto-option-rc"><input id="autoRc" type="checkbox" /><div><strong>Inserisci automaticamente i riposi compensativi</strong><span>Protegge i riposi settimanali e pianifica i recuperi delle deroghe art. 27. Gli RFS vengono pianificati obbligatoriamente entro la fine del mese successivo, senza scelta di rinvio.</span></div></label>
         </div>
       </div>
       <div class="modal-foot"><button class="btn ghost" data-close="autoModal">Annulla</button><button class="btn primary" id="generateAutoBtn">Conferma e genera</button></div>
@@ -721,7 +777,7 @@
     <div class="modal rfs-modal">
       <div class="modal-head">
         <div>
-          <div class="modal-title">Recuperi festività da programmare</div>
+          <div class="modal-title">RFS obbligatori pianificati</div>
           <div class="modal-sub" id="rfsPlacementSubtitle">RFS disponibili</div>
         </div>
       </div>
@@ -746,11 +802,7 @@
         </div>
 
         <div class="notice info rfs-explanation">
-          Ogni <strong>RFS</strong> è utilizzabile dal giorno successivo alla
-          festività lavorata fino all’ultimo giorno del mese successivo.
-          ATLAS lo inserisce soltanto su una giornata già libera oppure dopo
-          aver trovato contestualmente un sostituto compatibile: non vengono
-          mai lasciati ruoli 118 o Secondari scoperti per collocare un recupero.
+          Ogni <strong>RFS</strong> deve essere fruito entro l’ultimo giorno del mese successivo alla festività lavorata. ATLAS lo prenota automaticamente: prima nel mese corrente e, se la scadenza lo consente, nel mese successivo. Un turno già assegnato viene spostato soltanto dopo aver trovato un sostituto compatibile; in caso contrario compare un rosso bloccante.
         </div>
 
         <div class="rfs-counter-table-wrap">
@@ -768,36 +820,13 @@
           </table>
         </div>
 
-        <div class="rfs-choice-grid">
-          <button class="rfs-choice current" id="rfsCurrentMonthBtn" type="button">
-            <span class="rfs-choice-icon">◉</span>
-            <span>
-              <strong>Inserisci nel mese in essere</strong>
-              <small id="rfsCurrentMonthLabel">Mese visualizzato · solo senza scoperture</small>
-            </span>
-            <span class="rfs-choice-arrow">→</span>
-          </button>
-
-          <button class="rfs-choice next" id="rfsNextMonthBtn" type="button">
-            <span class="rfs-choice-icon">↗</span>
-            <span>
-              <strong>Inserisci nel mese successivo</strong>
-              <small id="rfsNextMonthLabel">Mese successivo · entro la finestra consentita</small>
-            </span>
-            <span class="rfs-choice-arrow">→</span>
-          </button>
-
-          <button class="rfs-choice ro" id="rfsRoChoiceBtn" type="button">
-            <span class="rfs-choice-icon">RO</span>
-            <span>
-              <strong>Non inserirli automaticamente</strong>
-              <small>Restano disponibili nel contatore e saranno scelti liberamente dal RO</small>
-            </span>
-            <span class="rfs-choice-arrow">→</span>
-          </button>
+        <div class="notice success rfs-mandatory-result" id="rfsPlacementResult">
+          ATLAS sta pianificando automaticamente tutti gli RFS entro la fine del mese successivo.
         </div>
 
-        <div class="notice warning hidden" id="rfsPlacementResult"></div>
+        <div class="rfs-mandatory-actions">
+          <button class="btn primary" id="rfsCloseBtn" type="button">Chiudi e controlla le anomalie</button>
+        </div>
       </div>
     </div>
   </div>
@@ -945,6 +974,6 @@
   <input id="fileInput" type="file" accept="application/json,.json" class="hidden" />
   <div class="toast-stack" id="toastStack"></div>
 
-  <script type="module" src="atlas/js/atlas-app.js?v=1.3.9"></script>
+  <script type="module" src="atlas/js/atlas-app.js?v=1.4.0"></script>
 </body>
 </html>
