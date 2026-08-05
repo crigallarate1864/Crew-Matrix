@@ -1,0 +1,231 @@
+/* ATLAS 118 · Ripristino modulo volontari · Release 1.5.6 */
+
+.volunteer-layout-restored{
+  grid-template-columns:minmax(390px,470px) minmax(0,1fr);
+  align-items:start;
+  width:100%;
+  max-width:1500px;
+  margin:0 auto;
+}
+
+.volunteer-layout-restored .volunteer-panel{
+  min-width:0;
+  overflow:hidden;
+}
+
+.volunteer-layout-restored .volunteer-list-panel{
+  min-width:0;
+}
+
+.volunteer-simple-notice{
+  margin-bottom:14px;
+}
+
+.volunteer-role-fieldset{
+  min-width:0;
+  margin:0;
+  padding:0;
+  border:0;
+}
+
+.volunteer-role-fieldset legend{
+  margin:0 0 6px;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+
+.volunteer-direct-submit{
+  justify-content:flex-end;
+}
+
+.volunteer-direct-submit .btn{
+  min-width:210px;
+}
+
+.proposal-calendar-gate{
+  margin:4px 0 0;
+}
+
+.role-ro .volunteer-layout-restored{
+  grid-template-columns:minmax(0,1fr);
+  max-width:1250px;
+}
+
+.role-ro .volunteer-layout-restored .volunteer-list-panel{
+  grid-column:1/-1;
+}
+
+.role-admin .volunteer-layout-restored{
+  grid-template-columns:minmax(390px,470px) minmax(0,1fr);
+}
+
+.role-volunteer-scheduler .volunteer-layout-restored{
+  grid-template-columns:minmax(390px,470px) minmax(0,1fr);
+}
+
+.role-volunteer-scheduler .shell{
+  grid-template-columns:210px minmax(0,1fr);
+}
+
+.proposal-card,
+.proposal-line,
+.proposal-title,
+.proposal-meta{
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+
+@media(max-width:1050px){
+  .volunteer-layout-restored,
+  .role-admin .volunteer-layout-restored,
+  .role-ro .volunteer-layout-restored,
+  .role-volunteer-scheduler .volunteer-layout-restored{
+    grid-template-columns:minmax(0,1fr);
+    max-width:none;
+  }
+
+  .volunteer-layout-restored .volunteer-list-panel{
+    grid-column:1/-1;
+  }
+
+  .volunteer-proposal-list{
+    max-height:none;
+  }
+}
+
+@media(max-width:650px){
+  .volunteer-layout-restored{
+    padding:10px;
+  }
+
+  .volunteer-layout-restored .volunteer-panel{
+    padding:13px;
+    border-radius:14px;
+  }
+
+  .volunteer-direct-submit .btn{
+    width:100%;
+    min-width:0;
+    min-height:44px;
+  }
+
+  .volunteer-panel-head{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .volunteer-panel-head .proposal-status,
+  .volunteer-panel-head .input.compact{
+    justify-self:start;
+  }
+
+  .volunteer-panel-head .input.compact{
+    width:100%;
+  }
+
+  .proposal-head{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .proposal-head .proposal-status{
+    justify-self:start;
+  }
+
+  .proposal-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .proposal-actions .btn{
+    min-height:42px;
+  }
+}
+
+@media(max-width:420px){
+  .proposal-actions{
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* ================================================================
+ * Release 1.5.7 · Ruoli definitivi
+ * ================================================================ */
+
+/* Admin: modulo completo, form + richieste. */
+.role-admin .volunteer-layout-restored{
+  grid-template-columns:minmax(380px,460px) minmax(620px,1fr);
+  max-width:1600px;
+  width:100%;
+  margin-inline:auto;
+}
+
+/* RO: nessun form; panoramica richieste a tutta larghezza. */
+.role-ro .volunteer-layout-restored{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  max-width:1400px;
+  width:100%;
+  margin-inline:auto;
+}
+
+.role-ro .volunteer-list-panel{
+  grid-column:1/-1;
+  width:100%;
+}
+
+/* Responsabile Volontari: solo il form, centrato e largo. */
+.role-volunteer-scheduler .volunteer-layout-restored{
+  display:grid;
+  grid-template-columns:minmax(0,860px);
+  justify-content:center;
+  max-width:1100px;
+  width:100%;
+  margin-inline:auto;
+}
+
+.role-volunteer-scheduler #volunteerCreatePanel{
+  width:100%;
+}
+
+.role-volunteer-scheduler .volunteer-list-panel{
+  display:none!important;
+}
+
+/* Il RO non può mai vedere il pannello di inserimento. */
+.role-ro #volunteerCreatePanel{
+  display:none!important;
+}
+
+/* Pannelli leggibili su PC. */
+.volunteer-layout-restored .volunteer-panel{
+  min-width:0;
+}
+
+.volunteer-layout-restored .volunteer-proposal-list{
+  width:100%;
+}
+
+.proposal-actions:has(.btn:only-child){
+  grid-template-columns:minmax(180px,320px);
+  justify-content:end;
+}
+
+@media(max-width:1180px){
+  .role-admin .volunteer-layout-restored{
+    grid-template-columns:minmax(340px,420px) minmax(0,1fr);
+  }
+}
+
+@media(max-width:980px){
+  .role-admin .volunteer-layout-restored,
+  .role-ro .volunteer-layout-restored,
+  .role-volunteer-scheduler .volunteer-layout-restored{
+    grid-template-columns:minmax(0,1fr);
+    max-width:none;
+  }
+}
