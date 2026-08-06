@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>ATLAS 118 · Calendario richieste volontari</title>
+  <link rel="icon" type="image/svg+xml" href="atlas/assets/atlas-favicon.svg">
+  <link rel="preload" href="atlas/assets/atlas-logo-header.svg" as="image" type="image/svg+xml">
+  <link rel="stylesheet" href="portal/css/common.css?v=2.3.0">
+  <link rel="stylesheet" href="portal/css/volontari.css?v=2.3.0">
+</head>
+<body class="vol-page">
+  <header class="portal-header">
+    <div class="portal-brand">
+      <img src="atlas/assets/atlas-logo-header.svg"
+           width="420" height="92" alt="ATLAS 118">
+      <div class="portal-brand-copy">
+        <strong>Calendario richieste volontari</strong>
+        <span>Compila il mese, controlla il riepilogo e invia al RO</span>
+      </div>
+    </div>
+
+    <div class="portal-user">
+      <div class="portal-user-copy">
+        <strong id="userName">Verifica accesso…</strong>
+        <span>Referente Volontari</span>
+      </div>
+      <button class="portal-btn" id="logoutButton" type="button">Esci</button>
+    </div>
+  </header>
+
+  <main class="calendar-main" id="pageContent" hidden>
+    <section class="calendar-toolbar">
+      <div>
+        <span class="calendar-eyebrow">Programmazione mensile</span>
+        <h1>Seleziona un giorno e inserisci le richieste</h1>
+        <p>
+          Ogni casella può contenere più richieste e più turni.
+          Il lavoro resta in bozza finché non apri il riepilogo finale
+          e confermi l’invio al Responsabile Operativo.
+        </p>
+      </div>
+
+      <div class="month-navigation">
+        <button class="portal-btn month-arrow"
+                id="previousMonthButton"
+                type="button"
+                aria-label="Mese precedente">‹</button>
+
+        <label class="month-control" for="month">
+          <span>Mese</span>
+          <input id="month" type="month">
+        </label>
+
+        <button class="portal-btn month-arrow"
+                id="nextMonthButton"
+                type="button"
+                aria-label="Mese successivo">›</button>
+      </div>
+    </section>
+
+    <section class="calendar-status-bar">
+      <div class="status-stat">
+        <span>Richieste aggiunte</span>
+        <strong id="requestCount">0</strong>
+      </div>
+      <div class="status-stat">
+        <span>Giornate compilate</span>
+        <strong id="dayCount">0</strong>
+      </div>
+      <div class="status-stat">
+        <span>Moduli in sospeso</span>
+        <strong id="pendingDraftCount">0</strong>
+      </div>
+      <div class="status-stat status-wide">
+        <span>Salvataggio automatico</span>
+        <strong id="draftStatus">Attivo</strong>
+      </div>
+      <button class="portal-btn danger"
+              id="clearDraftButton"
+              type="button"
+              disabled>Svuota mese</button>
+      <button class="portal-btn primary review-button"
+              id="openReviewButton"
+              type="button"
+              disabled>Riepilogo finale</button>
+    </section>
+
+    <div class="autosave-banner">
+      <span class="autosave-dot"></span>
+      <div>
+        <strong>Salvataggio automatico attivo</strong>
+        <p>
+          ATLAS salva nel browser richieste, modifiche e moduli ancora
+          in compilazione. La mail non parte finché non confermi dal riepilogo finale.
+        </p>
+      </div>
+    </div>
+
+    <div class="calendar-workspace">
+      <section class="calendar-card">
+        <div class="week-header" aria-hidden="true">
+          <span>Lunedì</span>
+          <span>Martedì</span>
+          <span>Mercoledì</span>
+          <span>Giovedì</span>
+          <span>Venerdì</span>
+          <span>Sabato</span>
+          <span>Domenica</span>
+        </div>
+
+        <div class="month-grid" id="monthGrid"></div>
+      </section>
+
+      <aside class="month-summary-card">
+        <div class="summary-heading">
+          <div>
+            <span class="calendar-eyebrow">Riepilogo</span>
+            <h2 id="summaryMonth">Mese</h2>
+          </div>
+          <span class="summary-count" id="summaryCount">0</span>
+        </div>
+
+        <div class="summary-help">
+          Clicca una giornata del calendario per aggiungere, modificare
+          o eliminare le richieste.
+        </div>
+
+        <div class="month-request-list" id="monthRequestList"></div>
+
+        <div class="summary-empty" id="summaryEmpty">
+          <span>＋</span>
+          <strong>Nessuna richiesta inserita</strong>
+          <p>Seleziona un giorno del calendario per iniziare.</p>
+        </div>
+
+        <div class="summary-result" id="result"></div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="portal-loading" id="loading">
+    Verifica autorizzazione…
+  </div>
+
+  <div class="day-modal-backdrop" id="dayModal" hidden>
+    <section class="day-modal"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="dayModalTitle">
+
+      <header class="day-modal-header">
+        <div>
+          <span class="calendar-eyebrow">Giornata selezionata</span>
+          <h2 id="dayModalTitle">Data</h2>
+          <p id="dayModalSubtitle">Inserisci una o più richieste.</p>
+        </div>
+        <button class="modal-close"
+                id="closeModalButton"
+                type="button"
+                aria-label="Chiudi">×</button>
+      </header>
+
+      <div class="day-modal-body">
+        <section class="day-existing-section">
+          <div class="modal-section-title">
+            <span>Richieste già inserite</span>
+            <strong id="selectedDayCount">0</strong>
+          </div>
+
+          <div class="day-request-list" id="dayRequestList"></div>
+
+          <div class="day-empty" id="dayEmpty">
+            Nessuna richiesta presente in questa giornata.
+          </div>
+        </section>
+
+        <section class="request-form-section">
+          <div class="modal-section-title">
+            <span id="formTitle">Nuova richiesta</span>
+            <em id="formAutosaveState">Modulo salvato automaticamente</em>
+          </div>
+
+          <form id="requestForm">
+            <div class="request-form-grid">
+              <div class="form-field">
+                <label for="shift">Turno</label>
+                <select id="shift">
+                  <option value="M">Mattina</option>
+                  <option value="P">Pomeriggio</option>
+                  <option value="N">Notte</option>
+                  <option value="CUSTOM">Orario personalizzato</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="site">Sede</label>
+                <select id="site">
+                  <option value="G">Gallarate</option>
+                  <option value="S">Somma Lombardo</option>
+                  <option value="SU">Sumirago</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="start">Ora inizio</label>
+                <input id="start" type="time" required>
+              </div>
+
+              <div class="form-field">
+                <label for="end">Ora fine</label>
+                <input id="end" type="time" required>
+              </div>
+
+              <div class="form-field">
+                <label for="machine">Equipaggio</label>
+                <select id="machine">
+                  <option value="2">Mezzo a 2</option>
+                  <option value="3" selected>Mezzo a 3</option>
+                </select>
+              </div>
+
+              <fieldset class="form-field roles-field">
+                <legend>Ruoli mancanti</legend>
+                <div class="roles-grid">
+                  <label>
+                    <input id="roleA" type="checkbox" value="A">
+                    <span>Autista</span>
+                  </label>
+                  <label>
+                    <input id="roleC" type="checkbox" value="C">
+                    <span>Capo equipaggio</span>
+                  </label>
+                  <label>
+                    <input id="roleS" type="checkbox" value="S">
+                    <span>Soccorritore</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="form-field note-field">
+                <label for="note">Nota</label>
+                <textarea id="note"
+                          rows="3"
+                          placeholder="Informazioni utili per il Responsabile Operativo"></textarea>
+              </div>
+            </div>
+
+            <div class="form-message" id="formMessage"></div>
+
+            <div class="request-form-actions">
+              <button class="portal-btn"
+                      id="discardFormDraftButton"
+                      type="button">Scarta modulo</button>
+              <button class="portal-btn"
+                      id="resetFormButton"
+                      type="button">Pulisci campi</button>
+              <button class="portal-btn primary"
+                      id="saveRequestButton"
+                      type="submit">Aggiungi richiesta</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <footer class="day-modal-footer">
+        <span>
+          Puoi chiudere la finestra: anche il modulo non ancora aggiunto
+          resta salvato automaticamente.
+        </span>
+        <button class="portal-btn"
+                id="finishDayButton"
+                type="button">Fine giornata</button>
+      </footer>
+    </section>
+  </div>
+
+
+  <div class="review-modal-backdrop" id="reviewModal" hidden>
+    <section class="review-modal" role="dialog" aria-modal="true" aria-labelledby="reviewTitle">
+      <header class="review-header">
+        <div>
+          <span class="calendar-eyebrow">Controllo prima dell’invio</span>
+          <h2 id="reviewTitle">Riepilogo finale</h2>
+          <p>Verifica tutte le richieste del mese. Puoi ancora modificarle, duplicarle o eliminarle.</p>
+        </div>
+        <button class="modal-close" id="closeReviewButton" type="button" aria-label="Chiudi">×</button>
+      </header>
+
+      <div class="review-summary-bar">
+        <div><span>Mese</span><strong id="reviewMonth">—</strong></div>
+        <div><span>Richieste</span><strong id="reviewRequestCount">0</strong></div>
+        <div><span>Giornate</span><strong id="reviewDayCount">0</strong></div>
+        <div><span>Moduli da completare</span><strong id="reviewPendingCount">0</strong></div>
+      </div>
+
+      <div class="pending-drafts-warning" id="pendingDraftWarning" hidden>
+        <div>
+          <strong>Esistono moduli ancora in compilazione.</strong>
+          <p>Completa o elimina questi moduli prima di inviare definitivamente.</p>
+        </div>
+        <div class="pending-draft-list" id="pendingDraftList"></div>
+      </div>
+
+      <div class="review-body">
+        <div class="review-list" id="reviewList"></div>
+        <div class="review-empty" id="reviewEmpty">Nessuna richiesta disponibile.</div>
+      </div>
+
+      <footer class="review-footer">
+        <div class="review-footer-copy">
+          <strong>Nessuna mail è stata ancora inviata.</strong>
+          <span>L’invio definitivo salva tutte le righe nel foglio e manda un’unica mail riepilogativa al Responsabile Operativo.</span>
+        </div>
+        <div class="review-footer-actions">
+          <button class="portal-btn" id="backToCalendarButton" type="button">Torna al calendario</button>
+          <button class="portal-btn primary final-send-button" id="finalSendButton" type="button" disabled>Invia definitivamente al RO</button>
+        </div>
+      </footer>
+      <div class="review-result" id="reviewResult"></div>
+    </section>
+  </div>
+
+  <script type="module" src="portal/js/volontari.js?v=2.3.0"></script>
+</body>
+</html>
