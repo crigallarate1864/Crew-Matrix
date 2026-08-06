@@ -1,6 +1,6 @@
 
 export const ATLAS_SERVER_URL =
-  'https://script.google.com/macros/s/AKfycbwC6wNURko6ZZeK7yRW9yePVe-366JrH4BGQN38FY-HObBRWPK6FbBOeQmGJ37wSCXq/exec';
+  'https://script.google.com/macros/s/AKfycbwF1cBzD7r_DUKJwDlKpq4K_ANAiwj2m4q089XNvwoFdP6bNTMp1yIc4C6JuiQffU-c/exec';
 
 export const SESSION_KEY='atlas-118-v2-session';
 
