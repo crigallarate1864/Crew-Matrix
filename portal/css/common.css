@@ -1,0 +1,56 @@
+
+:root{
+  color-scheme:dark;
+  --bg:#06131d;
+  --panel:#0b2231;
+  --panel-2:#0e2a3b;
+  --line:rgba(145,188,214,.16);
+  --text:#edf8fc;
+  --muted:#91a9b7;
+  --accent:#39c7ea;
+  --accent-2:#2563eb;
+  --danger:#fb7185;
+  --success:#6ee7b7;
+  --warning:#fbbf24;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+body{min-height:100vh;background:
+  radial-gradient(circle at 15% 0,rgba(14,165,233,.12),transparent 32rem),
+  radial-gradient(circle at 100% 15%,rgba(37,99,235,.10),transparent 36rem),
+  var(--bg)}
+button,input,select,textarea{font:inherit}
+.hidden{display:none!important}
+.portal-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  min-height:72px;padding:12px 22px;border-bottom:1px solid var(--line);
+  background:rgba(4,16,24,.90);backdrop-filter:blur(18px);position:sticky;top:0;z-index:50
+}
+.portal-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.portal-brand img{width:170px;height:auto;display:block}
+.portal-brand-copy strong{display:block;font-size:16px}
+.portal-brand-copy span{display:block;margin-top:3px;color:var(--muted);font-size:11px}
+.portal-user{display:flex;align-items:center;gap:9px}
+.portal-user-copy{text-align:right}
+.portal-user-copy strong,.portal-user-copy span{display:block}
+.portal-user-copy strong{font-size:11px}
+.portal-user-copy span{color:var(--muted);font-size:9px;margin-top:2px}
+.portal-btn{
+  border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.035);
+  color:var(--text);min-height:38px;padding:8px 12px;cursor:pointer
+}
+.portal-btn.primary{border-color:transparent;background:linear-gradient(135deg,#0891b2,#2563eb)}
+.portal-btn.danger{border-color:rgba(251,113,133,.25);color:#ffd7de;background:rgba(251,113,133,.07)}
+.portal-btn:disabled{opacity:.45;cursor:not-allowed}
+.notice{padding:12px 14px;border-radius:12px;border:1px solid var(--line);font-size:11px;line-height:1.5}
+.notice.info{background:rgba(56,189,248,.055);border-color:rgba(56,189,248,.18)}
+.notice.success{background:rgba(52,211,153,.055);border-color:rgba(52,211,153,.18)}
+.notice.warning{background:rgba(251,191,36,.055);border-color:rgba(251,191,36,.18)}
+.notice.danger{background:rgba(251,113,133,.055);border-color:rgba(251,113,133,.18)}
+.portal-loading{display:grid;place-items:center;min-height:220px;color:var(--muted)}
+@media(max-width:680px){
+  .portal-header{padding:10px 12px;min-height:62px}
+  .portal-brand img{width:126px}
+  .portal-brand-copy{display:none}
+  .portal-user-copy{display:none}
+}

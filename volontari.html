@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>ATLAS 118 · Richieste mensili volontari</title>
+  <link rel="icon" type="image/svg+xml" href="atlas/assets/atlas-favicon.svg">
+  <link rel="preload" href="atlas/assets/atlas-logo-header.svg" as="image" type="image/svg+xml">
+  <link rel="stylesheet" href="portal/css/common.css?v=2.1.0">
+  <link rel="stylesheet" href="portal/css/volontari.css?v=2.1.0">
+</head>
+<body class="vol-page">
+  <header class="portal-header">
+    <div class="portal-brand">
+      <img src="atlas/assets/atlas-logo-header.svg" width="420" height="92" alt="ATLAS 118">
+      <div class="portal-brand-copy">
+        <strong>Richieste copertura volontari</strong>
+        <span>Programmazione mensile</span>
+      </div>
+    </div>
+    <div class="portal-user">
+      <div class="portal-user-copy">
+        <strong id="userName">Verifica accesso…</strong>
+        <span>Referente Volontari</span>
+      </div>
+      <button class="portal-btn" id="logoutButton" type="button">Esci</button>
+    </div>
+  </header>
+
+  <main class="vol-main monthly-main" id="pageContent" hidden>
+    <section class="monthly-hero">
+      <div>
+        <span class="monthly-eyebrow">Programmazione mensile</span>
+        <h1>Prepara tutte le richieste e inviale insieme</h1>
+        <p>
+          Puoi inserire una singola data, un intervallo o l’intero mese.
+          Ogni richiesta resta modificabile fino all’invio definitivo.
+        </p>
+      </div>
+
+      <div class="month-picker-wrap">
+        <label for="month">Mese di riferimento</label>
+        <input id="month" type="month">
+      </div>
+    </section>
+
+    <div class="monthly-layout">
+      <section class="vol-card request-builder">
+        <div class="card-heading">
+          <div>
+            <span class="step-badge">1</span>
+            <h2>Crea le richieste</h2>
+            <p>Scegli date, turni, sede, equipaggio e ruoli mancanti.</p>
+          </div>
+          <span class="draft-state" id="draftState">Bozza vuota</span>
+        </div>
+
+        <div class="builder-section">
+          <div class="section-title">Date da inserire</div>
+
+          <div class="mode-tabs" role="tablist">
+            <button class="mode-tab active" type="button" data-mode="single">Singola data</button>
+            <button class="mode-tab" type="button" data-mode="range">Più giorni</button>
+            <button class="mode-tab" type="button" data-mode="month">Tutto il mese</button>
+          </div>
+
+          <div class="date-mode-panel active" data-mode-panel="single">
+            <div class="vol-field">
+              <label for="singleDay">Data</label>
+              <input id="singleDay" type="date">
+            </div>
+          </div>
+
+          <div class="date-mode-panel" data-mode-panel="range">
+            <div class="vol-grid compact-grid">
+              <div class="vol-field">
+                <label for="rangeStart">Dal</label>
+                <input id="rangeStart" type="date">
+              </div>
+              <div class="vol-field">
+                <label for="rangeEnd">Al</label>
+                <input id="rangeEnd" type="date">
+              </div>
+            </div>
+          </div>
+
+          <div class="date-mode-panel" data-mode-panel="month">
+            <div class="notice info">
+              Verranno utilizzati tutti i giorni del mese selezionato,
+              limitati ai giorni della settimana scelti sotto.
+            </div>
+          </div>
+
+          <fieldset class="weekday-field">
+            <legend>Giorni della settimana</legend>
+            <div class="weekday-grid">
+              <label><input type="checkbox" data-weekday="1" checked><span>Lun</span></label>
+              <label><input type="checkbox" data-weekday="2" checked><span>Mar</span></label>
+              <label><input type="checkbox" data-weekday="3" checked><span>Mer</span></label>
+              <label><input type="checkbox" data-weekday="4" checked><span>Gio</span></label>
+              <label><input type="checkbox" data-weekday="5" checked><span>Ven</span></label>
+              <label><input type="checkbox" data-weekday="6" checked><span>Sab</span></label>
+              <label><input type="checkbox" data-weekday="0" checked><span>Dom</span></label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="builder-section">
+          <div class="section-title">Turni da richiedere</div>
+
+          <div class="shift-grid">
+            <label class="shift-option">
+              <input type="checkbox" data-shift="M" checked>
+              <span class="shift-icon">M</span>
+              <span><strong>Mattina</strong><small>Orario automatico</small></span>
+            </label>
+
+            <label class="shift-option">
+              <input type="checkbox" data-shift="P">
+              <span class="shift-icon">P</span>
+              <span><strong>Pomeriggio</strong><small>Orario automatico</small></span>
+            </label>
+
+            <label class="shift-option">
+              <input type="checkbox" data-shift="N">
+              <span class="shift-icon">N</span>
+              <span><strong>Notte</strong><small>Orario automatico</small></span>
+            </label>
+
+            <label class="shift-option">
+              <input type="checkbox" data-shift="CUSTOM">
+              <span class="shift-icon">C</span>
+              <span><strong>Personalizzato</strong><small>Inserisci gli orari</small></span>
+            </label>
+          </div>
+
+          <div class="custom-times" id="customTimes" hidden>
+            <div class="vol-grid compact-grid">
+              <div class="vol-field">
+                <label for="customStart">Ora inizio</label>
+                <input id="customStart" type="time">
+              </div>
+              <div class="vol-field">
+                <label for="customEnd">Ora fine</label>
+                <input id="customEnd" type="time">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="builder-section">
+          <div class="section-title">Dettagli della copertura</div>
+
+          <div class="vol-grid">
+            <div class="vol-field">
+              <label for="site">Sede</label>
+              <select id="site">
+                <option value="G">Gallarate</option>
+                <option value="S">Somma Lombardo</option>
+                <option value="SU">Sumirago</option>
+              </select>
+            </div>
+
+            <div class="vol-field">
+              <label for="machine">Equipaggio</label>
+              <select id="machine">
+                <option value="2">Mezzo a 2</option>
+                <option value="3" selected>Mezzo a 3</option>
+              </select>
+            </div>
+
+            <fieldset class="vol-field vol-roles">
+              <legend>Ruoli mancanti</legend>
+              <div class="vol-role-options">
+                <label><input id="roleA" type="checkbox" value="A"><span>Autista</span></label>
+                <label><input id="roleC" type="checkbox" value="C"><span>Capo equipaggio</span></label>
+                <label><input id="roleS" type="checkbox" value="S"><span>Soccorritore</span></label>
+              </div>
+            </fieldset>
+
+            <div class="vol-field full">
+              <label for="note">Nota comune</label>
+              <textarea id="note" placeholder="Informazioni utili per il Responsabile Operativo"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="builder-actions">
+          <button class="portal-btn" id="resetFormButton" type="button">Pulisci campi</button>
+          <button class="portal-btn primary" id="addButton" type="button">Aggiungi alla lista</button>
+        </div>
+
+        <div class="vol-result" id="builderResult"></div>
+      </section>
+
+      <section class="vol-card request-list-card">
+        <div class="card-heading list-heading">
+          <div>
+            <span class="step-badge">2</span>
+            <h2>Richieste da inviare</h2>
+            <p>Controlla, modifica o elimina ogni riga prima dell’invio.</p>
+          </div>
+          <div class="list-summary">
+            <strong id="requestCount">0</strong>
+            <span>richieste</span>
+          </div>
+        </div>
+
+        <div class="monthly-stats">
+          <div><span>Giornate</span><strong id="dayCount">0</strong></div>
+          <div><span>Mese</span><strong id="monthLabel">—</strong></div>
+          <div><span>Ultimo salvataggio</span><strong id="savedAt">Mai</strong></div>
+        </div>
+
+        <div class="request-list" id="requestList"></div>
+
+        <div class="empty-list" id="emptyList">
+          <span>＋</span>
+          <strong>Nessuna richiesta in bozza</strong>
+          <p>Compila il modulo a sinistra e aggiungi una o più richieste.</p>
+        </div>
+
+        <div class="final-actions">
+          <button class="portal-btn" id="saveDraftButton" type="button">Salva bozza</button>
+          <button class="portal-btn danger" id="clearDraftButton" type="button">Svuota lista</button>
+          <button class="portal-btn primary send-all-button" id="sendButton" type="button">
+            Salva e invia tutto al RO
+          </button>
+        </div>
+
+        <div class="vol-result" id="result"></div>
+      </section>
+    </div>
+  </main>
+
+  <div class="portal-loading" id="loading">Verifica autorizzazione…</div>
+  <script type="module" src="portal/js/volontari.js?v=2.1.0"></script>
+</body>
+</html>
