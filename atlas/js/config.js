@@ -5,7 +5,7 @@ const slug = value => String(value || '')
   .replace(/[^a-z0-9]+/g, '-')
   .replace(/^-|-$/g, '');
 
-export const ATLAS_SERVER_URL = 'https://script.google.com/macros/s/AKfycbwC6wNURko6ZZeK7yRW9yePVe-366JrH4BGQN38FY-HObBRWPK6FbBOeQmGJ37wSCXq/exec';
+export const ATLAS_SERVER_URL = 'https://script.google.com/macros/s/AKfycbwF1cBzD7r_DUKJwDlKpq4K_ANAiwj2m4q089XNvwoFdP6bNTMp1yIc4C6JuiQffU-c/exec';
 export const MATRIX_CSV_URL = '';
 export const DATABASE_CSV_URL = '';
 export const FALLBACK_EMPLOYEES = [];
