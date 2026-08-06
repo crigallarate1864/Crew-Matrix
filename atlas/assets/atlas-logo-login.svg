@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="t d">
+<title id="t">ATLAS 118</title><desc id="d">Identità grafica leggera ATLAS 118 CRI Gallarate</desc>
+<rect width="240" height="240" rx="42" fill="#fff"/>
+<circle cx="120" cy="76" r="48" fill="#fff" stroke="#e5edf2" stroke-width="4"/>
+<path d="M109 42h22v23h23v22h-23v23h-22V87H86V65h23z" fill="#d9273f"/>
+<text x="120" y="153" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="29" font-weight="800" fill="#102b3b">ATLAS 118</text>
+<text x="120" y="181" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" letter-spacing="1.2" fill="#d9273f">CRI GALLARATE</text>
+<text x="120" y="205" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="10" fill="#607785">TURNI DIPENDENTI</text>
+</svg>
