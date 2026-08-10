@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>ATLAS 118 · Equipaggi</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#061118;
+      --panel:#0a1a23;
+      --panel-2:#0d212c;
+      --line:#183745;
+      --line-soft:rgba(91,141,164,.18);
+      --text:#f1f6f8;
+      --muted:#7894a2;
+      --muted-2:#56727f;
+      --red:#d62c3f;
+      --green:#55c692;
+      --amber:#d4a653;
+      --blue:#4e9fc0;
+    }
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",Arial,sans-serif}
+    body{
+      background:
+        linear-gradient(rgba(255,255,255,.013) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.013) 1px,transparent 1px),
+        radial-gradient(circle at 90% 0,rgba(52,99,120,.10),transparent 35%),
+        #061118;
+      background-size:48px 48px,48px 48px,auto,auto;
+    }
+    .screen{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:16px;padding:24px 28px 18px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:28px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:15px;min-width:0}
+    .cri-mark{width:48px;height:48px;border:1px solid rgba(214,44,63,.46);border-radius:13px;background:#fff;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.22)}
+    .cri-cross{position:relative;width:25px;height:25px}
+    .cri-cross::before,.cri-cross::after{content:"";position:absolute;background:var(--red);border-radius:1px}
+    .cri-cross::before{left:8px;top:0;width:9px;height:25px}.cri-cross::after{left:0;top:8px;width:25px;height:9px}
+    .brand-copy{display:grid;gap:2px}
+    .atlas{font-size:31px;line-height:1;font-weight:900;letter-spacing:-.035em}.atlas span{color:var(--red)}
+    .section-name{font-size:11px;font-weight:750;letter-spacing:.15em;color:var(--muted)}
+    .datetime{text-align:right;display:grid;gap:3px}
+    .date{font-size:16px;font-weight:800;color:#dfe8ec;text-transform:capitalize}.clock{font-size:27px;font-weight:900;letter-spacing:-.03em}.local{font-size:9px;color:var(--muted);letter-spacing:.12em}
+    .board{min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .board.has-night{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .shift-column{min-width:0;min-height:0;display:grid;grid-template-rows:auto 1fr;border:1px solid var(--line);border-radius:17px;background:rgba(8,27,37,.86);overflow:hidden;box-shadow:0 18px 42px rgba(0,0,0,.18)}
+    .shift-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 17px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.018)}
+    .shift-title{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:900;letter-spacing:.015em}.shift-dot{width:8px;height:8px;border-radius:50%;background:var(--blue)}
+    .shift-column[data-shift="P"] .shift-dot{background:var(--amber)}.shift-column[data-shift="N"] .shift-dot{background:#788dbd}
+    .shift-time{font-size:11px;font-weight:750;color:var(--muted)}
+    .crew-list{min-height:0;display:grid;align-content:start;gap:10px;padding:11px;overflow:hidden}
+    .crew-card{display:grid;grid-template-columns:112px minmax(0,1fr);min-height:124px;border:1px solid var(--line-soft);border-radius:14px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.012));overflow:hidden}
+    .vehicle{position:relative;display:grid;place-items:center;padding:9px;border-right:1px solid var(--line-soft);background:linear-gradient(150deg,#102b38,#0a202b)}
+    .vehicle::after{content:"";position:absolute;left:16%;right:16%;bottom:17px;height:7px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(4px)}
+    .ambulance-svg{position:relative;z-index:1;width:100%;height:auto;filter:drop-shadow(0 8px 8px rgba(0,0,0,.24))}
+    .crew-body{min-width:0;display:grid;grid-template-rows:auto 1fr;padding:11px 12px 10px}
+    .crew-meta{display:flex;align-items:baseline;justify-content:space-between;gap:9px;padding-bottom:8px;border-bottom:1px solid rgba(91,141,164,.12)}
+    .crew-location{font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.crew-machine{font-size:10px;color:var(--muted);font-weight:750;white-space:nowrap}
+    .roles{display:grid;align-content:center;gap:5px;padding-top:7px}
+    .role-row{display:grid;grid-template-columns:31px minmax(0,1fr);align-items:center;gap:8px;min-height:27px}.role-badge{height:25px;display:grid;place-items:center;border-radius:7px;background:#173846;color:#d9e8ee;font-size:12px;font-weight:950}.role-badge.role-A{background:#164a3b;color:#b9efd7}.role-badge.role-C{background:#173f57;color:#bde4f4}.role-badge.role-S{background:#4b2730;color:#ffcbd1}
+    .role-name{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.role-name.vacant{color:#c6848d;font-weight:750}
+    .empty-shift{height:100%;display:grid;place-items:center;padding:30px;color:var(--muted);font-size:13px;text-align:center}
+    .footer{display:flex;justify-content:space-between;align-items:center;gap:18px;min-height:31px;padding-top:11px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}
+    .connection{display:flex;align-items:center;gap:8px}.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px rgba(85,198,146,.32)}.status-dot.error{background:var(--red);box-shadow:none}.status-dot.loading{background:var(--amber);box-shadow:none}
+    .footer-right{font-weight:750;letter-spacing:.05em;color:#718d9a}
+    @media(max-width:1200px){.screen{padding:18px;gap:11px}.topbar{padding-bottom:11px}.atlas{font-size:26px}.board,.board.has-night{gap:10px}.crew-card{grid-template-columns:86px minmax(0,1fr);min-height:103px}.role-name{font-size:11px}.crew-location{font-size:11px}.shift-title{font-size:15px}}
+  </style>
+</head>
+<body>
+  <main class="screen">
+    <header class="topbar">
+      <div class="brand">
+        <div class="cri-mark" aria-hidden="true"><div class="cri-cross"></div></div>
+        <div class="brand-copy">
+          <div class="atlas">ATLAS <span>118</span></div>
+          <div class="section-name">EQUIPAGGI OPERATIVI · CRI GALLARATE</div>
+        </div>
+      </div>
+      <div class="datetime">
+        <div class="date" id="date">—</div>
+        <div class="clock" id="clock">--:--</div>
+        <div class="local">ORA LOCALE</div>
+      </div>
+    </header>
+
+    <section class="board" id="board"></section>
+
+    <footer class="footer">
+      <div class="connection">
+        <span class="status-dot loading" id="statusDot"></span>
+        <span id="statusText">Connessione ai dati ATLAS…</span>
+      </div>
+      <div class="footer-right">ATLAS 118 · SOLA VISUALIZZAZIONE</div>
+    </footer>
+  </main>
+
+<script>
+(() => {
+  'use strict';
+
+  const SERVER_URL='https://script.google.com/macros/s/AKfycbxbNUckXrc7U9W_kRM322w2yibgJ8aOtKuoUHUJtTWwm3F-_vaB9P1bQuuxKRuTX4c/exec';
+  const REFRESH_MS=60000;
+  const CALLBACK='atlasTvCallback';
+  const CACHE_KEY='atlas118-tv-cache-jsonp-v1';
+  const shifts=[
+    {id:'M',label:'MATTINA',fallback:'06:00 — 13:30'},
+    {id:'P',label:'POMERIGGIO',fallback:'13:00 — 20:30'},
+    {id:'N',label:'NOTTE',fallback:'20:30 — 06:00'}
+  ];
+
+  let state={day:'',assignments:[],source:'loading',updatedAt:null,error:''};
+  let loadTimer=null;
+
+  const $=s=>document.querySelector(s);
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const pad=n=>String(n).padStart(2,'0');
+
+  function ambulanceSvg(){
+    return `
+      <svg class="ambulance-svg" viewBox="0 0 170 98" aria-hidden="true">
+        <defs>
+          <linearGradient id="vanBody" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#dfe6e9"/><stop offset="1" stop-color="#aebbc1"/>
+          </linearGradient>
+          <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#274758"/><stop offset="1" stop-color="#102b39"/>
+          </linearGradient>
+        </defs>
+        <path d="M19 35h83c8 0 13 3 18 10l13 17h15c6 0 10 4 10 10v10H12V46c0-7 3-11 7-11z" fill="url(#vanBody)" stroke="#71868f" stroke-width="1.2"/>
+        <path d="M100 40h14c4 0 8 2 11 7l9 14h-34z" fill="url(#glass)"/>
+        <path d="M18 58h119" stroke="#cc2b3c" stroke-width="7"/>
+        <rect x="28" y="40" width="34" height="14" rx="2" fill="#f6f8f9"/>
+        <path d="M41 41h9v12h-9zM35 45h21v5H35z" fill="#cf2d3e"/>
+        <rect x="68" y="29" width="19" height="6" rx="2" fill="#4389aa"/>
+        <rect x="90" y="30" width="14" height="5" rx="2" fill="#d74655"/>
+        <circle cx="44" cy="81" r="13" fill="#11191d"/><circle cx="44" cy="81" r="6" fill="#75858d"/>
+        <circle cx="129" cy="81" r="13" fill="#11191d"/><circle cx="129" cy="81" r="6" fill="#75858d"/>
+        <rect x="143" y="68" width="14" height="5" rx="2" fill="#e5e8e9"/>
+      </svg>`;
+  }
+
+  function roleOrder(role){return ({A:0,C:1,S:2})[role] ?? 9;}
+  function siteName(site){return ({G:'Gallarate',S:'Somma Lombardo',SU:'Sumirago'})[site]||site;}
+  function expectedRoles(machine){return String(machine)==='2'?['A','C']:['A','C','S'];}
+
+  function crewKey(item){return `${item.site||''}|${item.machine||'3'}`;}
+
+  function groupsForShift(shift){
+    const records=state.assignments.filter(item=>String(item.shift||'').toUpperCase()===shift);
+    const map=new Map();
+    records.forEach(item=>{
+      const key=crewKey(item);
+      if(!map.has(key))map.set(key,{site:item.site||'',machine:item.machine||'3',records:[]});
+      map.get(key).records.push(item);
+    });
+    return [...map.values()].sort((a,b)=>{
+      const order={G:0,S:1,SU:2};
+      return (order[a.site]??9)-(order[b.site]??9)||Number(a.machine)-Number(b.machine);
+    });
+  }
+
+  function shiftTime(shift,records){
+    const first=records.find(r=>r.start&&r.end);
+    if(first){
+      const start=String(first.start).match(/T(\d{2}:\d{2})/);
+      const end=String(first.end).match(/T(\d{2}:\d{2})/);
+      if(start&&end)return `${start[1]} — ${end[1]}`;
+    }
+    return shifts.find(s=>s.id===shift)?.fallback||'';
+  }
+
+  function crewCard(group){
+    const roles=expectedRoles(group.machine);
+    const records=[...group.records].sort((a,b)=>roleOrder(a.role)-roleOrder(b.role));
+    return `
+      <article class="crew-card">
+        <div class="vehicle">${ambulanceSvg()}</div>
+        <div class="crew-body">
+          <div class="crew-meta">
+            <span class="crew-location">${esc(siteName(group.site))}</span>
+            <span class="crew-machine">Mezzo ${esc(group.machine)}</span>
+          </div>
+          <div class="roles">
+            ${roles.map(role=>{
+              const item=records.find(r=>String(r.role||'').toUpperCase()===role);
+              const name=item?(item.displayName||item.employeeName||item.employeeId||''):'';
+              return `<div class="role-row"><span class="role-badge role-${role}">${role}</span><span class="role-name ${name?'':'vacant'}">${esc(name||'DA COPRIRE')}</span></div>`;
+            }).join('')}
+          </div>
+        </div>
+      </article>`;
+  }
+
+  function render(){
+    const now=new Date();
+    $('#date').textContent=now.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+    $('#clock').textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+    const available=shifts.filter(shift=>shift.id!=='N'||groupsForShift('N').length>0);
+    $('#board').classList.toggle('has-night',available.some(s=>s.id==='N'));
+    $('#board').innerHTML=available.map(shift=>{
+      const groups=groupsForShift(shift.id);
+      const records=state.assignments.filter(item=>String(item.shift||'').toUpperCase()===shift.id);
+      return `
+        <section class="shift-column" data-shift="${shift.id}">
+          <header class="shift-head">
+            <div class="shift-title"><span class="shift-dot"></span>${shift.label}</div>
+            <div class="shift-time">${esc(shiftTime(shift.id,records))}</div>
+          </header>
+          <div class="crew-list">
+            ${groups.length?groups.map(crewCard).join(''):'<div class="empty-shift">Nessun equipaggio registrato per questa fascia.</div>'}
+          </div>
+        </section>`;
+    }).join('');
+
+    const dot=$('#statusDot');
+    dot.className='status-dot '+(state.source==='server'?'':state.source==='loading'?'loading':'error');
+    if(state.source==='server'){
+      $('#statusText').textContent=`Dati aggiornati · ${state.updatedAt?.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})||'--:--'}`;
+    }else if(state.source==='cache'){
+      $('#statusText').textContent=`Dati memorizzati · ${state.error||'server momentaneamente non raggiungibile'}`;
+    }else if(state.source==='error'){
+      $('#statusText').textContent=`Dati non disponibili · ${state.error||'errore collegamento'}`;
+    }else{
+      $('#statusText').textContent='Connessione ai dati ATLAS…';
+    }
+  }
+
+  function saveCache(){
+    try{localStorage.setItem(CACHE_KEY,JSON.stringify({day:state.day,assignments:state.assignments,updatedAt:state.updatedAt?.toISOString()||''}));}catch{}
+  }
+  function loadCache(){
+    try{
+      const data=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
+      if(!data||!Array.isArray(data.assignments))return false;
+      state.day=data.day||'';state.assignments=data.assignments;state.updatedAt=data.updatedAt?new Date(data.updatedAt):null;state.source='cache';return true;
+    }catch{return false;}
+  }
+
+  window[CALLBACK]=data=>{
+    clearTimeout(loadTimer);
+    if(!data||data.ok!==true){
+      state.error=String(data?.error||'risposta server non valida');
+      state.source=loadCache()?'cache':'error';
+      render();return;
+    }
+    state.day=data.day||'';
+    state.assignments=Array.isArray(data.assignments)?data.assignments:[];
+    state.updatedAt=new Date();
+    state.source='server';
+    state.error='';
+    saveCache();
+    render();
+  };
+
+  function refresh(){
+    state.source=state.assignments.length?state.source:'loading';
+    render();
+    const old=document.getElementById('atlasTvJsonp');
+    if(old)old.remove();
+    const script=document.createElement('script');
+    script.id='atlasTvJsonp';
+    script.async=true;
+    script.src=`${SERVER_URL}?action=tvToday&callback=${CALLBACK}&t=${Date.now()}`;
+    script.onerror=()=>{
+      clearTimeout(loadTimer);
+      state.error='collegamento non riuscito';
+      state.source=loadCache()?'cache':'error';
+      render();
+    };
+    document.head.appendChild(script);
+    clearTimeout(loadTimer);
+    loadTimer=setTimeout(()=>{
+      state.error='timeout collegamento';
+      state.source=loadCache()?'cache':'error';
+      render();
+    },15000);
+  }
+
+  setInterval(render,1000);
+  setInterval(refresh,REFRESH_MS);
+  render();
+  refresh();
+})();
+</script>
+</body>
+</html>
