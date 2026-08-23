@@ -210,7 +210,7 @@ function compatibilityMeta(status){
     },
 
     CHANGES:{
-      label:'Con cambio turno',
+      label:'Con adeguamento',
       cls:'compat-changes',
       icon:'⇄'
     },
@@ -1336,11 +1336,20 @@ function buildApprovalReportReason(proposal,solution,alreadyApplied=false){
         role:String(operation.role||''),
         text:
           `${operation.coverName||'Risorsa'} copre ${roleLabel(operation.role)}; `+
-          `${operation.replacementName||'Risorsa'} prende ${operation.sourceCode||'il turno liberato'}`
+          `${operation.replacementName||'Risorsa'} prende ${operation.sourceCode||'il turno liberato'}`+
+          (operation.replacementFallbackResponsibility
+            ?` liberando ${operation.replacementFallbackResponsibility}`
+            :'')
       };
     }
     if(operation.mode==='direct'){
-      return{type:'DIRECT',role:String(operation.role||''),text:`${operation.coverName||'Risorsa'} copre direttamente ${roleLabel(operation.role)}`};
+      return{
+        type:operation.fallbackResponsibility?'RESP_FALLBACK':'DIRECT',
+        role:String(operation.role||''),
+        text:operation.fallbackResponsibility
+          ?`${operation.coverName||'Risorsa'} copre ${roleLabel(operation.role)} liberando ${operation.fallbackResponsibility}`
+          :`${operation.coverName||'Risorsa'} copre direttamente ${roleLabel(operation.role)}`
+      };
     }
     if(operation.mode==='sunday-rest'){
       return{type:'SUNDAY_REST',role:String(operation.role||''),text:`${operation.coverName||'Risorsa'} copre ${roleLabel(operation.role)} spostando il riposo domenicale${operation.recoveryDay?`; recupero previsto il ${dateLabel(operation.recoveryDay)}`:'; recupero da programmare'}`};
@@ -1707,11 +1716,14 @@ function renderSolutionPreview(solution){
               `<span class="compat-change-arrow">⇄</span> `+
               `<strong>${esc(operation.replacementName)}</strong> `+
               `prende il suo turno `+
-              `<strong>${esc(operation.sourceCode)}</strong>.`;
+              `<strong>${esc(operation.sourceCode)}</strong>`+
+              (operation.replacementFallbackResponsibility
+                ?` liberando <strong>${esc(operation.replacementFallbackResponsibility)}</strong>.`
+                :'.');
           }else{
-            text=
-              `<strong>${esc(operation.coverName)}</strong> `+
-              `copre direttamente il ruolo senza spostare altri turni.`;
+            text=operation.fallbackResponsibility
+              ?`<strong>${esc(operation.coverName)}</strong> copre il ruolo liberando <strong>${esc(operation.fallbackResponsibility)}</strong>, usato come fallback per il 118.`
+              :`<strong>${esc(operation.coverName)}</strong> copre direttamente il ruolo senza spostare altri turni.`;
           }
 
           return`
@@ -1958,7 +1970,9 @@ function renderCompatibilityDetail(
               Sul suo turno
               <strong>${esc(detail.sourceCode)}</strong>
               può subentrare
-              <strong>${esc(detail.replacementName)}</strong>.
+              <strong>${esc(detail.replacementName)}</strong>${detail.replacementFallbackResponsibility
+                ?`, liberando <strong>${esc(detail.replacementFallbackResponsibility)}</strong>`
+                :''}.
             </span>
           </div>
         `;
@@ -1972,7 +1986,9 @@ function renderCompatibilityDetail(
 
           <span class="compat-role-detail">
             <strong>${esc(detail.coverName)}</strong>
-            disponibile direttamente.
+            ${detail.fallbackResponsibility
+              ?`può coprire liberando <strong>${esc(detail.fallbackResponsibility)}</strong> come ultima risorsa.`
+              :'disponibile direttamente.'}
           </span>
         </div>
       `;
@@ -2573,10 +2589,13 @@ function bindSolutionControls(){
 
           const description=[
             ...direct.map(operation=>
-              `${roleLabel(operation.role)}: ${operation.coverName} copertura diretta`
+              operation.fallbackResponsibility
+                ?`${roleLabel(operation.role)}: ${operation.coverName} copre liberando ${operation.fallbackResponsibility}`
+                :`${roleLabel(operation.role)}: ${operation.coverName} copertura diretta`
             ),
             ...changes.map(operation=>
-              `${roleLabel(operation.role)}: ${operation.coverName} sulla richiesta; ${operation.replacementName} sul turno ${operation.sourceCode}`
+              `${roleLabel(operation.role)}: ${operation.coverName} sulla richiesta; ${operation.replacementName} sul turno ${operation.sourceCode}`+
+              (operation.replacementFallbackResponsibility?` liberando ${operation.replacementFallbackResponsibility}`:'')
             )
           ].join('\n');
 
@@ -2806,17 +2825,22 @@ function bindReviewButtons(){
                     return(
                       `${roleLabel(operation.role)}: `+
                       `${operation.coverName} copre il buco; `+
-                      `${operation.replacementName} prende ${operation.sourceCode}`
+                      `${operation.replacementName} prende ${operation.sourceCode}`+
+                      (operation.replacementFallbackResponsibility
+                        ?` liberando ${operation.replacementFallbackResponsibility}`
+                        :'')
                     );
                   }
 
                   if(
                     operation.mode==='direct'
                   ){
-                    return(
-                      `${roleLabel(operation.role)}: `+
-                      `${operation.coverName} copertura diretta`
-                    );
+                    return operation.fallbackResponsibility
+                      ?`${roleLabel(operation.role)}: ${operation.coverName} copre liberando ${operation.fallbackResponsibility}`
+                      :(
+                        `${roleLabel(operation.role)}: `+
+                        `${operation.coverName} copertura diretta`
+                      );
                   }
 
                   return(
