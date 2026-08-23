@@ -27,3 +27,4 @@ jobs:
           git commit -m "ATLAS: remove duplicated MGSE quota fields"
           git pull --rebase origin atlas/mgse-settings-coverage-20260823
           git push origin HEAD:atlas/mgse-settings-coverage-20260823
+# trigger
