@@ -1,3 +1,5 @@
+import './volunteer-night-guard.js?v=1.0.0-20260823';
+
 const slug = value => String(value || '')
   .normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '')
