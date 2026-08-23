@@ -1,0 +1,28 @@
+name: Clarify monthly MGSE quota UI
+on:
+  push:
+    branches: [atlas/grs-structural-quota-ui-20260823]
+    paths: [.github/workflows/run-clarify-monthly-mgse.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: atlas/grs-structural-quota-ui-20260823
+          fetch-depth: 0
+      - run: python tools/clarify_monthly_mgse_quota.py
+      - run: |
+          grep -q "Minimo MENSILE di giornate MGSE" admin.html
+          grep -q "Massimo MENSILE di giornate MGSE" admin.html
+          grep -q "Questi due valori NON sono il minimo/massimo giornaliero" admin.html
+          grep -q "GRS-MONTHLY-QUOTA-2119" admin.html
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin.html ro.html
+          git commit -m "ATLAS: clarify preferred employee monthly MGSE quota"
+          git pull --rebase origin atlas/grs-structural-quota-ui-20260823
+          git push origin HEAD:atlas/grs-structural-quota-ui-20260823
