@@ -1,13 +1,11 @@
 name: Temporary volunteer exhaustive analysis validator
 
-# Trigger rerun after workflow registration on main.
 on:
-  push:
+  pull_request:
     branches:
       - main
     paths:
-      - .github/workflows/temp-volunteer-exhaustive-45s.yml
-  workflow_dispatch:
+      - .github/scripts/patch-volunteer-exhaustive-45s.py
 
 permissions:
   contents: write
