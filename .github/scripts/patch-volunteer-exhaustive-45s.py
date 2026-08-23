@@ -144,6 +144,7 @@ ui=replace_once(
     '<button class="compat-filter" type="button" data-compat-filter="ANALYSIS_ERROR">! Errori <span class="count" data-compat-count="ANALYSIS_ERROR">0</span></button>',
     'filter review -> error'
 )
+ui=ui.replace('.compat-filter[data-compat-filter="REVIEW"]','.compat-filter[data-compat-filter="ANALYSIS_ERROR"]')
 ui=replace_once(
     ui,
     "  const counts={ALL:0,DIRECT:0,CHANGES:0,WAITING_CALENDAR:0,REVIEW:0,INCOMPATIBLE:0};",
@@ -237,14 +238,12 @@ ui=replace_once(
     "  const boxClass=\n    result.status==='DIRECT'\n      ?'direct'\n      :result.status==='CHANGES'\n        ?'changes'\n        :'incompatible';",
     'box marker'
 )
-# No-op above asserts the expected block exists.
 ui=ui.replace(
     "  const icon=\n    result.status==='DIRECT'\n      ?'✓'\n      :result.status==='CHANGES'\n        ?'⇄'\n        :'×';",
     "  const icon=\n    result.status==='DIRECT'\n      ?'✓'\n      :result.status==='CHANGES'\n        ?'⇄'\n        :result.status==='ANALYSIS_ERROR'\n          ?'!'\n          :'×';",
     1
 )
 
-# Assertions: the forbidden user-facing phrase/status must be gone from logic/UI.
 for forbidden in [
     "status:'REVIEW'",
     "data-compat-filter=\"REVIEW\"",
