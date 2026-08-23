@@ -14,7 +14,7 @@
   <link rel="preload" href="atlas/assets/atlas-logo-login.svg" as="image" type="image/svg+xml" />
   <link rel="preload" href="atlas/assets/atlas-logo-header.svg" as="image" type="image/svg+xml" />
   <link id="atlasFavicon" rel="icon" type="image/svg+xml" href="atlas/assets/atlas-favicon.svg" />
-    <link rel="stylesheet" href="atlas/css/core.css?v=1.0.0-MGSE-COVERAGE-20260823" />
+    <link rel="stylesheet" href="atlas/css/core.css?v=1.0.0-GRS-STRUCTURAL-QUOTA-2112" />
   <link rel="stylesheet" href="atlas/css/mobile.css?v=1.0.0-final-20260809" />
   <link rel="stylesheet" href="atlas/css/volunteer-rollback.css?v=1.5.9" />
   <link rel="stylesheet" href="atlas/css/print.css?v=1.0.0-final-20260809" />
@@ -431,9 +431,10 @@
                 <select id="setSePreferredEmployee" class="input"><option value="">Nessuna preferenza</option></select>
                 <small>È una preferenza soft: ferie, riposi, vincoli e soprattutto la copertura 118 hanno priorità. Se necessario, il dipendente può essere utilizzato nel 118.</small>
               </div>
-              <div class="field"><label>Giornate MGSE minime · prevalente</label><input id="setSePreferredMinDays" class="input" type="number" min="0" max="31" step="1" /></div>
-              <div class="field"><label>Giornate MGSE massime · prevalente</label><input id="setSePreferredMaxDays" class="input" type="number" min="0" max="31" step="1" /></div>
-              <div class="field full"><small>Le quote mensili min/max sono modificabili dall’Admin; per il RO sono in sola lettura.</small></div>
+              <div class="field full"><div class="section-label">Quote mensili del dipendente prevalente · ADMIN</div></div>
+              <div class="field"><label>Minimo giornate MGSE nel mese</label><input id="setSePreferredMinDays" class="input" type="number" min="0" max="31" step="1" placeholder="es. 8" /></div>
+              <div class="field"><label>Massimo giornate MGSE nel mese</label><input id="setSePreferredMaxDays" class="input" type="number" min="0" max="31" step="1" placeholder="es. 12" /></div>
+              <div class="field full"><div class="notice info"><strong>Quote del prevalente:</strong> l’Admin definisce quante giornate MGSE deve svolgere almeno e al massimo nel mese. Il 118 e i vincoli protetti restano prioritari. Nel profilo RO questi valori non sono modificabili.</div></div>
               <div class="field full"><div class="notice warning"><strong>Regola operativa:</strong> ATLAS prova a mantenere 2 MGSE nei feriali. Può scendere sotto 2 soltanto quando le risorse sono necessarie per il 118; la pagina Coperture evidenzia il caso in arancione.</div></div>
             </div>
           </details>
@@ -623,8 +624,8 @@
         <div class="auto-grid" style="margin-top:12px">
           <label class="auto-option"><input id="autoPreserve" type="checkbox" checked /><div><strong>Conserva turni manuali, Database e bloccati</strong><span>Ferie, permessi, assenze, RC e riposi manuali sono sempre protetti, anche rigenerando da zero.</span></div></label>
           <label class="auto-option"><input id="autoAdmin" type="checkbox" checked /><div><strong>Pianifica Amministrazione</strong><span>Praderio: AM8,5 lun–gio e AM4 venerdì. Vescera: AM4 lun/ven e AM7 mar–gio.</span></div></label>
-          <label class="auto-option"><input id="autoResp" type="checkbox" checked /><div><strong>Pianifica responsabili</strong><span>GRO feriali, GRS feriali e 5 giornate obiettivo per GRA/GRM.</span></div></label>
-          <label class="auto-option"><input id="autoSe" type="checkbox" checked /><div><strong>Porta i Secondari a 2 risorse feriali</strong><span>GRS non conta come risorsa operativa. ATLAS usa prima il dipendente prevalente configurato, poi le altre risorse disponibili. Il 118 mantiene sempre la priorità; Raschi passa a MGSE soltanto se necessario.</span></div></label>
+          <label class="auto-option"><input id="autoResp" type="checkbox" checked /><div><strong>Pianifica altre responsabilità</strong><span>GRS viene sempre pianificato nei feriali. Questa opzione gestisce GRO e le giornate obiettivo GRA/GRM.</span></div></label>
+          <label class="auto-option"><input id="autoSe" type="checkbox" checked /><div><strong>Porta i Secondari a 2 risorse feriali</strong><span>GRS non conta come risorsa operativa e non viene convertito in MGSE. ATLAS usa il dipendente prevalente entro le quote min/max configurate, poi le altre risorse disponibili. Il 118 mantiene sempre la priorità.</span></div></label>
           <label class="auto-option"><input id="autoRo" type="checkbox" /><div><strong>Consenti il RO come ultima risorsa nel 118</strong><span>Disattivato per impostazione predefinita. L’uso genera comunque un alert.</span></div></label>
           <label class="auto-option auto-option-rc"><input id="autoRc" type="checkbox" /><div><strong>Inserisci automaticamente i riposi compensativi</strong><span>Protegge i riposi settimanali e pianifica i recuperi delle deroghe art. 27. Gli RFS vengono pianificati automaticamente entro 30 giorni dalla festività. Un recupero non collocabile entro il termine genera un rosso bloccante.</span></div></label>
         </div>
@@ -864,6 +865,6 @@
   <input id="fileInput" type="file" accept="application/json,.json" class="hidden" />
   <div class="toast-stack" id="toastStack"></div>
 
-  <script type="module" src="atlas/js/atlas-app.js?v=1.0.0-GRS-MGSE-QUOTA-20260823"></script>
+  <script type="module" src="atlas/js/atlas-app.js?v=1.0.0-GRS-STRUCTURAL-QUOTA-2112"></script>
 </body>
 </html>
