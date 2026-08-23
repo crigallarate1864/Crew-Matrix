@@ -233,10 +233,10 @@ function compatibilityMeta(status){
       icon:'…'
     },
 
-    REVIEW:{
-      label:'Da verificare',
-      cls:'compat-review',
-      icon:'?'
+    ANALYSIS_ERROR:{
+      label:'Errore analisi',
+      cls:'compat-incompatible',
+      icon:'!'
     },
 
     WAITING_CALENDAR:{
@@ -1021,7 +1021,7 @@ function ensureCompatibilityStyles(){
     .compatibility-summary{display:flex!important;flex-wrap:wrap;gap:6px!important}
     .compat-filter{min-height:34px!important;border-radius:9px!important;padding:6px 9px!important}
     .compat-filter[data-compat-filter="WAITING_CALENDAR"]{border-color:rgba(234,191,105,.18)!important}
-    .compat-filter[data-compat-filter="REVIEW"]{border-color:rgba(240,169,103,.18)!important}
+    .compat-filter[data-compat-filter="ANALYSIS_ERROR"]{border-color:rgba(240,169,103,.18)!important}
     .compatibility-progress{display:flex!important;align-items:center!important;gap:8px!important;text-align:right!important}
     .accepted-toolbar{display:flex!important;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px;padding:9px 11px;border:1px solid rgba(151,195,215,.09);border-radius:12px;background:rgba(7,24,34,.66)}
     .volunteer-proposal-list{gap:12px!important}
@@ -1643,7 +1643,7 @@ function ensureCompatibilityToolbar(){
       <div class="vol-ops-stat"><span>Richieste totali</span><strong id="volOpsTotal">0</strong></div>
       <div class="vol-ops-stat waiting"><span>In attesa calendario</span><strong id="volOpsWaiting">0</strong></div>
       <div class="vol-ops-stat ready"><span>Soluzione pronta</span><strong id="volOpsReady">0</strong></div>
-      <div class="vol-ops-stat review"><span>Da verificare</span><strong id="volOpsReview">0</strong></div>
+      <div class="vol-ops-stat review"><span>Errori analisi</span><strong id="volOpsError">0</strong></div>
       <div class="vol-ops-stat approved"><span>Approvate</span><strong id="volOpsApproved">0</strong></div>
     </div>
     <div class="vol-ops-controls">
@@ -1652,7 +1652,7 @@ function ensureCompatibilityToolbar(){
         <button class="compat-filter" type="button" data-compat-filter="WAITING_CALENDAR">◷ Attesa calendario <span class="count" data-compat-count="WAITING_CALENDAR">0</span></button>
         <button class="compat-filter" type="button" data-compat-filter="DIRECT">✓ Dirette <span class="count" data-compat-count="DIRECT">0</span></button>
         <button class="compat-filter" type="button" data-compat-filter="CHANGES">⇄ Con cambi <span class="count" data-compat-count="CHANGES">0</span></button>
-        <button class="compat-filter" type="button" data-compat-filter="REVIEW">? Da verificare <span class="count" data-compat-count="REVIEW">0</span></button>
+        <button class="compat-filter" type="button" data-compat-filter="ANALYSIS_ERROR">! Errori <span class="count" data-compat-count="ANALYSIS_ERROR">0</span></button>
         <button class="compat-filter" type="button" data-compat-filter="INCOMPATIBLE">× Impossibili <span class="count" data-compat-count="INCOMPATIBLE">0</span></button>
       </div>
       <div class="compatibility-progress"><span id="compatibilityProgressText">Pronto</span><button class="btn small compat-recalc" id="compatibilityRecalcBtn" type="button">Ricalcola</button></div>
@@ -1936,7 +1936,9 @@ function renderCompatibilityDetail(
       ?'✓'
       :result.status==='CHANGES'
         ?'⇄'
-        :'×';
+        :result.status==='ANALYSIS_ERROR'
+          ?'!'
+          :'×';
 
   const roleRows=(result.roles||[])
     .map(detail=>{
@@ -2183,7 +2185,7 @@ function card(item){
                       result.status==='WAITING_CALENDAR'||
                       result.status==='INCOMPATIBLE'||
                       result.status==='OTHER_MONTH'||
-                      result.status==='REVIEW'
+                      result.status==='ANALYSIS_ERROR'
                         ?'disabled'
                         :''
                     }>
@@ -2194,8 +2196,8 @@ function card(item){
                   ?'Analisi in corso…'
                   :result?.status==='INCOMPATIBLE'
                     ?'Nessuna soluzione'
-                    :result?.status==='REVIEW'
-                      ?'Da verificare'
+                    :result?.status==='ANALYSIS_ERROR'
+                      ?'Errore analisi'
                       :'Approva e applica'
               }
             </button>
@@ -2228,7 +2230,7 @@ function card(item){
 }
 
 function compatibilityCounts(){
-  const counts={ALL:0,DIRECT:0,CHANGES:0,WAITING_CALENDAR:0,REVIEW:0,INCOMPATIBLE:0};
+  const counts={ALL:0,DIRECT:0,CHANGES:0,WAITING_CALENDAR:0,ANALYSIS_ERROR:0,INCOMPATIBLE:0};
   (workspace.proposals||[]).filter(item=>item.status==='INVIATA').forEach(item=>{
     counts.ALL++;
     const status=compatibility.get(item.id)?.status;
@@ -2245,7 +2247,7 @@ function updateCompatibilityToolbar(){
   const total=(workspace.proposals||[]).length;
   const ready=counts.DIRECT+counts.CHANGES;
   const setStat=(id,value)=>{const node=$(id);if(node)node.textContent=String(value);};
-  setStat('#volOpsTotal',total);setStat('#volOpsWaiting',counts.WAITING_CALENDAR);setStat('#volOpsReady',ready);setStat('#volOpsReview',counts.REVIEW);setStat('#volOpsApproved',approved);
+  setStat('#volOpsTotal',total);setStat('#volOpsWaiting',counts.WAITING_CALENDAR);setStat('#volOpsReady',ready);setStat('#volOpsError',counts.ANALYSIS_ERROR);setStat('#volOpsApproved',approved);
 
   Object.entries(counts)
     .forEach(([key,value])=>{
@@ -3055,7 +3057,7 @@ async function runCompatibilityAnalysis({
     ++analysisRun;
 
   const started=performance.now();
-  const watchdogMs=5200;
+  const watchdogMs=45000;
 
   if(blocking){
     volunteerCancelRequested=false;
@@ -3102,18 +3104,19 @@ async function runCompatibilityAnalysis({
     }
 
     if(performance.now()-started>watchdogMs){
-      pending.slice(processed).forEach(left=>{
-        if(!compatibility.has(left.id)||compatibility.get(left.id)?.status==='ANALYZING'){
-          compatibility.set(left.id,{
-            status:'REVIEW',
-            label:'Da verificare',
-            tone:'warning',
-            summary:'Il controllo automatico ha raggiunto il limite di sicurezza. La richiesta non viene dichiarata impossibile.',
-            roles:[],changes:[],solutions:[],blockers:[]
-          });
-        }
-      });
-      break;
+      const progress=$('#compatibilityProgressText');
+      if(progress){
+        progress.textContent='Analisi approfondita oltre 45 s · ATLAS continua la ricerca';
+      }
+      if(blocking){
+        updateVolunteerAnalysisOverlay({
+          title:'Analisi approfondita',
+          text:'Sono trascorsi più di 45 secondi. ATLAS continua a cercare cambi e combinazioni finché trova una soluzione o dimostra che non esiste.',
+          stage:'Ricerca estesa',
+          current:processed,
+          total:pending.length
+        });
+      }
     }
 
     if(
@@ -3133,21 +3136,14 @@ async function runCompatibilityAnalysis({
       compatibility.set(
         item.id,
         {
-          status:'REVIEW',
-          label:'Da verificare',
-          tone:'warning',
-          summary:
-            'ATLAS non è riuscito a completare il controllo locale.',
+          status:'ANALYSIS_ERROR',
+          label:'Errore analisi',
+          tone:'danger',
+          summary:'Errore tecnico durante il calcolo. Ricalcola la compatibilità: la richiesta non viene classificata come impossibile.',
           roles:[],
           changes:[],
           solutions:[],
-          blockers:[
-            String(
-              error?.message||
-              error||
-              'Errore non specificato.'
-            )
-          ]
+          blockers:[String(error?.message||error||'Errore non specificato.')]
         }
       );
     }
