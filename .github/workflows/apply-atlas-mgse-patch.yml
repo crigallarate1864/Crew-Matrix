@@ -7,13 +7,19 @@ on:
     paths:
       - tools/apply_atlas_mgse_coverage_patch.py
       - .github/workflows/apply-atlas-mgse-patch.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - tools/apply_atlas_mgse_coverage_patch.py
+      - .github/workflows/apply-atlas-mgse-patch.yml
 
 permissions:
   contents: write
 
 jobs:
   patch:
-    if: ${{ !contains(github.event.head_commit.message, '[atlas-patch-applied]') }}
+    if: ${{ github.event_name == 'pull_request' || !contains(github.event.head_commit.message, '[atlas-patch-applied]') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout feature branch
