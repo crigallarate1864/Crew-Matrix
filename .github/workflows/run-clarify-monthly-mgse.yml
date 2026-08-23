@@ -26,3 +26,4 @@ jobs:
           git commit -m "ATLAS: clarify preferred employee monthly MGSE quota"
           git pull --rebase origin atlas/grs-structural-quota-ui-20260823
           git push origin HEAD:atlas/grs-structural-quota-ui-20260823
+# trigger 2026-08-23 21:19 Europe/Rome
