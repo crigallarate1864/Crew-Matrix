@@ -1,0 +1,42 @@
+name: Validate ATLAS safe GRS/MGSE patch
+
+on:
+  pull_request:
+    branches: [main]
+    types: [synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-check:
+    if: github.head_ref == 'atlas/grs-monthly-mgse-safe-20260823'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Apply patch once
+        run: |
+          if grep -q "sePreferredMinDays: 0" atlas/js/config.js; then
+            echo "Patch already applied"
+          else
+            python tools/apply_safe_grs_monthly_mgse.py
+          fi
+      - name: Syntax checks
+        run: |
+          node --check atlas/js/config.js
+          node --check atlas/js/atlas-app.js
+          python tools/check_safe_grs_monthly_mgse.py
+      - name: Commit only validated changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add atlas/js/config.js atlas/js/atlas-app.js admin.html ro.html
+          if git diff --cached --quiet; then
+            echo "No application changes to commit"
+          else
+            git commit -m "ATLAS: structural GRS + monthly MGSE quota [validated]"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
