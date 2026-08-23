@@ -1,0 +1,34 @@
+name: ATLAS GRS structural quota UI fix
+on:
+  push:
+    branches: [atlas/grs-structural-quota-ui-20260823]
+    paths: [.github/workflows/run-grs-structural-quota-ui.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: atlas/grs-structural-quota-ui-20260823
+          fetch-depth: 0
+      - run: python tools/fix_grs_structural_quota_ui.py
+      - name: Verify
+        run: |
+          node --check atlas/js/atlas-app.js
+          grep -q "function scheduleGrsResponsibility" atlas/js/atlas-app.js
+          grep -q "Pianificazione GRS feriali" atlas/js/atlas-app.js
+          grep -q "GRS feriale mancante" atlas/js/atlas-app.js
+          grep -q "Minimo giornate MGSE nel mese" admin.html
+          grep -q "Massimo giornate MGSE nel mese" admin.html
+          grep -q "GRS-STRUCTURAL-QUOTA-2112" admin.html
+          ! grep -q "Raschi passa a MGSE" admin.html
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add atlas/js/atlas-app.js admin.html ro.html
+          git commit -m "ATLAS: make GRS structural and expose Admin MGSE quotas"
+          git pull --rebase origin atlas/grs-structural-quota-ui-20260823
+          git push origin HEAD:atlas/grs-structural-quota-ui-20260823
