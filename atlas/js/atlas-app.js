@@ -1778,7 +1778,6 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
       }
     }
     if(item.type==='MGSE'&&isWeekend(d))errors.push('MGSE non è previsto nel weekend.');
-    if(item.category==='SE'&&(e.turno==='RS'||slug(e.responsabile)==='secondari'))warnings.push('Il Responsabile Secondari viene impiegato nel servizio operativo SE solo per necessità.');
 
 
     const same=getAssignments(e.id,day);
@@ -1818,7 +1817,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         const dailyWork=items.filter(isWorkingAssignment).map(a=>({a,...assignmentTimes(a,day)})).filter(r=>r.timed).sort((a,b)=>a.start-b.start);
         if(state.settings.enforceNoSplitDay&&dailyWork.length>1){for(let i=1;i<dailyWork.length;i++){const gap=(dailyWork[i].start-dailyWork[i-1].end)/36e5;if(gap>0.25&&!dailyWork[i].a.splitAllowed&&!dailyWork[i-1].a.splitAllowed){out.push(validation('error','Giornata lavorativa frazionata',`${employeeName(e)} presenta due fasce separate da ${fmt(gap)} ore. Registrare una prestazione unica o un’autorizzazione esplicita.`,e.id,day));break;}}}
         if(items.some(a=>['MAL','INF'].includes(a.code||a.type))&&items.some(a=>(a.code||a.type)==='F'))out.push(validation('error','Malattia e ferie sovrapposte',`${employeeName(e)} ha malattia/infortunio e ferie nello stesso giorno: le ferie devono essere interrotte.`,e.id,day));
-        items.forEach(a=>{if(isNightItem(a,day)&&nightRestrictionActive(e,day)){if(e.nightRestriction==='NO_NIGHT')out.push(validation('error','Lavoro notturno vietato',`${employeeName(e)} risulta assegnato in fascia notturna durante una limitazione attiva.`,e.id,day));else out.push(validation('warning','Notte con consenso da verificare',`${employeeName(e)} è indicato come non disponibile alla notte salvo consenso.`,e.id,day));}const code=String(a.code||a.type||'').toUpperCase();if(code==='REP'){const t=assignmentTimes(a,day);if(!t.timed)out.push(validation('error','Reperibilità senza orario',`${employeeName(e)}: indicare inizio e fine.`,e.id,day));else if(t.hours<4||t.hours>12)out.push(validation('error','Durata reperibilità non conforme',`${employeeName(e)}: ${fmt(t.hours)} ore; durata ammessa 4-12 ore.`,e.id,day));if(e.onCallNightRestricted&&isNightItem(a,day))out.push(validation('error','Reperibilità notturna vietata',`${employeeName(e)} presenta una limitazione attiva.`,e.id,day));}if(a.category==='OP'){const meta=operationalShiftMeta(a.code||a.type);if(e.turno==='Amministrazione')out.push(validation('error','Amministrazione in turno operativo',`${employeeName(e)} non può essere assegnato a ${normalizeCode(a)}.`,e.id,day));if(meta?.site==='S'&&e.sedeSolo==='G')out.push(validation('error','Sede non consentita',`${employeeName(e)} può essere assegnato solo a Gallarate.`,e.id,day));if(meta?.role==='A'&&!e.autista||meta?.role==='C'&&!e.capo||meta?.role==='S'&&!e.soccorritore)out.push(validation('error','Abilitazione mancante',`${employeeName(e)} non è abilitato per ${normalizeCode(a)}.`,e.id,day));}if(a.category==='118'){if(e.turno==='Amministrazione')out.push(validation('error','Amministrazione nel 118',`${employeeName(e)} può svolgere solo amministrazione.`,e.id,day));if(a.site!=='G'&&e.sedeSolo==='G')out.push(validation('error','Sede non consentita',`${employeeName(e)} può essere assegnata solo a Gallarate.`,e.id,day));if(['N','PN'].includes(a.shift)&&String(a.machine)==='2')out.push(validation('error','Macchina a 2 in turno notturno',`${employeeName(e)}: ${normalizeCode(a)} non è valido, di notte le macchine sono sempre a 3.`,e.id,day));if(a.site!=='G'&&String(a.machine)!=='3')out.push(validation('error','Equipaggio sede non valido',`${normalizeCode(a)}: Somma e Sumirago sono sempre equipaggi a 3.`,e.id,day));if(d.getDay()===6&&a.shift==='M'&&!['G2','G3','Somma'].includes(crewKey(a)))out.push(validation('warning','Copertura extra sabato mattina',`${employeeName(e)}: ${normalizeCode(a)} non rientra nella copertura ordinaria del sabato mattina, prevista per Gallarate macchina a 2, Gallarate macchina a 3 e Somma.`,e.id,day));if(d.getDay()===6&&a.shift==='P'&&!['G2','Somma'].includes(crewKey(a)))out.push(validation('warning','Copertura extra sabato pomeriggio',`${employeeName(e)}: ${normalizeCode(a)} non rientra nella copertura ordinaria del sabato pomeriggio, prevista per Gallarate macchina a 2 e Somma.`,e.id,day));if(a.site==='SU')out.push(validation('info','Sumirago inserita manualmente',`${employeeName(e)}: ${normalizeCode(a)} è una copertura al bisogno e non fa parte della generazione ordinaria.`,e.id,day));if(a.role==='A'&&!e.autista||a.role==='C'&&!e.capo||a.role==='S'&&!e.soccorritore)out.push(validation('error','Abilitazione mancante',`${employeeName(e)} non è abilitato al ruolo ${a.role}.`,e.id,day));if(e.turno==='RO')out.push(validation('warning','Responsabile Operativo impiegato nel 118',`${employeeName(e)} deve essere utilizzato solo in estrema urgenza.`,e.id,day));}if(a.type==='MGSE'&&isWeekend(d))out.push(validation('error','MGSE nel weekend','MGSE non è previsto il sabato o la domenica.',e.id,day));if(a.category==='SE'&&(e.turno==='RS'||slug(e.responsabile)==='secondari'))out.push(validation('warning','Raschi impiegato nei Secondari operativi',`${employeeName(e)} è stato utilizzato in MGSE per necessità; normalmente svolge GRS.`,e.id,day));});});
+        items.forEach(a=>{if(isNightItem(a,day)&&nightRestrictionActive(e,day)){if(e.nightRestriction==='NO_NIGHT')out.push(validation('error','Lavoro notturno vietato',`${employeeName(e)} risulta assegnato in fascia notturna durante una limitazione attiva.`,e.id,day));else out.push(validation('warning','Notte con consenso da verificare',`${employeeName(e)} è indicato come non disponibile alla notte salvo consenso.`,e.id,day));}const code=String(a.code||a.type||'').toUpperCase();if(code==='REP'){const t=assignmentTimes(a,day);if(!t.timed)out.push(validation('error','Reperibilità senza orario',`${employeeName(e)}: indicare inizio e fine.`,e.id,day));else if(t.hours<4||t.hours>12)out.push(validation('error','Durata reperibilità non conforme',`${employeeName(e)}: ${fmt(t.hours)} ore; durata ammessa 4-12 ore.`,e.id,day));if(e.onCallNightRestricted&&isNightItem(a,day))out.push(validation('error','Reperibilità notturna vietata',`${employeeName(e)} presenta una limitazione attiva.`,e.id,day));}if(a.category==='OP'){const meta=operationalShiftMeta(a.code||a.type);if(e.turno==='Amministrazione')out.push(validation('error','Amministrazione in turno operativo',`${employeeName(e)} non può essere assegnato a ${normalizeCode(a)}.`,e.id,day));if(meta?.site==='S'&&e.sedeSolo==='G')out.push(validation('error','Sede non consentita',`${employeeName(e)} può essere assegnato solo a Gallarate.`,e.id,day));if(meta?.role==='A'&&!e.autista||meta?.role==='C'&&!e.capo||meta?.role==='S'&&!e.soccorritore)out.push(validation('error','Abilitazione mancante',`${employeeName(e)} non è abilitato per ${normalizeCode(a)}.`,e.id,day));}if(a.category==='118'){if(e.turno==='Amministrazione')out.push(validation('error','Amministrazione nel 118',`${employeeName(e)} può svolgere solo amministrazione.`,e.id,day));if(a.site!=='G'&&e.sedeSolo==='G')out.push(validation('error','Sede non consentita',`${employeeName(e)} può essere assegnata solo a Gallarate.`,e.id,day));if(['N','PN'].includes(a.shift)&&String(a.machine)==='2')out.push(validation('error','Macchina a 2 in turno notturno',`${employeeName(e)}: ${normalizeCode(a)} non è valido, di notte le macchine sono sempre a 3.`,e.id,day));if(a.site!=='G'&&String(a.machine)!=='3')out.push(validation('error','Equipaggio sede non valido',`${normalizeCode(a)}: Somma e Sumirago sono sempre equipaggi a 3.`,e.id,day));if(d.getDay()===6&&a.shift==='M'&&!['G2','G3','Somma'].includes(crewKey(a)))out.push(validation('warning','Copertura extra sabato mattina',`${employeeName(e)}: ${normalizeCode(a)} non rientra nella copertura ordinaria del sabato mattina, prevista per Gallarate macchina a 2, Gallarate macchina a 3 e Somma.`,e.id,day));if(d.getDay()===6&&a.shift==='P'&&!['G2','Somma'].includes(crewKey(a)))out.push(validation('warning','Copertura extra sabato pomeriggio',`${employeeName(e)}: ${normalizeCode(a)} non rientra nella copertura ordinaria del sabato pomeriggio, prevista per Gallarate macchina a 2 e Somma.`,e.id,day));if(a.site==='SU')out.push(validation('info','Sumirago inserita manualmente',`${employeeName(e)}: ${normalizeCode(a)} è una copertura al bisogno e non fa parte della generazione ordinaria.`,e.id,day));if(a.role==='A'&&!e.autista||a.role==='C'&&!e.capo||a.role==='S'&&!e.soccorritore)out.push(validation('error','Abilitazione mancante',`${employeeName(e)} non è abilitato al ruolo ${a.role}.`,e.id,day));if(e.turno==='RO')out.push(validation('warning','Responsabile Operativo impiegato nel 118',`${employeeName(e)} deve essere utilizzato solo in estrema urgenza.`,e.id,day));}if(a.type==='MGSE'&&isWeekend(d))out.push(validation('error','MGSE nel weekend','MGSE non è previsto il sabato o la domenica.',e.id,day));});});
       const repDays=new Set(rows.filter(r=>r.employeeId===e.id&&String(r.a.code||r.a.type).toUpperCase()==='REP').map(r=>r.day)).size;
       if(repDays>8)out.push(validation('warning','Reperibilità oltre il limite ordinario',`${employeeName(e)}: ${repDays} giornate nel mese; il CCNL indica di norma massimo 8.`,e.id,null));
       const stats=employeeStats(e),target=targetHoursFor(e),delta=stats.hours-target;if(delta>15)out.push(validation('warning','Monte ore elevato',`${employeeName(e)} è a +${fmt(delta)} ore rispetto al target ${fmt(target)}.`,e.id,null));else if(delta<-25)out.push(validation('info','Monte ore da completare',`${employeeName(e)} è a ${fmt(delta)} ore rispetto al target ${fmt(target)}.`,e.id,null));
@@ -1848,6 +1847,21 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       }});
     });
     workdays().forEach(d=>{const day=dateKey(d),count=rows.filter(r=>r.day===day&&r.a.category==='SE').length;if(count<2){if(required118OnDay(day))out.push(validation('info','MGSE ridotto per priorità 118',`${DOW[d.getDay()]} ${d.getDate()}: ${count}/2 risorse MGSE. Riduzione ammessa perché nella giornata è richiesta copertura 118, che ha priorità.`,null,day));else out.push(validation('warning','Secondari sotto il minimo',`${DOW[d.getDay()]} ${d.getDate()}: ${count}/2 persone operative in MGSE senza una fascia 118 richiesta che giustifichi la riduzione.`,null,day));}if(count>2)out.push(validation('error','Troppi dipendenti nei Secondari',`${DOW[d.getDay()]} ${d.getDate()}: ${count} persone, massimo 2.`,null,day));});
+    const structuralGrsEmployee=secondariResponsibleEmployee();
+    if(structuralGrsEmployee){
+      workdays().forEach(d=>{
+        const day=dateKey(d);
+        if(!employeeActiveOn(structuralGrsEmployee,day))return;
+        const items=getAssignments(structuralGrsEmployee.id,day);
+        const hasGrs=items.some(a=>String(a.type||a.code||'').toUpperCase()==='GRS');
+        const has118=items.some(a=>a.category==='118');
+        const excused=items.some(a=>['ABS','RC','REST','FORM'].includes(a.category));
+        if(!hasGrs&&!has118&&!excused){
+          out.push(validation('warning','GRS feriale mancante',`${employeeName(structuralGrsEmployee)}: ${formatDateIt(day)} senza GRS e senza impiego 118/assenza protetta.`,structuralGrsEmployee.id,day));
+        }
+      });
+    }
+
     const preferredSeEmployee=ordinarySecondariPreferredEmployee();
     if(preferredSeEmployee){const preferredDays=preferredSecondariDayCount(preferredSeEmployee.id),preferredMin=Math.max(0,Math.min(31,numeric(state.settings.sePreferredMinDays,0))),preferredMax=Math.max(preferredMin,Math.min(31,numeric(state.settings.sePreferredMaxDays,31)));if(preferredDays<preferredMin)out.push(validation('warning','Prevalente Secondari sotto il minimo',`${employeeName(preferredSeEmployee)}: ${preferredDays} giornate MGSE, minimo ${preferredMin}.`,preferredSeEmployee.id,null));if(preferredDays>preferredMax)out.push(validation('warning','Prevalente Secondari oltre il massimo',`${employeeName(preferredSeEmployee)}: ${preferredDays} giornate MGSE, massimo ${preferredMax}.`,preferredSeEmployee.id,null));}
     const preferredSeEmployee=ordinarySecondariPreferredEmployee();
@@ -4227,7 +4241,56 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
   }
 
   function scheduleAdmin(){let added=0;workdays().forEach(d=>{const day=dateKey(d);state.employees.filter(e=>e.turno==='Amministrazione'&&employeeActiveOn(e,day)).forEach(e=>{if(getAssignments(e.id,day).length)return;const dow=d.getDay();let code='AM7';if(slug(e.cognome)==='praderio')code=dow===5?'AM4':'AM8,5';else if(slug(e.cognome)==='vescera')code=[1,5].includes(dow)?'AM4':'AM7';addAuto(e,day,{category:'AM',type:code,code});added++;});});return added;}
-  function scheduleFixedResponsibles(){let added=0;const bosetti=state.employees.find(e=>slug(e.responsabile)==='operativo'||e.turno==='RO');if(bosetti)workdays().forEach(d=>{const day=dateKey(d),item={category:'RESP',type:'GRO',code:'GRO'};if(employeeActiveOn(bosetti,day)&&!getAssignments(bosetti.id,day).length&&checkCandidate(bosetti,day,item).errors.length===0){addAuto(bosetti,day,item);added++;}});const raschi=state.employees.find(e=>slug(e.responsabile)==='secondari'||e.turno==='RS');if(raschi)workdays().forEach(d=>{const day=dateKey(d),item={category:'RESP',type:'GRS',code:'GRS'};if(employeeActiveOn(raschi,day)&&!getAssignments(raschi.id,day).length&&checkCandidate(raschi,day,item).errors.length===0){addAuto(raschi,day,item);added++;}});const responsibles=[...state.employees.filter(e=>slug(e.responsabile)==='autoparco').map(e=>[e,'GRA']),...state.employees.filter(e=>slug(e.responsabile)==='magazzino').map(e=>[e,'GRM'])];responsibles.forEach(([e,code],idx)=>{let count=allAssignmentRows().filter(r=>r.employeeId===e.id&&r.a.type===code).length;const candidates=workdays().filter((d,i)=>i%Math.max(1,Math.floor(workdays().length/state.settings.respGoal))===idx%2).concat(workdays());for(const d of candidates){if(count>=state.settings.respGoal)break;const day=dateKey(d);if(getAssignments(e.id,day).length)continue;const item={category:'RESP',type:code,code};if(checkCandidate(e,day,item).errors.length)continue;addAuto(e,day,item);count++;added++;}});return added;}
+  function secondariResponsibleEmployee(){
+    return state.employees.find(e=>
+      slug(e.responsabile)==='secondari'||
+      e.turno==='RS'||
+      slug(e.cognome)==='raschi'
+    )||null;
+  }
+  function scheduleGrsResponsibility(){
+    let added=0;
+    const raschi=secondariResponsibleEmployee();
+    if(!raschi)return added;
+    workdays().forEach(d=>{
+      const day=dateKey(d);
+      if(!employeeActiveOn(raschi,day))return;
+      const existing=getAssignments(raschi.id,day);
+      if(existing.some(a=>String(a.type||a.code||'').toUpperCase()==='GRS'))return;
+      // Assenze, RC, formazione o altri vincoli gia presenti restano prioritari e protetti.
+      if(existing.length)return;
+      const item={category:'RESP',type:'GRS',code:'GRS',structuralGrs:true,note:'Responsabile Secondari · giornata GRS ordinaria'};
+      if(checkCandidate(raschi,day,item).errors.length)return;
+      addAuto(raschi,day,item);
+      added++;
+    });
+    return added;
+  }
+  function scheduleFixedResponsibles(){
+    let added=0;
+    const bosetti=state.employees.find(e=>slug(e.responsabile)==='operativo'||e.turno==='RO');
+    if(bosetti)workdays().forEach(d=>{
+      const day=dateKey(d),item={category:'RESP',type:'GRO',code:'GRO'};
+      if(employeeActiveOn(bosetti,day)&&!getAssignments(bosetti.id,day).length&&checkCandidate(bosetti,day,item).errors.length===0){addAuto(bosetti,day,item);added++;}
+    });
+    const responsibles=[
+      ...state.employees.filter(e=>slug(e.responsabile)==='autoparco').map(e=>[e,'GRA']),
+      ...state.employees.filter(e=>slug(e.responsabile)==='magazzino').map(e=>[e,'GRM'])
+    ];
+    responsibles.forEach(([e,code],idx)=>{
+      let count=allAssignmentRows().filter(r=>r.employeeId===e.id&&r.a.type===code).length;
+      const candidates=workdays().filter((d,i)=>i%Math.max(1,Math.floor(workdays().length/state.settings.respGoal))===idx%2).concat(workdays());
+      for(const d of candidates){
+        if(count>=state.settings.respGoal)break;
+        const day=dateKey(d);
+        if(getAssignments(e.id,day).length)continue;
+        const item={category:'RESP',type:code,code};
+        if(checkCandidate(e,day,item).errors.length)continue;
+        addAuto(e,day,item);count++;added++;
+      }
+    });
+    return added;
+  }
   function removeAutoGrsForRaschi(raschi,day){const items=getAssignments(raschi.id,day),keep=items.filter(a=>!(a.type==='GRS'&&sourceLabel(a)==='AUTO'&&!a.locked));setAssignments(raschi.id,day,keep,{dirty:false,render:false});}
   function preferredSecondariDayCount(employeeId){
     if(!employeeId)return 0;
@@ -5666,7 +5729,13 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       ensureGenerationNotCancelled();
 
       if(admin){updateGeneration(14,'Pianificazione amministrazione…');added+=scheduleAdmin();await yieldUi();ensureGenerationNotCancelled();}
-      if(resp){updateGeneration(22,'Pianificazione giornate responsabili…');added+=scheduleFixedResponsibles();await yieldUi();ensureGenerationNotCancelled();}
+
+      updateGeneration(19,'Pianificazione GRS feriali…');
+      added+=scheduleGrsResponsibility();
+      await yieldUi();
+      ensureGenerationNotCancelled();
+
+      if(resp){updateGeneration(24,'Pianificazione altre responsabilità…');added+=scheduleFixedResponsibles();await yieldUi();ensureGenerationNotCancelled();}
 
       updateGeneration(32,'Copertura prioritaria equipaggi 118…');
       r=await schedule118({
