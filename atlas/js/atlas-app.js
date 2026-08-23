@@ -1981,10 +1981,11 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         <summary class="coverage-day-summary">
           <div class="coverage-date-block"><b>${DOW[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}</b><span>${d.getFullYear()}${preferredGroup(d,'M')?` · M ${preferredGroup(d,'M')} / P ${preferredGroup(d,'P')}`:''}</span></div>
           <div class="coverage-shift-strip">${shiftChips}</div>
-          <div class="coverage-se-chip ${se.tone}"><span>MGSE</span><b>${se.count}/${se.target}</b><small>${esc(se.label)}</small></div>
+          <div class="coverage-se-chip ${se.tone}" title="${esc(seNames||se.label)}"><span>MGSE</span><b>${se.count}/${se.target}</b><small>${seNames?esc(seNames):esc(se.label)}</small></div>
           <span class="coverage-expand">⌄</span>
         </summary>
         <div class="coverage-day-detail">
+          ${!isWeekend(d)?`<div class="coverage-priority-note ${se.tone==='bad'?'danger':''}"><strong>MGSE:</strong> ${seNames?esc(seNames):'nessun dipendente assegnato'} · ${se.count}/${se.target}</div>`:''}
           ${se.reduced?`<div class="coverage-priority-note">118 prioritario · MGSE ridotto a ${se.count}/${se.target}. ${seNames?`Presenti: ${esc(seNames)}.`:'Nessuna risorsa MGSE disponibile dopo la copertura 118.'}</div>`:''}
           ${se.tone==='bad'?`<div class="coverage-priority-note danger">MGSE sotto il minimo senza una fascia 118 richiesta nella giornata.</div>`:''}
           ${shifts.map(s=>{
