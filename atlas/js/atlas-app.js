@@ -3225,7 +3225,11 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
           :'Compatibile con cambio turno',
         tone:'warning',
         summary:responsibilityFallbacks.length
-          ?`Copertura trovata solo come fallback: ${responsibilityFallbacks.map(operation=>`${operation.coverName} ${operation.fallbackResponsibility} → 118`).join(' · ')}.`
+          ?`Copertura trovata solo come fallback: ${responsibilityFallbacks.map(operation=>
+              operation.fallbackResponsibility
+                ?`${operation.coverName} ${operation.fallbackResponsibility} → 118`
+                :`${operation.replacementName} libera ${operation.replacementFallbackResponsibility} per prendere ${operation.sourceCode}`
+            ).join(' · ')}.`
           :solutions.length>1
             ?`ATLAS ha trovato ${solutions.length} soluzioni compatibili. La prima richiede ${changes.length} ${changes.length===1?'cambio turno':'cambi turno'}.`
             :changes.length===1
