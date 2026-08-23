@@ -2419,12 +2419,12 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       .map(([reason])=>reason);
   }
 
-  function volunteerDirectOptions(hole,role,item,reasonMap){
+  function volunteerDirectOptions(hole,role,item,reasonMap,{allowResponsibilityFallback=false}={}){
     const day=String(hole.day||'').slice(0,10);
     const existing=duplicateSlotRows(day,item);
     if(existing.length)return[{type:'covered',cost:0,role,resources:[],cover:null,replacement:null,sourceItem:null,warnings:[],score:-1000,text:`Ruolo già coperto da ${existing.map(row=>employeeName(row.employee)).join(', ')}`}];
 
-    return state.employees
+    const ordinary=state.employees
       .filter(employee=>volunteerEmployeeAllowed(employee,role))
       .map(employee=>{
         const check=checkCandidate(employee,day,item,{manual:false,allowRo:true});
@@ -2448,6 +2448,75 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       .filter(Boolean)
       .sort((left,right)=>left.cost-right.cost||left.warnings.length-right.warnings.length||left.score-right.score||employeeName(left.cover).localeCompare(employeeName(right.cover),'it'))
       .slice(0,10);
+
+    if(!allowResponsibilityFallback){
+      return ordinary;
+    }
+
+    const fallback=volunteerResponsibilityFallbackOptions(hole,role,item,reasonMap);
+    return[...ordinary,...fallback]
+      .sort((left,right)=>left.cost-right.cost||left.warnings.length-right.warnings.length||left.score-right.score||employeeName(left.cover).localeCompare(employeeName(right.cover),'it'))
+      .slice(0,12);
+  }
+
+  const VOLUNTEER_RESPONSIBILITY_FALLBACK_TYPES=new Set(['GRO','GRS']);
+
+  function volunteerResponsibilityFallbackOptions(hole,role,item,reasonMap){
+    const day=String(hole.day||'').slice(0,10);
+
+    return state.employees
+      .filter(employee=>volunteerEmployeeAllowed(employee,role))
+      .map(employee=>{
+        const releases=releasableResponsibilityAssignments(employee,day)
+          .filter(entry=>VOLUNTEER_RESPONSIBILITY_FALLBACK_TYPES.has(String(entry.type||entry.code||'').toUpperCase()));
+
+        if(!releases.length){
+          return null;
+        }
+
+        const check=withResponsibilityAssignmentsRemoved(
+          employee,
+          day,
+          releases,
+          ()=>checkCandidate(employee,day,item,{manual:false,allowRo:true})
+        );
+
+        if(check.errors.length){
+          check.errors.forEach(error=>reasonMap.set(error,(reasonMap.get(error)||0)+1));
+          return null;
+        }
+
+        const codes=[...new Set(releases.map(entry=>String(entry.type||entry.code||'').toUpperCase()))];
+        const sourceHours=releases.reduce((total,entry)=>{
+          const times=assignmentTimes(entry,day);
+          return total+Number(times?.hours||entry.hours||0);
+        },0);
+        const fallbackResponsibility=codes.join(' + ');
+
+        return{
+          type:'direct',
+          cost:4,
+          role,
+          resources:[employee.id],
+          cover:employee,
+          replacement:null,
+          sourceItem:null,
+          releasedResponsibilityIds:releases.map(entry=>entry.id),
+          releasedResponsibilityCodes:codes,
+          fallbackResponsibility,
+          warnings:[
+            ...(check.warnings||[]),
+            `Fallback Buchi volontari: ${fallbackResponsibility} viene liberato per coprire il 118.`
+          ],
+          targetHours:Number(item.hours||0),
+          sourceHours,
+          score:candidateScore(employee,day,item,null)+1200,
+          text:`${employeeName(employee)} può coprire liberando ${fallbackResponsibility}`
+        };
+      })
+      .filter(Boolean)
+      .sort((left,right)=>left.warnings.length-right.warnings.length||left.score-right.score||employeeName(left.cover).localeCompare(employeeName(right.cover),'it'))
+      .slice(0,6);
   }
 
   function volunteerReplacementCandidates(
@@ -2609,6 +2678,57 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         left.score-right.score
       )
       .slice(0,5);
+  }
+
+  function volunteerRoleAnalyses(hole,roles,{allowResponsibilityFallback=false}={}){
+    return roles.map(role=>{
+      const item=volunteerHoleItem(hole,role);
+      const reasonMap=new Map();
+
+      const direct=volunteerDirectOptions(
+        hole,
+        role,
+        item,
+        reasonMap,
+        {allowResponsibilityFallback}
+      );
+
+      let changes=[];
+
+      const hasCovered=direct.some(
+        option=>option.type==='covered'
+      );
+
+      const directPeople=direct.filter(
+        option=>option.type==='direct'&&!option.fallbackResponsibility
+      ).length;
+
+      if(
+        !hasCovered&&
+        directPeople<Math.max(roles.length,2)
+      ){
+        changes=volunteerChangeOptions(
+          hole,
+          role,
+          item,
+          reasonMap,
+          roles.length
+        );
+      }
+
+      return{
+        role,
+        item,
+        options:[
+          ...direct,
+          ...changes
+        ],
+        directCount:directPeople,
+        changeCount:changes.length,
+        fallbackCount:direct.filter(option=>!!option.fallbackResponsibility).length,
+        reasons:volunteerMostCommonReasons(reasonMap)
+      };
+    });
   }
 
   function volunteerOptionSignature(option){
@@ -2787,7 +2907,10 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       sourceItemId:'',
       sourceCode:'',
       targetHours:Number(option.targetHours||0),
-      sourceHours:0,
+      sourceHours:Number(option.sourceHours||0),
+      releasedResponsibilityIds:[...(option.releasedResponsibilityIds||[])],
+      releasedResponsibilityCodes:[...(option.releasedResponsibilityCodes||[])],
+      fallbackResponsibility:String(option.fallbackResponsibility||''),
       text:option.text,
       warnings:option.warnings||[]
     };
@@ -2802,11 +2925,13 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       );
 
     const changes=operations.filter(
-      operation=>['change','sunday-rest'].includes(operation.mode)
+      operation=>
+        ['change','sunday-rest'].includes(operation.mode)||
+        !!operation.fallbackResponsibility
     );
 
     const direct=operations.filter(
-      operation=>operation.mode==='direct'
+      operation=>operation.mode==='direct'&&!operation.fallbackResponsibility
     );
 
     const covered=operations.filter(
@@ -2817,9 +2942,11 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
 
     if(changes.length){
       const names=changes
-        .map(operation=>operation.mode==='sunday-rest'
-          ?`${operation.coverName} · riposo domenicale spostato`
-          :`${operation.coverName} ⇄ ${operation.replacementName}`)
+        .map(operation=>operation.fallbackResponsibility
+          ?`${operation.coverName} · ${operation.fallbackResponsibility} → 118`
+          :operation.mode==='sunday-rest'
+            ?`${operation.coverName} · riposo domenicale spostato`
+            :`${operation.coverName} ⇄ ${operation.replacementName}`)
         .join(' · ');
 
       label=`${changes.length} ${changes.length===1?'adeguamento':'adeguamenti'} · ${names}`;
@@ -2880,7 +3007,13 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       const source=Number(operation.sourceHours||0);
 
       if(operation.mode==='direct'){
-        add(operation.coverEmployeeId,target,'Copertura richiesta volontari');
+        add(
+          operation.coverEmployeeId,
+          target-source,
+          operation.fallbackResponsibility
+            ?`Copertura volontari · ${operation.fallbackResponsibility} convertito in 118`
+            :'Copertura richiesta volontari'
+        );
       }else if(operation.mode==='sunday-rest'){
         add(operation.coverEmployeeId,target,'Copertura con riposo domenicale spostato');
       }else if(operation.mode==='change'){
@@ -2986,56 +3119,33 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       };
     }
 
-    const roleAnalyses=roles.map(role=>{
-      const item=volunteerHoleItem(hole,role);
-      const reasonMap=new Map();
+    let roleAnalyses=volunteerRoleAnalyses(hole,roles);
 
-      const direct=volunteerDirectOptions(
-        hole,
-        role,
-        item,
-        reasonMap
-      );
-
-      let changes=[];
-
-      const hasCovered=direct.some(
-        option=>option.type==='covered'
-      );
-
-      const directPeople=direct.filter(
-        option=>option.type==='direct'
-      ).length;
-
-      if(
-        !hasCovered&&
-        directPeople<Math.max(roles.length,2)
-      ){
-        changes=volunteerChangeOptions(
-          hole,
-          role,
-          item,
-          reasonMap,
-          roles.length
-        );
-      }
-
-      return{
-        role,
-        item,
-        options:[
-          ...direct,
-          ...changes
-        ],
-        directCount:directPeople,
-        changeCount:changes.length,
-        reasons:volunteerMostCommonReasons(reasonMap)
-      };
-    });
-
-    const impossible=roleAnalyses.filter(
+    let impossible=roleAnalyses.filter(
       analysis=>!analysis.options.length
     );
+
+    let plans=impossible.length
+      ?[]
+      :volunteerPlanOptions(roleAnalyses,16);
+
+    if(impossible.length||!plans.length){
+      const fallbackAnalyses=volunteerRoleAnalyses(
+        hole,
+        roles,
+        {allowResponsibilityFallback:true}
+      );
+      const fallbackImpossible=fallbackAnalyses.filter(
+        analysis=>!analysis.options.length
+      );
+      const fallbackPlans=fallbackImpossible.length
+        ?[]
+        :volunteerPlanOptions(fallbackAnalyses,16);
+
+      roleAnalyses=fallbackAnalyses;
+      impossible=fallbackImpossible;
+      plans=fallbackPlans;
+    }
 
     if(impossible.length){
       return{
@@ -3060,11 +3170,6 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         }).slice(0,6)
       };
     }
-
-    const plans=volunteerPlanOptions(
-      roleAnalyses,
-      16
-    );
 
     if(!plans.length){
       return{
@@ -3092,14 +3197,18 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
 
     const best=solutions[0];
     const changes=best.changes||[];
+    const responsibilityFallbacks=changes.filter(operation=>!!operation.fallbackResponsibility);
 
     if(changes.length){
       return{
         status:'CHANGES',
-        label:'Compatibile con cambio turno',
+        label:responsibilityFallbacks.length
+          ?'Compatibile con fallback GRO/GRS'
+          :'Compatibile con cambio turno',
         tone:'warning',
-        summary:
-          solutions.length>1
+        summary:responsibilityFallbacks.length
+          ?`Copertura trovata solo come fallback: ${responsibilityFallbacks.map(operation=>`${operation.coverName} ${operation.fallbackResponsibility} → 118`).join(' · ')}.`
+          :solutions.length>1
             ?`ATLAS ha trovato ${solutions.length} soluzioni compatibili. La prima richiede ${changes.length} ${changes.length===1?'cambio turno':'cambi turno'}.`
             :changes.length===1
               ?'La richiesta è copribile con un cambio turno sicuro individuato da ATLAS.'
@@ -3431,12 +3540,50 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
           );
         }
 
+        const key=assignmentKey(
+          employee.id,
+          day
+        );
+
+        const releaseIds=new Set(
+          operation.releasedResponsibilityIds||[]
+        );
+
+        if(releaseIds.size){
+          const current=[...getAssignments(employee.id,day)];
+          const released=current.filter(entry=>releaseIds.has(entry.id));
+          const invalid=released.filter(entry=>
+            entry?.category!=='RESP'||
+            !VOLUNTEER_RESPONSIBILITY_FALLBACK_TYPES.has(String(entry.type||entry.code||'').toUpperCase())
+          );
+
+          if(released.length!==releaseIds.size||invalid.length){
+            throw new Error(
+              `La giornata ${operation.fallbackResponsibility||'GRO/GRS'} di ${employeeName(employee)} non è più disponibile. Ricalcola la compatibilità.`
+            );
+          }
+
+          const remaining=current.filter(entry=>!releaseIds.has(entry.id));
+          if(remaining.length){
+            state.assignments[key]=remaining;
+          }else{
+            delete state.assignments[key];
+          }
+        }
+
         const item=
           volunteerAssignmentForProposal(
             proposal,
             hole,
             operation.role
           );
+
+        if(operation.fallbackResponsibility){
+          item.note=[
+            item.note,
+            `${operation.fallbackResponsibility} liberato come fallback per il buco volontari`
+          ].filter(Boolean).join(' · ');
+        }
 
         const check=
           checkCandidate(
@@ -3454,11 +3601,6 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
             `${employeeName(employee)} non è più disponibile per ${operation.role}: ${check.errors.join(' ')}`
           );
         }
-
-        const key=assignmentKey(
-          employee.id,
-          day
-        );
 
         state.assignments[key]=[
           ...getAssignments(
