@@ -1,0 +1,29 @@
+name: Cleanup MGSE quota duplicates
+on:
+  push:
+    branches: [atlas/mgse-settings-coverage-20260823]
+    paths: [.github/workflows/run-cleanup-mgse.yml]
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: atlas/mgse-settings-coverage-20260823
+          fetch-depth: 0
+      - run: python tools/cleanup_mgse_quota_duplicates.py
+      - run: |
+          test "$(grep -o 'id="setSePreferredMinDays"' admin.html | wc -l)" -eq 1
+          test "$(grep -o 'id="setSePreferredMaxDays"' admin.html | wc -l)" -eq 1
+          test "$(grep -o 'id="setSePreferredMinDays"' ro.html | wc -l)" -eq 1
+          test "$(grep -o 'id="setSePreferredMaxDays"' ro.html | wc -l)" -eq 1
+          node --check atlas/js/atlas-app.js
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin.html ro.html
+          git commit -m "ATLAS: remove duplicated MGSE quota fields"
+          git pull --rebase origin atlas/mgse-settings-coverage-20260823
+          git push origin HEAD:atlas/mgse-settings-coverage-20260823
