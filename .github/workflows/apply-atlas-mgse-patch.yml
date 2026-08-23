@@ -1,0 +1,52 @@
+name: Apply ATLAS MGSE patch
+
+on:
+  push:
+    branches:
+      - atlas/mgse-settings-coverage-20260823
+    paths:
+      - tools/apply_atlas_mgse_coverage_patch.py
+      - .github/workflows/apply-atlas-mgse-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[atlas-patch-applied]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: atlas/mgse-settings-coverage-20260823
+          fetch-depth: 0
+
+      - name: Apply patch
+        run: python tools/apply_atlas_mgse_coverage_patch.py
+
+      - name: Basic JavaScript syntax checks
+        run: |
+          node --check atlas/js/config.js
+          node --check atlas/js/atlas-app.js
+
+      - name: Verify expected changes
+        run: |
+          grep -q "seMin: 2" atlas/js/config.js
+          grep -q "sePreferredEmployeeId" atlas/js/atlas-app.js
+          grep -q "Copertura prioritaria equipaggi 118" atlas/js/atlas-app.js
+          grep -q "coverage-dashboard-kpis" atlas/css/core.css
+          grep -q "setSePreferredEmployee" ro.html
+          grep -q "setSePreferredEmployee" admin.html
+
+      - name: Commit generated changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add atlas/js/config.js atlas/js/atlas-app.js atlas/css/core.css ro.html admin.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "ATLAS: prioritize 118 and redesign MGSE coverage [atlas-patch-applied]"
+            git push origin HEAD:atlas/mgse-settings-coverage-20260823
+          fi
