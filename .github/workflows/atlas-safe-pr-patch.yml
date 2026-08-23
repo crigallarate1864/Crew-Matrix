@@ -1,6 +1,9 @@
 name: Validate ATLAS safe GRS/MGSE patch
 
 on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/atlas-safe-pr-patch.yml]
   pull_request:
     branches: [main]
     types: [synchronize, reopened]
@@ -12,7 +15,7 @@ permissions:
 
 jobs:
   patch-and-check:
-    if: github.event_name == 'schedule' || github.head_ref == 'atlas/grs-monthly-mgse-safe-20260823'
+    if: github.event_name == 'push' || github.event_name == 'schedule' || github.head_ref == 'atlas/grs-monthly-mgse-safe-20260823'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
