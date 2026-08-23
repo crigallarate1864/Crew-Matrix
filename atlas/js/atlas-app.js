@@ -178,6 +178,7 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
     'seMin',
     'seMax',
     'seTarget',
+    'sePreferredEmployeeId',
     'respMin',
     'respGoal',
     'autoAdmin',
@@ -249,7 +250,12 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
       holidayRecoveryDays:
         Number(
           shared.settings.holidayRecoveryDays
-        )||30
+        )||30,
+      // Regola strutturale ATLAS: MGSE ordinario sempre 2/2.
+      // Un vecchio valore condiviso non deve riattivare il precedente minimo 1.
+      seMin:2,
+      seMax:2,
+      seTarget:2
     };
 
     state.sharedSettingsUpdatedAt=
@@ -1185,7 +1191,7 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
 
 
   function renderAll(){ initRequirements();const rows=buildAssignmentRows(),idx=indexRows(rows);state._renderRows=rows;state._renderRowsByEmployee=idx.byEmployee;state._renderRowsByDay=idx.byDay;state._renderShiftRows=idx.byShift;state._renderStatsCache=new Map();state._historyRowsCache=new Map();try{state.validations=validateAll();renderCalendar();renderCoverage();renderCcnlDashboard();renderSummary();renderAnomalies();renderStaff();renderKpis();renderRules();}finally{delete state._renderRows;delete state._renderRowsByEmployee;delete state._renderRowsByDay;delete state._renderShiftRows;delete state._renderStatsCache;delete state._historyRowsCache;} }
-  function renderRules(){ $('#sidebarRest').textContent=`${fmt(state.settings.minRest)} ore`;$('#sidebarSe').textContent=`${state.settings.seMin}–${state.settings.seMax} persone`;$('#sidebarResp').textContent=`min ${state.settings.respMin} · obiettivo ${state.settings.respGoal}`; const db=$('#dbStateText'); if(db)db.textContent=`Matrice ${state.matrixLoaded?'✓':'fallback'} · Database ${state.dbLoaded?'✓':'locale'}`; }
+  function renderRules(){ $('#sidebarRest').textContent=`${fmt(state.settings.minRest)} ore`;$('#sidebarSe').textContent='2 persone · riducibili per priorità 118';$('#sidebarResp').textContent=`min ${state.settings.respMin} · obiettivo ${state.settings.respGoal}`; const db=$('#dbStateText'); if(db)db.textContent=`Matrice ${state.matrixLoaded?'✓':'fallback'} · Database ${state.dbLoaded?'✓':'locale'}`; }
   function filteredEmployees(){
     const q=$('#searchEmployee').value.trim().toLowerCase(),
       g=$('#groupFilter').value,
@@ -1839,7 +1845,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         out.push(validation(missingDue||dueInViewedMonth||overdue?'error':'warning',missingDue?'Scadenza recupero obbligatoria mancante':'Recupero permesso da completare',`${employeeName(e)}: ${code} del ${formatDateIt(r.day)}${r.a.recoveryDue?` da recuperare entro ${formatDateIt(r.a.recoveryDue)}`:' senza scadenza configurata'}.`,e.id,r.day));
       }});
     });
-    workdays().forEach(d=>{const day=dateKey(d),count=rows.filter(r=>r.day===day&&r.a.category==='SE').length;if(count<state.settings.seMin)out.push(validation('warning','Secondari sotto il minimo',`${DOW[d.getDay()]} ${d.getDate()}: ${count} persone operative in SE, minimo ${state.settings.seMin}. GRS non viene conteggiato.`,null,day));if(count>state.settings.seMax)out.push(validation('error','Troppi dipendenti nei Secondari',`${DOW[d.getDay()]} ${d.getDate()}: ${count} persone, massimo ${state.settings.seMax}.`,null,day));});
+    workdays().forEach(d=>{const day=dateKey(d),count=rows.filter(r=>r.day===day&&r.a.category==='SE').length;if(count<2){if(required118OnDay(day))out.push(validation('info','MGSE ridotto per priorità 118',`${DOW[d.getDay()]} ${d.getDate()}: ${count}/2 risorse MGSE. Riduzione ammessa perché nella giornata è richiesta copertura 118, che ha priorità.`,null,day));else out.push(validation('warning','Secondari sotto il minimo',`${DOW[d.getDay()]} ${d.getDate()}: ${count}/2 persone operative in MGSE senza una fascia 118 richiesta che giustifichi la riduzione.`,null,day));}if(count>2)out.push(validation('error','Troppi dipendenti nei Secondari',`${DOW[d.getDay()]} ${d.getDate()}: ${count} persone, massimo 2.`,null,day));});
     monthDates().forEach(d=>{const day=dateKey(d);['M','P','N'].forEach(shift=>{if(state.requirements[`${day}|${shift}`]!=='required')return;const cov=coverageFor(day,shift);Object.entries(cov).forEach(([crew,roles])=>Object.entries(roles).forEach(([role,people])=>{if(!people.length)out.push(validation('error','Ruolo 118 scoperto',`${DOW[d.getDay()]} ${d.getDate()} · ${shift} · ${crew}: manca ${role}.`,null,day));if(people.length>1)out.push(validation('error','Ruolo duplicato',`${DOW[d.getDay()]} ${d.getDate()} · ${shift} · ${crew}: ${role} assegnato a più persone.`,null,day));}));
       const sr=shiftRows(day,shift),groups=[...new Set(sr.map(r=>r.employee.turno).filter(g=>['A','B'].includes(g)))],crossRows=sr.filter(r=>r.a.crossGroup===true);
       if(groups.length>1)out.push(validation('warning','Gruppi A/B mischiati',`${DOW[d.getDay()]} ${d.getDate()} · ${shift}: sono presenti dipendenti dei gruppi A e B. Il cross è stato utilizzato per completare la copertura.`,null,day));
@@ -1889,8 +1895,122 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
 
   function emptyCoverage(day,shift,rows=null){const result={};const sr=rows||shiftRows(day,shift);crewSlotsForDayShift(day,shift).forEach(slot=>{if(!result[slot.crew])result[slot.crew]={};result[slot.crew][slot.role]=[];});if(sr.some(r=>r.a.site==='SU'))result.Sumirago={A:[],C:[],S:[]};return result;}
   function coverageFor(day,shift){const sr=shiftRows(day,shift),result=emptyCoverage(day,shift,sr);sr.forEach(r=>{const crew=crewKey(r.a);if(result[crew]?.[r.a.role])result[crew][r.a.role].push(employeeName(r.employee));});return result;}
+  function required118OnDay(day){
+    return ['M','P','N'].some(shift=>state.requirements[`${day}|${shift}`]==='required');
+  }
+  function secondariDayStatus(day){
+    const employees=rowsForDay(day).filter(r=>r.a.category==='SE');
+    const count=employees.length;
+    const weekday=!isWeekend(parseDateKey(day));
+    const target=weekday?2:0;
+    const reduced=weekday&&count<target&&required118OnDay(day);
+    return{
+      count,target,reduced,
+      tone:!weekday?'na':count>=target?'ok':reduced?'reduced':'bad',
+      employees,
+      label:!weekday?'MGSE non previsti':count>=target?'MGSE ordinario':reduced?'MGSE ridotto · priorità 118':'MGSE sotto minimo'
+    };
+  }
   function crewHtml(name,roles){const title=name==='Somma'?'SOMMA':name==='Sumirago'?'SUMIRAGO':`GALLARATE ${name.slice(1)}`;return`<div class="crew"><div class="crew-title">${esc(title)}</div>${Object.entries(roles).map(([role,people])=>`<div class="role-row ${people.length?'':'missing'}"><span class="role-code">${role}</span><span class="role-person">${people.length?esc(people.join(', ')):'manca'}</span></div>`).join('')}</div>`;}
-  function renderCoverage(){const filter=$('#coverageFilter').value,rows=[];monthDates().forEach(d=>{const day=dateKey(d);let hasUncovered=false,hasRequired=false;const shifts=['M','P','N'].map(shift=>{const req=state.requirements[`${day}|${shift}`]||'conditional',cov=coverageFor(day,shift);let missing=0;Object.values(cov).forEach(roles=>Object.values(roles).forEach(p=>{if(!p.length)missing++;}));if(req==='required'){hasRequired=true;if(missing)hasUncovered=true;}return{shift,req,cov,missing};});const include=filter==='all'||filter==='required'&&hasRequired||filter==='uncovered'&&hasUncovered||filter==='weekdays'&&!isWeekend(d)||filter==='weekends'&&isWeekend(d);if(include)rows.push({d,day,shifts});});$('#coverageGrid').innerHTML=rows.map(({d,day,shifts})=>{const se=rowsForDay(day).filter(r=>r.a.category==='SE').map(r=>employeeName(r.employee));return`<article class="day-card"><div class="day-card-head"><div><div class="day-card-title">${DOW[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}</div><div class="day-card-date">${d.getFullYear()}${preferredGroup(d,'M')?` · M ${preferredGroup(d,'M')} / P ${preferredGroup(d,'P')}`:''}</div></div><span class="chip">SE ${se.length}</span></div>${shifts.map(s=>{const status=s.req==='required'?(s.missing?'bad':'ok'):'warn',w=shiftWindow(s.shift,day),crewCards=Object.entries(s.cov).map(([name,roles])=>crewHtml(name,roles)).join('');return`<div class="shift-coverage"><div class="coverage-top"><span class="shift-pill">${s.shift}</span><span class="muted" style="font-size:10px">${w.start}–${w.end}</span><span class="coverage-status ${status}"></span><div class="req-toggle"><button data-req-day="${day}" data-req-shift="${s.shift}" class="${s.req}">${s.req==='required'?'Richiesto':'Da definire'}</button></div></div><div class="crew-grid">${crewCards}</div>${s.shift==='N'?'<div class="se-line"><span>Configurazione notte</span><strong class="text-green">solo equipaggi a 3</strong></div>':''}${d.getDay()===6&&s.shift==='M'?'<div class="se-line"><span>Sabato mattina</span><strong class="text-green">Gallarate macchina a 2 + Gallarate macchina a 3 + Somma</strong></div>':''}${d.getDay()===6&&s.shift==='P'?'<div class="se-line"><span>Sabato pomeriggio</span><strong class="text-green">Gallarate macchina a 2 + Somma</strong></div>':''}${s.shift==='M'?`<div class="se-line"><span>Secondari feriali</span><strong class="${!isWeekend(d)&&se.length<state.settings.seMin?'text-red':!isWeekend(d)&&se.length>=state.settings.seTarget?'text-green':'text-amber'}">${se.length?esc(se.join(', ')):(isWeekend(d)?'non previsti':'nessuno')}</strong></div>`:''}</div>`;}).join('')}</article>`;}).join('')||'<div class="empty-state"><div><strong>Nessun giorno corrisponde al filtro</strong></div></div>';$$('[data-req-day]').forEach(b=>b.addEventListener('click',()=>{const k=`${b.dataset.reqDay}|${b.dataset.reqShift}`;state.requirements[k]=state.requirements[k]==='required'?'conditional':'required';state.localDirty=true;saveState();renderAll();}));}
+  function renderCoverage(){
+    const filter=$('#coverageFilter').value;
+    const days=[];
+    monthDates().forEach(d=>{
+      const day=dateKey(d);
+      let hasUncovered=false,hasRequired=false,requiredSlots=0,filledSlots=0;
+      const shifts=['M','P','N'].map(shift=>{
+        const req=state.requirements[`${day}|${shift}`]||'conditional';
+        const cov=coverageFor(day,shift);
+        let missing=0,total=0;
+        Object.values(cov).forEach(roles=>Object.values(roles).forEach(people=>{
+          total++;
+          if(!people.length)missing++;
+        }));
+        if(req==='required'){
+          hasRequired=true;
+          requiredSlots+=total;
+          filledSlots+=Math.max(0,total-missing);
+          if(missing)hasUncovered=true;
+        }
+        return{shift,req,cov,missing,total};
+      });
+      const se=secondariDayStatus(day);
+      const include=filter==='all'||
+        filter==='required'&&hasRequired||
+        filter==='uncovered'&&hasUncovered||
+        filter==='weekdays'&&!isWeekend(d)||
+        filter==='weekends'&&isWeekend(d)||
+        filter==='se-reduced'&&se.reduced;
+      if(include)days.push({d,day,shifts,se,hasRequired,hasUncovered,requiredSlots,filledSlots});
+    });
+
+    const allDays=monthDates().map(d=>{
+      const day=dateKey(d);
+      let requiredSlots=0,missing=0;
+      ['M','P','N'].forEach(shift=>{
+        if(state.requirements[`${day}|${shift}`]!=='required')return;
+        const cov=coverageFor(day,shift);
+        Object.values(cov).forEach(roles=>Object.values(roles).forEach(people=>{
+          requiredSlots++;
+          if(!people.length)missing++;
+        }));
+      });
+      return{day,requiredSlots,missing,se:secondariDayStatus(day),weekday:!isWeekend(d)};
+    });
+    const totalRequired=allDays.reduce((sum,row)=>sum+row.requiredSlots,0);
+    const totalMissing=allDays.reduce((sum,row)=>sum+row.missing,0);
+    const completeDays=allDays.filter(row=>row.requiredSlots>0&&row.missing===0).length;
+    const reducedSeDays=allDays.filter(row=>row.weekday&&row.se.reduced).length;
+
+    const kpis=`<div class="coverage-dashboard-kpis">
+      <article><span>Ruoli richiesti</span><strong>${totalRequired}</strong><small>${Math.max(0,totalRequired-totalMissing)} coperti</small></article>
+      <article class="${totalMissing?'bad':'good'}"><span>Ruoli scoperti</span><strong>${totalMissing}</strong><small>${totalMissing?'da risolvere':'copertura completa'}</small></article>
+      <article class="good"><span>Giorni 118 completi</span><strong>${completeDays}</strong><small>fasce richieste senza buchi</small></article>
+      <article class="${reducedSeDays?'warn':'good'}"><span>MGSE ridotti</span><strong>${reducedSeDays}</strong><small>priorità assegnata al 118</small></article>
+    </div>`;
+
+    const list=days.map(({d,day,shifts,se,hasRequired,hasUncovered})=>{
+      const tone=hasUncovered?'bad':se.tone==='bad'?'warn':se.reduced?'reduced':'ok';
+      const shiftChips=shifts.map(s=>{
+        const cls=s.req!=='required'?'idle':s.missing?'bad':'ok';
+        const text=s.req!=='required'?'—':s.missing?`−${s.missing}`:'✓';
+        return`<span class="coverage-shift-chip ${cls}"><b>${s.shift}</b>${text}</span>`;
+      }).join('');
+      const seNames=se.employees.map(r=>employeeName(r.employee)).join(', ');
+      return`<details class="coverage-day-row ${tone}">
+        <summary class="coverage-day-summary">
+          <div class="coverage-date-block"><b>${DOW[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}</b><span>${d.getFullYear()}${preferredGroup(d,'M')?` · M ${preferredGroup(d,'M')} / P ${preferredGroup(d,'P')}`:''}</span></div>
+          <div class="coverage-shift-strip">${shiftChips}</div>
+          <div class="coverage-se-chip ${se.tone}"><span>MGSE</span><b>${se.count}/${se.target}</b><small>${esc(se.label)}</small></div>
+          <span class="coverage-expand">⌄</span>
+        </summary>
+        <div class="coverage-day-detail">
+          ${se.reduced?`<div class="coverage-priority-note">118 prioritario · MGSE ridotto a ${se.count}/${se.target}. ${seNames?`Presenti: ${esc(seNames)}.`:'Nessuna risorsa MGSE disponibile dopo la copertura 118.'}</div>`:''}
+          ${se.tone==='bad'?`<div class="coverage-priority-note danger">MGSE sotto il minimo senza una fascia 118 richiesta nella giornata.</div>`:''}
+          ${shifts.map(s=>{
+            const status=s.req==='required'?(s.missing?'bad':'ok'):'warn';
+            const w=shiftWindow(s.shift,day);
+            const crewCards=Object.entries(s.cov).map(([name,roles])=>crewHtml(name,roles)).join('');
+            return`<div class="shift-coverage compact">
+              <div class="coverage-top"><span class="shift-pill">${s.shift}</span><strong>${w.start}–${w.end}</strong><span class="coverage-status ${status}"></span><div class="req-toggle"><button data-req-day="${day}" data-req-shift="${s.shift}" class="${s.req}">${s.req==='required'?'Richiesto':'Da definire'}</button></div></div>
+              <div class="crew-grid">${crewCards}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </details>`;
+    }).join('')||'<div class="empty-state"><div><strong>Nessun giorno corrisponde al filtro</strong>Modifica il filtro per visualizzare altre giornate.</div></div>';
+
+    $('#coverageGrid').innerHTML=kpis+`<div class="coverage-dashboard-list">${list}</div>`;
+    $$('[data-req-day]').forEach(b=>b.addEventListener('click',event=>{
+      event.preventDefault();
+      event.stopPropagation();
+      const k=`${b.dataset.reqDay}|${b.dataset.reqShift}`;
+      state.requirements[k]=state.requirements[k]==='required'?'conditional':'required';
+      state.localDirty=true;
+      saveState();
+      renderAll();
+    }));
+  }
   function renderCcnlDashboard(){
     const host=$('#ccnlDashboard');if(!host)return;const year=Number(state.month.slice(0,4));
     const weeklyErrors=state.validations.filter(v=>['Settimana oltre 44 ore','Riposo settimanale insufficiente','Media settimanale oltre 48 ore'].includes(v.title)).length;
@@ -4101,9 +4221,59 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
   function scheduleAdmin(){let added=0;workdays().forEach(d=>{const day=dateKey(d);state.employees.filter(e=>e.turno==='Amministrazione'&&employeeActiveOn(e,day)).forEach(e=>{if(getAssignments(e.id,day).length)return;const dow=d.getDay();let code='AM7';if(slug(e.cognome)==='praderio')code=dow===5?'AM4':'AM8,5';else if(slug(e.cognome)==='vescera')code=[1,5].includes(dow)?'AM4':'AM7';addAuto(e,day,{category:'AM',type:code,code});added++;});});return added;}
   function scheduleFixedResponsibles(){let added=0;const bosetti=state.employees.find(e=>slug(e.responsabile)==='operativo'||e.turno==='RO');if(bosetti)workdays().forEach(d=>{const day=dateKey(d),item={category:'RESP',type:'GRO',code:'GRO'};if(employeeActiveOn(bosetti,day)&&!getAssignments(bosetti.id,day).length&&checkCandidate(bosetti,day,item).errors.length===0){addAuto(bosetti,day,item);added++;}});const raschi=state.employees.find(e=>slug(e.responsabile)==='secondari'||e.turno==='RS');if(raschi)workdays().forEach(d=>{const day=dateKey(d),item={category:'RESP',type:'GRS',code:'GRS'};if(employeeActiveOn(raschi,day)&&!getAssignments(raschi.id,day).length&&checkCandidate(raschi,day,item).errors.length===0){addAuto(raschi,day,item);added++;}});const responsibles=[...state.employees.filter(e=>slug(e.responsabile)==='autoparco').map(e=>[e,'GRA']),...state.employees.filter(e=>slug(e.responsabile)==='magazzino').map(e=>[e,'GRM'])];responsibles.forEach(([e,code],idx)=>{let count=allAssignmentRows().filter(r=>r.employeeId===e.id&&r.a.type===code).length;const candidates=workdays().filter((d,i)=>i%Math.max(1,Math.floor(workdays().length/state.settings.respGoal))===idx%2).concat(workdays());for(const d of candidates){if(count>=state.settings.respGoal)break;const day=dateKey(d);if(getAssignments(e.id,day).length)continue;const item={category:'RESP',type:code,code};if(checkCandidate(e,day,item).errors.length)continue;addAuto(e,day,item);count++;added++;}});return added;}
   function removeAutoGrsForRaschi(raschi,day){const items=getAssignments(raschi.id,day),keep=items.filter(a=>!(a.type==='GRS'&&sourceLabel(a)==='AUTO'&&!a.locked));setAssignments(raschi.id,day,keep,{dirty:false,render:false});}
-  function scheduleSecondari(){let added=0;workdays().forEach(d=>{const day=dateKey(d);let count=state.employees.reduce((n,e)=>n+getAssignments(e.id,day).filter(a=>a.category==='SE').length,0);const pref=preferredGroup(d,'M');while(count<state.settings.seTarget){const item={category:'SE',type:'MGSE',code:'MGSE'};let pool=state.employees.filter(e=>e.turno===pref||e.turno==='Libera');let e=chooseCandidate(day,item,{preferred:pref,pool});if(!e)break;addAuto(e,day,item);added++;count++;}
-      if(count<state.settings.seMin){const raschi=state.employees.find(e=>slug(e.responsabile)==='secondari'||e.turno==='RS');if(raschi){const grs=getAssignments(raschi.id,day).find(a=>a.type==='GRS');if(!grs||(!grs.locked&&sourceLabel(grs)==='AUTO')){removeAutoGrsForRaschi(raschi,day);const item={category:'SE',type:'MGSE',code:'MGSE',raschiEmergency:true,note:'Responsabile Secondari impiegato operativamente per necessità'};if(checkCandidate(raschi,day,item).errors.length===0){addAuto(raschi,day,item);added++;count++;}}}}
-    });return added;}
+  function scheduleSecondari(){
+    let added=0;
+    workdays().forEach(d=>{
+      const day=dateKey(d);
+      let count=state.employees.reduce((n,e)=>n+getAssignments(e.id,day).filter(a=>a.category==='SE').length,0);
+      const target=2;
+      const item={category:'SE',type:'MGSE',code:'MGSE'};
+      const preferredId=String(state.settings.sePreferredEmployeeId||'');
+      const preferredEmployee=preferredId?state.employees.find(e=>e.id===preferredId):null;
+
+      if(count<target&&preferredEmployee&&employeeActiveOn(preferredEmployee,day)&&preferredEmployee.turno!=='Amministrazione'){
+        const preferredItem={...item,preferredSecondari:true,note:'Dipendente prevalente Secondari · preferenza organizzativa soft'};
+        const check=checkCandidate(preferredEmployee,day,preferredItem);
+        if(!check.errors.length){
+          addAuto(preferredEmployee,day,preferredItem);
+          added++;
+          count++;
+        }
+      }
+
+      const pref=preferredGroup(d,'M');
+      while(count<target){
+        let pool=state.employees.filter(e=>e.turno===pref||e.turno==='Libera');
+        let employee=chooseCandidate(day,item,{preferred:pref,pool});
+        if(!employee){
+          pool=state.employees.filter(e=>['A','B','Libera'].includes(e.turno));
+          employee=chooseCandidate(day,item,{preferred:pref,pool});
+        }
+        if(!employee)break;
+        addAuto(employee,day,item);
+        added++;
+        count++;
+      }
+
+      if(count<target){
+        const raschi=state.employees.find(e=>slug(e.responsabile)==='secondari'||e.turno==='RS');
+        if(raschi){
+          const grs=getAssignments(raschi.id,day).find(a=>a.type==='GRS');
+          if(!grs||(!grs.locked&&sourceLabel(grs)==='AUTO')){
+            removeAutoGrsForRaschi(raschi,day);
+            const emergencyItem={category:'SE',type:'MGSE',code:'MGSE',raschiEmergency:true,note:'Responsabile Secondari impiegato operativamente per necessità'};
+            if(checkCandidate(raschi,day,emergencyItem).errors.length===0){
+              addAuto(raschi,day,emergencyItem);
+              added++;
+              count++;
+            }
+          }
+        }
+      }
+    });
+    return added;
+  }
+
   function currentSlotOccupied(day,shift,slot){const cov=coverageFor(day,shift);return !!cov[slot.crew]?.[slot.role]?.length;}
 
   function directShiftRows(day,shift){
@@ -5494,17 +5664,23 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       await yieldUi();
       ensureGenerationNotCancelled();
 
-      if(admin){updateGeneration(15,'Pianificazione amministrazione…');added+=scheduleAdmin();await yieldUi();ensureGenerationNotCancelled();}
-      if(resp){updateGeneration(24,'Pianificazione giornate responsabili…');added+=scheduleFixedResponsibles();await yieldUi();ensureGenerationNotCancelled();}
-      if(se){updateGeneration(34,'Pianificazione Secondari…');added+=scheduleSecondari();await yieldUi();ensureGenerationNotCancelled();}
+      if(admin){updateGeneration(14,'Pianificazione amministrazione…');added+=scheduleAdmin();await yieldUi();ensureGenerationNotCancelled();}
+      if(resp){updateGeneration(22,'Pianificazione giornate responsabili…');added+=scheduleFixedResponsibles();await yieldUi();ensureGenerationNotCancelled();}
 
-      updateGeneration(42,'Composizione equipaggi 118…');
+      updateGeneration(32,'Copertura prioritaria equipaggi 118…');
       r=await schedule118({
         allowRo,
         onProgress:(done,total)=>
-          updateGeneration(42+(done/total)*30,`Composizione equipaggi 118 · giorno ${done}/${total}`)
+          updateGeneration(32+(done/total)*34,`Copertura prioritaria 118 · giorno ${done}/${total}`)
       });
       added+=r.added;
+
+      if(se){
+        updateGeneration(68,'Completamento Secondari dopo la copertura 118…');
+        added+=scheduleSecondari();
+        await yieldUi();
+        ensureGenerationNotCancelled();
+      }
 
       updateGeneration(73,'Riequilibrio delle ore settimanali…');
       const weeklyBalance=rebalanceWeeklyOverloads();
@@ -5599,7 +5775,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     }
   }
 
-  function openAutoModal(){if(state.generating)return toast('Generazione già in corso','Attendi il completamento.','info');const req=Object.values(state.requirements).filter(v=>v==='required').length;const protectedCount=existingProtectedForRecap().length;$('#autoInfo').innerHTML=`Sono state verificate <strong>${protectedCount} indisponibilità protette</strong> per ${monthLabel()}. <strong>Ferie, permessi, malattie, 104, AVIS, congedi, RC e riposi manuali già inseriti restano vincoli e non vengono sovrascritti dalla generazione.</strong> <strong>ATLAS</strong> mantiene separati i gruppi <strong>A/B</strong>; le <strong>Libere</strong> partecipano come risorse neutrali secondo le abilitazioni. Alterna i ruoli A/C/S, distribuisce gli uomini tra gli equipaggi che ne sono privi e applica la regola rigida: <strong>la macchina a 2 non può avere due donne</strong>. La generazione ordinaria comprende <strong>Gallarate e Somma</strong>; <strong>Sumirago è inserita solo manualmente al bisogno</strong>. <strong>Priorità organizzativa: coprire tutti i ruoli 118.</strong> Laddove la copertura sia già garantita, ATLAS privilegia settimane coerenti sulla stessa sede (Somma oppure Gallarate) per limitare gli spostamenti; questa preferenza viene ignorata appena ostacola la copertura. Il sabato mattina pianifica <strong>Gallarate macchina a 2, Gallarate macchina a 3 e Somma</strong>; il sabato pomeriggio pianifica <strong>Gallarate macchina a 2 e Somma</strong>; di notte usa soltanto equipaggi a 3. Le giornate <strong>GRS, GRA, GRM e GRO</strong> restano responsabilità finché il 118 è coperto; se, dopo i tentativi ordinari, rimane un buco 118, ATLAS può convertirle in servizio 118 nel rispetto di qualifiche, riposi e assenze. Saranno completate ${req} fasce richieste. L’opzione <strong>RC automatici</strong> è facoltativa. Gli RFS sono utilizzabili fino all’ultimo giorno del mese successivo alla festività e vengono collocati soltanto senza creare scoperture: giornata già libera oppure sostituto compatibile trovato prima dello spostamento.`;if($('#autoRc'))$('#autoRc').checked=!!state.settings.autoCompensatoryRestDefault;openModal('autoModal');}
+  function openAutoModal(){if(state.generating)return toast('Generazione già in corso','Attendi il completamento.','info');const req=Object.values(state.requirements).filter(v=>v==='required').length;const protectedCount=existingProtectedForRecap().length;$('#autoInfo').innerHTML=`Sono state verificate <strong>${protectedCount} indisponibilità protette</strong> per ${monthLabel()}. <strong>Ferie, permessi, malattie, 104, AVIS, congedi, RC e riposi manuali già inseriti restano vincoli e non vengono sovrascritti dalla generazione.</strong> <strong>ATLAS</strong> mantiene separati i gruppi <strong>A/B</strong>; le <strong>Libere</strong> partecipano come risorse neutrali secondo le abilitazioni. Alterna i ruoli A/C/S, distribuisce gli uomini tra gli equipaggi che ne sono privi e applica la regola rigida: <strong>la macchina a 2 non può avere due donne</strong>. La generazione ordinaria comprende <strong>Gallarate e Somma</strong>; <strong>Sumirago è inserita solo manualmente al bisogno</strong>. <strong>Priorità organizzativa: coprire tutti i ruoli 118 prima di impegnare risorse sui Secondari.</strong> Laddove la copertura sia già garantita, ATLAS privilegia settimane coerenti sulla stessa sede (Somma oppure Gallarate) per limitare gli spostamenti; questa preferenza viene ignorata appena ostacola la copertura. Il sabato mattina pianifica <strong>Gallarate macchina a 2, Gallarate macchina a 3 e Somma</strong>; il sabato pomeriggio pianifica <strong>Gallarate macchina a 2 e Somma</strong>; di notte usa soltanto equipaggi a 3. Le giornate <strong>GRS, GRA, GRM e GRO</strong> restano responsabilità finché il 118 è coperto; se, dopo i tentativi ordinari, rimane un buco 118, ATLAS può convertirle in servizio 118 nel rispetto di qualifiche, riposi e assenze. Saranno completate ${req} fasce richieste. L’opzione <strong>RC automatici</strong> è facoltativa. Gli RFS sono utilizzabili fino all’ultimo giorno del mese successivo alla festività e vengono collocati soltanto senza creare scoperture: giornata già libera oppure sostituto compatibile trovato prima dello spostamento.`;if($('#autoRc'))$('#autoRc').checked=!!state.settings.autoCompensatoryRestDefault;openModal('autoModal');}
 
   let selectedAbsenceIds=new Set();
   function setAbsencePane(mode){const create=mode==='create';$('#absenceCreatePane').classList.toggle('hidden',!create);$('#absenceManagePane').classList.toggle('hidden',create);$('#absenceCreateTab').classList.toggle('active',create);$('#absenceManageTab').classList.toggle('active',!create);$('#saveAbsenceBtn').classList.toggle('hidden',!create);if(!create)renderAbsenceBulkList();}
@@ -6383,7 +6559,50 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
 
   function openSettings(){
     const auth=getServerAuthContext();
-    $('#setTargetHours').value=state.settings.targetHours;$('#setMinRest').value=state.settings.minRest;$('#setSeMin').value=state.settings.seMin;$('#setSeMax').value=state.settings.seMax;$('#setRespMin').value=state.settings.respMin;$('#setRespGoal').value=state.settings.respGoal;$('#setWeeklyStandard').value=state.settings.weeklyStandardHours;$('#setWeeklyMin').value=state.settings.weeklyMinHours;$('#setWeeklyMax').value=state.settings.weeklyMaxHours;$('#setWeeklyAverageMax').value=state.settings.weeklyAverageMax;$('#setWeeklyRestHours').value=state.settings.weeklyRestHours;$('#setWeeklyRestOccurrences').value=state.settings.weeklyRestOccurrences14;$('#setOvertimeLimit').value=state.settings.annualOvertimeLimit;$('#setOvertimeExtended').value=state.settings.annualOvertimeExtended;$('#setVacationAnnual').value=state.settings.vacationAnnualHours;$('#setSuppressedHolidayAnnual').value=state.settings.suppressedHolidayAnnualHours;$('#setPersonalPermitAnnual').value=state.settings.personalPermitAnnualHours;$('#setHolidayRecoveryDays').value=30;$('#setBankHoursMinBlock').value=state.settings.bankHoursMinBlock;$('#setPatronHoliday').value=state.settings.patronHoliday||'';$('#setNoSplitDay').checked=state.settings.enforceNoSplitDay!==false;$('#setAppsScript').value=ATLAS_SERVER_URL;$('#setRotation').checked=state.settings.useABRotation;openModal('settingsModal');
+    const isRo=String(auth.user?.profileType||'').toUpperCase()==='RO';
+    $('#setTargetHours').value=state.settings.targetHours;
+    $('#setMinRest').value=state.settings.minRest;
+    $('#setSeMin').value=2;
+    $('#setSeMax').value=2;
+    $('#setRespMin').value=state.settings.respMin;
+    $('#setRespGoal').value=state.settings.respGoal;
+    $('#setWeeklyStandard').value=state.settings.weeklyStandardHours;
+    $('#setWeeklyMin').value=state.settings.weeklyMinHours;
+    $('#setWeeklyMax').value=state.settings.weeklyMaxHours;
+    $('#setWeeklyAverageMax').value=state.settings.weeklyAverageMax;
+    $('#setWeeklyRestHours').value=state.settings.weeklyRestHours;
+    $('#setWeeklyRestOccurrences').value=state.settings.weeklyRestOccurrences14;
+    $('#setOvertimeLimit').value=state.settings.annualOvertimeLimit;
+    $('#setOvertimeExtended').value=state.settings.annualOvertimeExtended;
+    $('#setVacationAnnual').value=state.settings.vacationAnnualHours;
+    $('#setSuppressedHolidayAnnual').value=state.settings.suppressedHolidayAnnualHours;
+    $('#setPersonalPermitAnnual').value=state.settings.personalPermitAnnualHours;
+    $('#setHolidayRecoveryDays').value=30;
+    $('#setBankHoursMinBlock').value=state.settings.bankHoursMinBlock;
+    $('#setPatronHoliday').value=state.settings.patronHoliday||'';
+    $('#setNoSplitDay').checked=state.settings.enforceNoSplitDay!==false;
+    $('#setAppsScript').value=ATLAS_SERVER_URL;
+    $('#setRotation').checked=state.settings.useABRotation;
+
+    const preferred=$('#setSePreferredEmployee');
+    preferred.innerHTML='<option value="">Nessuna preferenza</option>'+state.employees
+      .filter(e=>e.attivo!==false&&e.turno!=='Amministrazione')
+      .sort((a,b)=>employeeName(a).localeCompare(employeeName(b),'it'))
+      .map(e=>`<option value="${esc(e.id)}">${esc(employeeName(e))} · ${esc(e.turno)}</option>`).join('');
+    preferred.value=String(state.settings.sePreferredEmployeeId||'');
+
+    const note=$('#settingsPermissionNote');
+    if(note){
+      note.classList.toggle('hidden',!isRo);
+      note.innerHTML=isRo?'<strong>Profilo Responsabile Operativo:</strong> puoi scegliere il dipendente prevalente MGSE. Gli altri parametri sono visibili in sola lettura.':'';
+    }
+    $$('#settingsModal input, #settingsModal select').forEach(control=>{
+      const fixed=['setAppsScript','setHolidayRecoveryDays','setSeMin','setSeMax'].includes(control.id);
+      control.disabled=isRo&&control.id!=='setSePreferredEmployee';
+      if(!isRo&&fixed)control.disabled=false;
+    });
+    ['setAppsScript','setHolidayRecoveryDays','setSeMin','setSeMax'].forEach(id=>{const control=$('#'+id);if(control){control.readOnly=true;control.disabled=false;}});
+    openModal('settingsModal');
   }
   async function saveSettings(){
     const auth=getServerAuthContext();
@@ -6416,21 +6635,11 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         numeric(
           $('#setMinRest').value
         ),
-      seMin:
-        numeric(
-          $('#setSeMin').value
-        ),
-      seMax:
-        numeric(
-          $('#setSeMax').value
-        ),
-      seTarget:
-        Math.min(
-          numeric(
-            $('#setSeMax').value
-          ),
-          2
-        ),
+      seMin:2,
+      seMax:2,
+      seTarget:2,
+      sePreferredEmployeeId:
+        $('#setSePreferredEmployee')?.value||'',
       respMin:
         numeric(
           $('#setRespMin').value
@@ -6529,6 +6738,31 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       return;
     }
 
+    const isRo=String(auth.user?.profileType||'').toUpperCase()==='RO';
+    if(isRo){
+      state.settings={...state.settings,seMin:2,seMax:2,seTarget:2,sePreferredEmployeeId:nextSettings.sePreferredEmployeeId};
+      state.localDirty=true;
+      saveState();
+      renderAll();
+      closeModal('settingsModal');
+      toast('Preferenza Secondari salvata',nextSettings.sePreferredEmployeeId?'Il dipendente selezionato sarà privilegiato su MGSE, salvo necessità del 118.':'Nessun dipendente prevalente configurato.','success');
+      try{
+        const data=await saveSharedSettings({url:serverUrl,token:auth.token,settings:sharedSettingsPayload(nextSettings)});
+        if(data?.sharedSettings?.settings){
+          state.settings={...state.settings,...data.sharedSettings.settings,seMin:2,seMax:2,seTarget:2};
+          state.sharedSettingsUpdatedAt=String(data.sharedSettings.updatedAt||'');
+          state.sharedSettingsUpdatedBy=String(data.sharedSettings.updatedBy||auth.user?.username||'');
+          saveState();
+          renderAll();
+          toast('Preferenza condivisa sincronizzata','La configurazione MGSE è disponibile anche sugli altri dispositivi.','success');
+        }
+      }catch(error){
+        console.warn('Preferenza MGSE salvata localmente: backend non autorizza la modifica RO.',error);
+        toast('Preferenza salvata su questo dispositivo','Il server non ha autorizzato la modifica condivisa del RO; il generatore locale userà comunque la preferenza.','info');
+      }
+      return;
+    }
+
     const button=
       $('#saveSettingsBtn');
 
@@ -6559,7 +6793,10 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         ...(data.sharedSettings?.settings||{}),
         matrixCsvUrl:'',
         databaseCsvUrl:'',
-        appsScriptUrl:serverUrl
+        appsScriptUrl:serverUrl,
+        seMin:2,
+        seMax:2,
+        seTarget:2
       };
 
       state.sharedSettingsUpdatedAt=

@@ -12,9 +12,10 @@ export const FALLBACK_EMPLOYEES = [];
 export const DEFAULT_SETTINGS = {
     targetHours: 167.2,
     minRest: 11,
-    seMin: 1,
+    seMin: 2,
     seMax: 2,
     seTarget: 2,
+    sePreferredEmployeeId: '', 
     respMin: 4,
     respGoal: 5,
     matrixCsvUrl: MATRIX_CSV_URL,
