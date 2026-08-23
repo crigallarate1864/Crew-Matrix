@@ -14,7 +14,7 @@
   <link rel="preload" href="atlas/assets/atlas-logo-login.svg" as="image" type="image/svg+xml" />
   <link rel="preload" href="atlas/assets/atlas-logo-header.svg" as="image" type="image/svg+xml" />
   <link id="atlasFavicon" rel="icon" type="image/svg+xml" href="atlas/assets/atlas-favicon.svg" />
-    <link rel="stylesheet" href="atlas/css/core.css?v=1.0.0-GRS-MONTHLY-QUOTA-2119" />
+    <link rel="stylesheet" href="atlas/css/core.css?v=1.0.0-MGSE-COVERAGE-20260823" />
   <link rel="stylesheet" href="atlas/css/mobile.css?v=1.0.0-final-20260809" />
   <link rel="stylesheet" href="atlas/css/volunteer-rollback.css?v=1.5.9" />
   <link rel="stylesheet" href="atlas/css/print.css?v=1.0.0-final-20260809" />
@@ -361,7 +361,7 @@
                 <div class="alert-key"><span class="alert-amber">AVVISO</span><p>Gruppi A/B mischiati, RO nel 118, equipaggio tutto femminile, ruoli poco equilibrati o responsabili sotto obiettivo.</p></div>
                 <div class="alert-key"><span class="alert-blue">INFO</span><p>Situazioni ammesse ma da conoscere, come Sumirago inserita manualmente.</p></div>
               </article>
-              <article class="manual-card"><h3>Regole chiave</h3><ul><li>Le Libere entrano nel 118 secondo abilitazioni e sono neutrali rispetto ai gruppi.</li><li>Raschi svolge GRS nei feriali; viene liberato dalla responsabilità esclusivamente quando serve come risorsa di fallback 118.</li><li>Sumirago non viene generata automaticamente: si inserisce manualmente.</li><li>Il sabato mattina ordinario copre G2, G3 e Somma; il sabato pomeriggio copre G2 e Somma. Di notte tutte le postazioni sono a 3.</li><li>La macchina a 2 di Gallarate deve avere almeno un uomo: due donne nello stesso equipaggio non sono consentite. Negli equipaggi a 3 ATLAS distribuisce gli uomini in modo da ridurre gli equipaggi interamente femminili, compatibilmente con abilitazioni, gruppi, sedi, riposi e monte ore.</li><li>Dopo ogni turno N o P+N, ATLAS calcola la fine effettiva della prestazione e richiede almeno 11 ore consecutive prima dell’inizio del turno successivo. Non blocca automaticamente l’intera giornata e non inserisce più uno SM automatico.</li><li>Il RO entra nel 118 solo in estrema urgenza.</li></ul></article>
+              <article class="manual-card"><h3>Regole chiave</h3><ul><li>Le Libere entrano nel 118 secondo abilitazioni e sono neutrali rispetto ai gruppi.</li><li>Raschi svolge GRS; MGSE solo quando il minimo SE non è raggiungibile.</li><li>Sumirago non viene generata automaticamente: si inserisce manualmente.</li><li>Il sabato mattina ordinario copre G2, G3 e Somma; il sabato pomeriggio copre G2 e Somma. Di notte tutte le postazioni sono a 3.</li><li>La macchina a 2 di Gallarate deve avere almeno un uomo: due donne nello stesso equipaggio non sono consentite. Negli equipaggi a 3 ATLAS distribuisce gli uomini in modo da ridurre gli equipaggi interamente femminili, compatibilmente con abilitazioni, gruppi, sedi, riposi e monte ore.</li><li>Dopo ogni turno N o P+N, ATLAS calcola la fine effettiva della prestazione e richiede almeno 11 ore consecutive prima dell’inizio del turno successivo. Non blocca automaticamente l’intera giornata e non inserisce più uno SM automatico.</li><li>Il RO entra nel 118 solo in estrema urgenza.</li></ul></article>
               <article class="manual-card"><h3>Inserire Sumirago</h3><ol><li>Apri la cella del dipendente e della data.</li><li>Scegli <strong>118</strong>.</li><li>Imposta fascia, sede <strong>Sumirago</strong> e ruolo A/C/S.</li><li>Salva le tre persone dell’equipaggio.</li><li>Verifica la pagina Coperture e l’alert informativo.</li></ol></article>
               <article class="manual-card"><h3>Anagrafiche</h3><p>L’ID resta tecnico e invisibile. Dalla pagina Anagrafiche puoi inserire o rimuovere persone, impostare gruppo, sesso, abilitazioni, responsabilità, sedi e monte ore mensile. Il sesso è usato solo dall’algoritmo e nella pagina Anagrafiche, non nel Calendario.</p></article>
               <article class="manual-card"><h3>Saldo ore nel Calendario</h3><p>Accanto al gruppo viene mostrato lo scostamento dal monte ore personale: il segno <strong>−</strong> indica le ore ancora mancanti, il segno <strong>+</strong> le ore in eccesso e <strong>0 h</strong> il raggiungimento del target. Passa il mouse sul valore per vedere ore programmate e obiettivo.</p></article>
@@ -431,10 +431,6 @@
                 <select id="setSePreferredEmployee" class="input"><option value="">Nessuna preferenza</option></select>
                 <small>È una preferenza soft: ferie, riposi, vincoli e soprattutto la copertura 118 hanno priorità. Se necessario, il dipendente può essere utilizzato nel 118.</small>
               </div>
-              <div class="field full"><div class="section-label">QUOTA MENSILE DEL DIPENDENTE PREVALENTE</div></div>
-              <div class="field"><label>Minimo MENSILE di giornate MGSE</label><input id="setSePreferredMinDays" class="input" type="number" min="0" max="31" step="1" placeholder="es. 8" /></div>
-              <div class="field"><label>Massimo MENSILE di giornate MGSE</label><input id="setSePreferredMaxDays" class="input" type="number" min="0" max="31" step="1" placeholder="es. 12" /></div>
-              <div class="field full"><div class="notice info"><strong>Questi due valori NON sono il minimo/massimo giornaliero.</strong> Si riferiscono esclusivamente al dipendente selezionato sopra come prevalente Secondari. Esempio: minimo 8 e massimo 12 significa che ATLAS proverà ad assegnargli tra 8 e 12 giornate MGSE nell’intero mese. Il 118, ferie, RC, riposi e gli altri vincoli protetti restano prioritari.</div></div>
               <div class="field full"><div class="notice warning"><strong>Regola operativa:</strong> ATLAS prova a mantenere 2 MGSE nei feriali. Può scendere sotto 2 soltanto quando le risorse sono necessarie per il 118; la pagina Coperture evidenzia il caso in arancione.</div></div>
             </div>
           </details>
@@ -444,7 +440,7 @@
             <div class="settings-section-body form-grid">
               <div class="field"><label>GRA/GRM minimo</label><input id="setRespMin" class="input" type="number" min="0" /></div>
               <div class="field"><label>GRA/GRM obiettivo</label><input id="setRespGoal" class="input" type="number" min="0" /></div>
-              <div class="field full"><div class="notice info">GRS viene pianificato in tutti i feriali compatibili con assenze e riposi obbligatori. Non viene usato per colmare MGSE: può essere convertito esclusivamente in 118 quando serve a chiudere una copertura. GRA, GRM e GRO restano convertibili nel fallback 118.</div></div>
+              <div class="field full"><div class="notice info">Le giornate GRS, GRA, GRM e GRO restano responsabilità finché il 118 è coperto; possono essere convertite dal fallback emergenziale quando servono a chiudere un ruolo 118.</div></div>
             </div>
           </details>
 
@@ -624,8 +620,8 @@
         <div class="auto-grid" style="margin-top:12px">
           <label class="auto-option"><input id="autoPreserve" type="checkbox" checked /><div><strong>Conserva turni manuali, Database e bloccati</strong><span>Ferie, permessi, assenze, RC e riposi manuali sono sempre protetti, anche rigenerando da zero.</span></div></label>
           <label class="auto-option"><input id="autoAdmin" type="checkbox" checked /><div><strong>Pianifica Amministrazione</strong><span>Praderio: AM8,5 lun–gio e AM4 venerdì. Vescera: AM4 lun/ven e AM7 mar–gio.</span></div></label>
-          <label class="auto-option"><input id="autoResp" type="checkbox" checked /><div><strong>Pianifica altre responsabilità</strong><span>GRS viene sempre pianificato nei feriali. Questa opzione gestisce GRO e le giornate obiettivo GRA/GRM.</span></div></label>
-          <label class="auto-option"><input id="autoSe" type="checkbox" checked /><div><strong>Porta i Secondari a 2 risorse feriali</strong><span>GRS non conta come risorsa operativa e non viene convertito in MGSE. ATLAS usa il dipendente prevalente entro le quote min/max configurate, poi le altre risorse disponibili. Il 118 mantiene sempre la priorità.</span></div></label>
+          <label class="auto-option"><input id="autoResp" type="checkbox" checked /><div><strong>Pianifica responsabili</strong><span>GRO feriali, GRS feriali e 5 giornate obiettivo per GRA/GRM.</span></div></label>
+          <label class="auto-option"><input id="autoSe" type="checkbox" checked /><div><strong>Porta i Secondari a 2 risorse feriali</strong><span>GRS non conta come risorsa operativa. ATLAS usa prima il dipendente prevalente configurato, poi le altre risorse disponibili. Il 118 mantiene sempre la priorità; Raschi passa a MGSE soltanto se necessario.</span></div></label>
           <label class="auto-option"><input id="autoRo" type="checkbox" /><div><strong>Consenti il RO come ultima risorsa nel 118</strong><span>Disattivato per impostazione predefinita. L’uso genera comunque un alert.</span></div></label>
           <label class="auto-option auto-option-rc"><input id="autoRc" type="checkbox" /><div><strong>Inserisci automaticamente i riposi compensativi</strong><span>Protegge i riposi settimanali e pianifica i recuperi delle deroghe art. 27. Gli RFS vengono pianificati automaticamente entro 30 giorni dalla festività. Un recupero non collocabile entro il termine genera un rosso bloccante.</span></div></label>
         </div>
@@ -865,6 +861,6 @@
   <input id="fileInput" type="file" accept="application/json,.json" class="hidden" />
   <div class="toast-stack" id="toastStack"></div>
 
-  <script type="module" src="atlas/js/atlas-app.js?v=1.0.0-GRS-MONTHLY-QUOTA-2119"></script>
+  <script type="module" src="atlas/js/atlas-app.js?v=1.0.0-MGSE-COVERAGE-20260823"></script>
 </body>
 </html>
