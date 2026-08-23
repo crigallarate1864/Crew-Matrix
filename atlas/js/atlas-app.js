@@ -2447,7 +2447,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       })
       .filter(Boolean)
       .sort((left,right)=>left.cost-right.cost||left.warnings.length-right.warnings.length||left.score-right.score||employeeName(left.cover).localeCompare(employeeName(right.cover),'it'))
-      .slice(0,10);
+;
 
     if(!allowResponsibilityFallback){
       return ordinary;
@@ -2456,7 +2456,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     const fallback=volunteerResponsibilityFallbackOptions(hole,role,item,reasonMap);
     return[...ordinary,...fallback]
       .sort((left,right)=>left.cost-right.cost||left.warnings.length-right.warnings.length||left.score-right.score||employeeName(left.cover).localeCompare(employeeName(right.cover),'it'))
-      .slice(0,12);
+;
   }
 
   const VOLUNTEER_RESPONSIBILITY_FALLBACK_TYPES=new Set(['GRO','GRS']);
@@ -2516,7 +2516,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       })
       .filter(Boolean)
       .sort((left,right)=>left.warnings.length-right.warnings.length||left.score-right.score||employeeName(left.cover).localeCompare(employeeName(right.cover),'it'))
-      .slice(0,6);
+;
   }
 
   function volunteerReplacementCandidates(
@@ -2592,7 +2592,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         left.score-right.score||
         employeeName(left.employee).localeCompare(employeeName(right.employee),'it')
       )
-      .slice(0,allowResponsibilityFallback?5:2);
+;
   }
 
   function volunteerChangeOptions(
@@ -2614,13 +2614,11 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
 
         return(
           working.length===1&&
-          ['118','OP'].includes(working[0].category)
+          ['118','OP','SE'].includes(working[0].category)
         );
       });
 
     for(const employee of blocked){
-      if(options.length>=5)break;
-
       const sourceItem=getAssignments(employee.id,day)
         .filter(isWorkingAssignment)[0];
       if(!sourceItem)continue;
@@ -2672,13 +2670,11 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
             `${employeeName(replacement.employee)} può sostituirlo su ${normalizeCode(sourceItem)}`+
             (replacement.fallbackResponsibility?` liberando ${replacement.fallbackResponsibility}`:'')
         });
-        if(options.length>=5)break;
       }
     }
 
     return options
-      .sort((left,right)=>left.cost-right.cost||left.warnings.length-right.warnings.length||left.score-right.score)
-      .slice(0,5);
+      .sort((left,right)=>left.cost-right.cost||left.warnings.length-right.warnings.length||left.score-right.score);
   }
 
   function volunteerRoleAnalyses(hole,roles,{allowResponsibilityFallback=false}={}){
@@ -2768,61 +2764,52 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
 
   function volunteerPlanOptions(roleAnalyses,limit=16){
     const ordered=[...roleAnalyses]
-      .sort((left,right)=>
-        left.options.length-right.options.length
-      );
+      .map(analysis=>({
+        ...analysis,
+        options:[...analysis.options].sort((left,right)=>
+          Number(left.cost||0)-Number(right.cost||0)||
+          (left.warnings?.length||0)-(right.warnings?.length||0)||
+          Number(left.score||0)-Number(right.score||0)
+        )
+      }))
+      .sort((left,right)=>left.options.length-right.options.length);
 
     const results=[];
+    const unique=new Set();
+    const started=(globalThis.performance?.now?.()||Date.now());
+    const watchdogMs=45000;
     let explored=0;
-    const maxExplored=700;
-    const searchDeadline=(globalThis.performance?.now?.()||Date.now())+70;
+    let watchdogLogged=false;
+
+    function watchdog(){
+      explored++;
+      if(!watchdogLogged&&(globalThis.performance?.now?.()||Date.now())-started>watchdogMs){
+        watchdogLogged=true;
+        console.warn('[ATLAS] Buchi Volontari: analisi combinatoria oltre 45 secondi; la ricerca continua fino a soluzione o impossibilità reale.');
+      }
+    }
 
     function walk(index,used,plan,cost,warnings,score){
-      if(
-        explored>=maxExplored||
-        (globalThis.performance?.now?.()||Date.now())>=searchDeadline
-      ){
-        return;
-      }
+      watchdog();
+      if(results.length>=limit)return true;
 
       if(index>=ordered.length){
-        explored++;
-        results.push({
-          cost,
-          warnings,
-          score,
-          plan:[...plan],
-          signature:volunteerPlanSignature(plan)
-        });
-        return;
+        const signature=volunteerPlanSignature(plan);
+        if(!unique.has(signature)){
+          unique.add(signature);
+          results.push({cost,warnings,score,plan:[...plan],signature});
+        }
+        return results.length>=limit;
       }
 
       const analysis=ordered[index];
-
       for(const option of analysis.options){
-        if(
-          explored>=maxExplored||
-          (globalThis.performance?.now?.()||Date.now())>=searchDeadline
-        ){
-          break;
-        }
-
-        if(
-          option.resources.some(
-            resource=>used.has(resource)
-          )
-        ){
-          continue;
-        }
+        if(option.resources.some(resource=>used.has(resource)))continue;
 
         const nextUsed=new Set(used);
-        option.resources.forEach(
-          resource=>nextUsed.add(resource)
-        );
-
+        option.resources.forEach(resource=>nextUsed.add(resource));
         plan.push(option);
-
-        walk(
+        const enough=walk(
           index+1,
           nextUsed,
           plan,
@@ -2830,29 +2817,21 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
           warnings+(option.warnings?.length||0),
           score+Number(option.score||0)
         );
-
         plan.pop();
+        if(enough)return true;
       }
+      return false;
     }
 
     walk(0,new Set(),[],0,0,0);
 
-    const unique=new Map();
-
-    results
+    return results
       .sort((left,right)=>
         left.cost-right.cost||
         left.warnings-right.warnings||
         left.score-right.score||
         left.signature.localeCompare(right.signature,'it')
       )
-      .forEach(plan=>{
-        if(!unique.has(plan.signature)){
-          unique.set(plan.signature,plan);
-        }
-      });
-
-    return[...unique.values()]
       .slice(0,limit);
   }
 
