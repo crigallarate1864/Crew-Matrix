@@ -1,0 +1,73 @@
+name: Validate daily MGSE and preferred employee fix
+
+on:
+  push:
+    branches:
+      - atlas/fix-daily-mgse-costa-20260823
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: atlas/fix-daily-mgse-costa-20260823
+          fetch-depth: 0
+
+      - name: Apply patch if needed
+        run: |
+          if grep -q "function shouldPreservePreferredSecondariFrom118" atlas/js/atlas-app.js; then
+            echo "Application patch already present"
+          else
+            python tools/apply_fix_daily_mgse_costa.py
+          fi
+
+      - name: JavaScript syntax checks
+        run: |
+          node --check atlas/js/config.js
+          node --check atlas/js/atlas-app.js
+
+      - name: Structural checks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          js=Path('atlas/js/atlas-app.js').read_text(encoding='utf-8')
+          admin=Path('admin.html').read_text(encoding='utf-8')
+          ro=Path('ro.html').read_text(encoding='utf-8')
+          checks={
+            'daily target helper unique': js.count('function secondariDailyTarget(')==1,
+            'scheduler uses daily target': 'const target=secondariDailyTarget();' in js,
+            'coverage uses daily target': 'const target=weekday?secondariDailyTarget():0;' in js,
+            'validation uses daily target': 'const dailySeTarget=secondariDailyTarget();' in js,
+            'sidebar uses daily target': "$('#sidebarSe').textContent=`${secondariDailyTarget()} persone" in js,
+            'preferred reservation helper unique': js.count('function shouldPreservePreferredSecondariFrom118(')==1,
+            '118 first preserves preferred': js.count('preservePreferredSe:true')>=2,
+            '118 fallback releases preferred': js.count('preservePreferredSe:false')>=2,
+            'daily field admin unique': admin.count('id="setSeMin"')==1,
+            'daily field RO unique': ro.count('id="setSeMin"')==1,
+            'daily field not readonly in HTML': 'id="setSeMin" class="input" type="number" min="0" max="6" step="1" value="2"' in admin,
+            'monthly quota preserved': 'id="setSePreferredMinDays"' in admin and 'id="setSePreferredMaxDays"' in admin,
+            'old daily hardcode removed from save': 'seMin:2,\n      seMax:2,\n      seTarget:2,' not in js,
+            'local backend compatibility flag': 'seDailyTargetLocalOverride' in js,
+          }
+          failed=[name for name,ok in checks.items() if not ok]
+          if failed:
+              raise SystemExit('FAILED: '+', '.join(failed))
+          print('All structural checks passed')
+          PY
+          git diff --check
+
+      - name: Commit validated application changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add atlas/js/atlas-app.js admin.html ro.html
+          if git diff --cached --quiet; then
+            echo "No application changes to commit"
+          else
+            git commit -m "ATLAS: configurable daily MGSE + preserve preferred minimum [validated]"
+            git push origin HEAD:atlas/fix-daily-mgse-costa-20260823
+          fi
