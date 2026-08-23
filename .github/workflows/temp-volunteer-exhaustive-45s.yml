@@ -1,5 +1,6 @@
 name: Temporary volunteer exhaustive analysis validator
 
+# Trigger rerun after workflow registration on main.
 on:
   push:
     branches:
