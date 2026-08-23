@@ -242,6 +242,12 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
       return false;
     }
 
+    const localDailyTarget=secondariDailyTarget(state.settings);
+    const sharedDailyRaw=Number(shared.settings.seTarget??shared.settings.seMin);
+    const sharedDailyTarget=Math.max(0,Math.min(6,Math.round(Number.isFinite(sharedDailyRaw)?sharedDailyRaw:localDailyTarget)));
+    const keepLocalDaily=state.settings.seDailyTargetLocalOverride===true&&localDailyTarget!==sharedDailyTarget;
+    const dailyTarget=keepLocalDaily?localDailyTarget:sharedDailyTarget;
+
     state.settings={
       ...DEFAULT_SETTINGS,
       ...state.settings,
@@ -253,11 +259,11 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
         Number(
           shared.settings.holidayRecoveryDays
         )||30,
-      // Regola strutturale ATLAS: MGSE ordinario sempre 2/2.
-      // Un vecchio valore condiviso non deve riattivare il precedente minimo 1.
-      seMin:2,
-      seMax:2,
-      seTarget:2
+      // Il numero MGSE giornaliero è configurabile dall'Admin.
+      seMin:dailyTarget,
+      seMax:dailyTarget,
+      seTarget:dailyTarget,
+      seDailyTargetLocalOverride:keepLocalDaily
     };
 
     state.sharedSettingsUpdatedAt=
@@ -1193,7 +1199,7 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
 
 
   function renderAll(){ initRequirements();const rows=buildAssignmentRows(),idx=indexRows(rows);state._renderRows=rows;state._renderRowsByEmployee=idx.byEmployee;state._renderRowsByDay=idx.byDay;state._renderShiftRows=idx.byShift;state._renderStatsCache=new Map();state._historyRowsCache=new Map();try{state.validations=validateAll();renderCalendar();renderCoverage();renderCcnlDashboard();renderSummary();renderAnomalies();renderStaff();renderKpis();renderRules();}finally{delete state._renderRows;delete state._renderRowsByEmployee;delete state._renderRowsByDay;delete state._renderShiftRows;delete state._renderStatsCache;delete state._historyRowsCache;} }
-  function renderRules(){ $('#sidebarRest').textContent=`${fmt(state.settings.minRest)} ore`;$('#sidebarSe').textContent='2 persone · riducibili per priorità 118';$('#sidebarResp').textContent=`min ${state.settings.respMin} · obiettivo ${state.settings.respGoal}`; const db=$('#dbStateText'); if(db)db.textContent=`Matrice ${state.matrixLoaded?'✓':'fallback'} · Database ${state.dbLoaded?'✓':'locale'}`; }
+  function renderRules(){ $('#sidebarRest').textContent=`${fmt(state.settings.minRest)} ore`;$('#sidebarSe').textContent=`${secondariDailyTarget()} persone · riducibili per priorità 118`;$('#sidebarResp').textContent=`min ${state.settings.respMin} · obiettivo ${state.settings.respGoal}`; const db=$('#dbStateText'); if(db)db.textContent=`Matrice ${state.matrixLoaded?'✓':'fallback'} · Database ${state.dbLoaded?'✓':'locale'}`; }
   function filteredEmployees(){
     const q=$('#searchEmployee').value.trim().toLowerCase(),
       g=$('#groupFilter').value,
@@ -1847,7 +1853,8 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         out.push(validation(missingDue||dueInViewedMonth||overdue?'error':'warning',missingDue?'Scadenza recupero obbligatoria mancante':'Recupero permesso da completare',`${employeeName(e)}: ${code} del ${formatDateIt(r.day)}${r.a.recoveryDue?` da recuperare entro ${formatDateIt(r.a.recoveryDue)}`:' senza scadenza configurata'}.`,e.id,r.day));
       }});
     });
-    workdays().forEach(d=>{const day=dateKey(d),count=rows.filter(r=>r.day===day&&r.a.category==='SE').length;if(count<2){if(required118OnDay(day))out.push(validation('info','MGSE ridotto per priorità 118',`${DOW[d.getDay()]} ${d.getDate()}: ${count}/2 risorse MGSE. Riduzione ammessa perché nella giornata è richiesta copertura 118, che ha priorità.`,null,day));else out.push(validation('warning','Secondari sotto il minimo',`${DOW[d.getDay()]} ${d.getDate()}: ${count}/2 persone operative in MGSE senza una fascia 118 richiesta che giustifichi la riduzione.`,null,day));}if(count>2)out.push(validation('error','Troppi dipendenti nei Secondari',`${DOW[d.getDay()]} ${d.getDate()}: ${count} persone, massimo 2.`,null,day));});
+    const dailySeTarget=secondariDailyTarget();
+    workdays().forEach(d=>{const day=dateKey(d),count=rows.filter(r=>r.day===day&&r.a.category==='SE').length;if(count<dailySeTarget){if(required118OnDay(day))out.push(validation('info','MGSE ridotto per priorità 118',`${DOW[d.getDay()]} ${d.getDate()}: ${count}/${dailySeTarget} risorse MGSE. Riduzione ammessa perché nella giornata è richiesta copertura 118, che ha priorità.`,null,day));else out.push(validation('warning','Secondari sotto il minimo',`${DOW[d.getDay()]} ${d.getDate()}: ${count}/${dailySeTarget} persone operative in MGSE senza una fascia 118 richiesta che giustifichi la riduzione.`,null,day));}if(count>dailySeTarget)out.push(validation('error','Troppi dipendenti nei Secondari',`${DOW[d.getDay()]} ${d.getDate()}: ${count} persone, massimo giornaliero configurato ${dailySeTarget}.`,null,day));});
     const preferredSeEmployee=ordinarySecondariPreferredEmployee();
     if(preferredSeEmployee){
       const preferredDays=preferredSecondariDayCount(preferredSeEmployee.id);
@@ -1922,7 +1929,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     const employees=rowsForDay(day).filter(r=>r.a.category==='SE');
     const count=employees.length;
     const weekday=!isWeekend(parseDateKey(day));
-    const target=weekday?2:0;
+    const target=weekday?secondariDailyTarget():0;
     const reduced=weekday&&count<target&&required118OnDay(day);
     return{
       count,target,reduced,
@@ -4294,6 +4301,11 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     return added;
   }
 
+  function secondariDailyTarget(source=state.settings){
+    const raw=Number(source?.seTarget??source?.seMin??2);
+    return Math.max(0,Math.min(6,Math.round(Number.isFinite(raw)?raw:2)));
+  }
+
   function preferredSecondariDayCount(employeeId){
     if(!employeeId)return 0;
     return workdays().reduce((count,d)=>
@@ -4310,6 +4322,19 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     return employee;
   }
 
+  function preferredSecondariNeedsReservation(){
+    const employee=ordinarySecondariPreferredEmployee();
+    if(!employee)return null;
+    const minimum=Math.max(0,Math.min(31,numeric(state.settings.sePreferredMinDays,0)));
+    if(minimum<=0)return null;
+    return preferredSecondariDayCount(employee.id)<minimum?employee:null;
+  }
+
+  function shouldPreservePreferredSecondariFrom118(employee,day){
+    const preferred=preferredSecondariNeedsReservation();
+    return !!preferred&&preferred.id===employee?.id&&!isWeekend(parseDateKey(day))&&employeeActiveOn(employee,day);
+  }
+
   function scheduleSecondari(){
     let added=0;
     const preferredEmployee=ordinarySecondariPreferredEmployee();
@@ -4320,7 +4345,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     workdays().forEach(d=>{
       const day=dateKey(d);
       let count=state.employees.reduce((n,e)=>n+getAssignments(e.id,day).filter(a=>a.category==='SE').length,0);
-      const target=2;
+      const target=secondariDailyTarget();
       const item={category:'SE',type:'MGSE',code:'MGSE'};
       const pref=preferredGroup(d,'M');
 
@@ -5569,16 +5594,24 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
   }
   function setGenerationUi(active,percent=0,label='Preparazione…'){state.generating=active;['#generateAutoBtn','#autoBtn'].forEach(sel=>{const b=$(sel);if(b)b.disabled=active;});const overlay=$('#generationOverlay');if(overlay)overlay.classList.toggle('open',active);const bar=$('#generationProgressBar');if(bar)bar.style.width=`${Math.max(0,Math.min(100,percent))}%`;const pct=$('#generationProgressPct');if(pct)pct.textContent=`${Math.round(percent)}%`;const stage=$('#generationStage');if(stage)stage.textContent=label;}
   function updateGeneration(percent,label){setGenerationUi(true,percent,label);}
-  function coverageCandidatePool({emergency=false,day=''}={}){
-    if(!emergency)return state.employees.filter(e=>['A','B','Libera'].includes(e.turno));
-    // In fallback aggiunge ESCLUSIVAMENTE le responsabilità operative autorizzate
-    // (GRS/GRA/GRM/GRO) oltre alle risorse ordinarie.
-    return state.employees.filter(e=>
-      e.turno!=='Amministrazione'&&
-      (['A','B','Libera'].includes(e.turno)||!!fallbackResponsibilityCode(e,day))
-    );
+  function coverageCandidatePool({emergency=false,day='',preservePreferredSe=false}={}){
+    let pool;
+    if(!emergency){
+      pool=state.employees.filter(e=>['A','B','Libera'].includes(e.turno));
+    }else{
+      // In fallback aggiunge ESCLUSIVAMENTE le responsabilità operative autorizzate
+      // (GRS/GRA/GRM/GRO) oltre alle risorse ordinarie.
+      pool=state.employees.filter(e=>
+        e.turno!=='Amministrazione'&&
+        (['A','B','Libera'].includes(e.turno)||!!fallbackResponsibilityCode(e,day))
+      );
+    }
+    if(preservePreferredSe){
+      pool=pool.filter(e=>!shouldPreservePreferredSecondariFrom118(e,day));
+    }
+    return pool;
   }
-  function slotCandidateRanking(day,shift,slot,targetGroup,{emergency=false,ignoreSiteContinuity=false}={}){
+  function slotCandidateRanking(day,shift,slot,targetGroup,{emergency=false,ignoreSiteContinuity=false,preservePreferredSe=false}={}){
     const item={category:'118',shift,site:slot.site,machine:slot.machine,role:slot.role,plannedGroup:targetGroup};
     const currentRows=shiftRows(day,shift),crewRows=currentRows.filter(r=>crewKey(r.a)===slot.crew),hasMale=crewRows.some(r=>isMale(r.employee));
     const activeCrews=[...new Set(crewSlotsForDayShift(parseDateKey(day),shift).map(x=>x.crew))];
@@ -5587,7 +5620,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     return rankCandidates(day,item,{
       preferred:targetGroup,
       allowRo:emergency,
-      pool:coverageCandidatePool({emergency,day}),
+      pool:coverageCandidatePool({emergency,day,preservePreferredSe}),
       preferMale:!hasMale,
       preserveMale:hasMale&&otherCrewNeedsMale,
       requireMale,
@@ -5618,7 +5651,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     if(restored.length)state.assignments[trial.key]=restored;else delete state.assignments[trial.key];
     refreshAutoCache();
   }
-  function solveRequiredShift(day,shift,targetGroup,{emergency=false,ignoreSiteContinuity=false,maxNodes=1800,maxMs=450,maxCandidates=8}={}){
+  function solveRequiredShift(day,shift,targetGroup,{emergency=false,ignoreSiteContinuity=false,preservePreferredSe=false,maxNodes=1800,maxMs=450,maxCandidates=8}={}){
     const initial=crewSlotsForDayShift(parseDateKey(day),shift).filter(slot=>!currentSlotOccupied(day,shift,slot));
     const started=(globalThis.performance?.now?.()??Date.now());
     let nodes=0,timedOut=false;
@@ -5633,7 +5666,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       if(!slots.length)return trials;
       const ranked=slots.map(slot=>({
         slot,
-        candidates:slotCandidateRanking(day,shift,slot,targetGroup,{emergency,ignoreSiteContinuity}).slice(0,maxCandidates)
+        candidates:slotCandidateRanking(day,shift,slot,targetGroup,{emergency,ignoreSiteContinuity,preservePreferredSe}).slice(0,maxCandidates)
       })).sort((a,b)=>a.candidates.length-b.candidates.length||(['A','C','S'].indexOf(a.slot.role)-['A','C','S'].indexOf(b.slot.role)));
       const current=ranked[0];
       if(!current||!current.candidates.length)return null;
@@ -5665,12 +5698,14 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     return{added,cross,emergency};
   }
   function scheduleShiftCompletely(day,shift,targetGroup){
-    // 1) Tentativo ordinario con preferenza SOFT della sede settimanale.
-    let solved=solveRequiredShift(day,shift,targetGroup,{emergency:false,ignoreSiteContinuity:false});
-    // 2) PRIORITÀ COPERTURA: se non chiude, riprova senza alcun peso Somma/Gallarate.
-    if(!solved.success)solved=solveRequiredShift(day,shift,targetGroup,{emergency:false,ignoreSiteContinuity:true,maxNodes:2400,maxMs:520,maxCandidates:10});
-    // 3) Ultimo fallback: GRS/GRA/GRM/GRO possono lasciare la responsabilità e fare 118.
-    if(!solved.success)solved=solveRequiredShift(day,shift,targetGroup,{emergency:true,ignoreSiteContinuity:true,maxNodes:2800,maxMs:620,maxCandidates:12});
+    // 1) Prima prova a preservare il dipendente prevalente MGSE se è ancora sotto il minimo mensile.
+    let solved=solveRequiredShift(day,shift,targetGroup,{emergency:false,ignoreSiteContinuity:false,preservePreferredSe:true});
+    // 2) Stessa protezione, ma senza preferenza di continuità sede.
+    if(!solved.success)solved=solveRequiredShift(day,shift,targetGroup,{emergency:false,ignoreSiteContinuity:true,preservePreferredSe:true,maxNodes:2400,maxMs:520,maxCandidates:10});
+    // 3) PRIORITÀ 118: se serve davvero, libera anche il prevalente MGSE.
+    if(!solved.success)solved=solveRequiredShift(day,shift,targetGroup,{emergency:false,ignoreSiteContinuity:true,preservePreferredSe:false,maxNodes:2600,maxMs:570,maxCandidates:12});
+    // 4) Ultimo fallback: GRS/GRA/GRM/GRO possono lasciare la responsabilità e fare 118.
+    if(!solved.success)solved=solveRequiredShift(day,shift,targetGroup,{emergency:true,ignoreSiteContinuity:true,preservePreferredSe:false,maxNodes:3000,maxMs:650,maxCandidates:14});
     if(!solved.success){
       return{success:false,added:0,cross:0,emergency:0,missing:crewSlotsForDayShift(parseDateKey(day),shift).filter(slot=>!currentSlotOccupied(day,shift,slot)).length};
     }
@@ -6644,8 +6679,9 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     const isRo=String(auth.user?.profileType||'').toUpperCase()==='RO';
     $('#setTargetHours').value=state.settings.targetHours;
     $('#setMinRest').value=state.settings.minRest;
-    $('#setSeMin').value=2;
-    $('#setSeMax').value=2;
+    const dailySeTarget=secondariDailyTarget();
+    $('#setSeMin').value=dailySeTarget;
+    $('#setSeMax').value=dailySeTarget;
     $('#setRespMin').value=state.settings.respMin;
     $('#setRespGoal').value=state.settings.respGoal;
     $('#setWeeklyStandard').value=state.settings.weeklyStandardHours;
@@ -6681,11 +6717,14 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       note.innerHTML=isRo?'<strong>Profilo Responsabile Operativo:</strong> puoi scegliere il dipendente prevalente MGSE. Il minimo e il massimo MENSILE sono definiti dall’Admin e restano in sola lettura.':'';
     }
     $$('#settingsModal input, #settingsModal select').forEach(control=>{
-      const fixed=['setAppsScript','setHolidayRecoveryDays','setSeMin','setSeMax'].includes(control.id);
+      const fixed=['setAppsScript','setHolidayRecoveryDays','setSeMax'].includes(control.id);
       control.disabled=isRo&&control.id!=='setSePreferredEmployee';
+      if(!isRo)control.disabled=false;
       if(!isRo&&fixed)control.disabled=false;
     });
-    ['setAppsScript','setHolidayRecoveryDays','setSeMin','setSeMax'].forEach(id=>{const control=$('#'+id);if(control){control.readOnly=true;control.disabled=false;}});
+    ['setAppsScript','setHolidayRecoveryDays','setSeMax'].forEach(id=>{const control=$('#'+id);if(control){control.readOnly=true;if(!isRo)control.disabled=false;}});
+    const dailyControl=$('#setSeMin');
+    if(dailyControl){dailyControl.readOnly=isRo;dailyControl.disabled=isRo;}
     openModal('settingsModal');
   }
   async function saveSettings(){
@@ -6709,6 +6748,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       return;
     }
 
+    const dailyTarget=Math.max(0,Math.min(6,Math.round(numeric($('#setSeMin')?.value,secondariDailyTarget()))));
     const nextSettings={
       ...state.settings,
       targetHours:
@@ -6719,9 +6759,9 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         numeric(
           $('#setMinRest').value
         ),
-      seMin:2,
-      seMax:2,
-      seTarget:2,
+      seMin:dailyTarget,
+      seMax:dailyTarget,
+      seTarget:dailyTarget,
       sePreferredEmployeeId:
         $('#setSePreferredEmployee')?.value||'',
       sePreferredMinDays:Math.max(0,Math.min(31,numeric($('#setSePreferredMinDays').value,0))),
@@ -6831,7 +6871,8 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
 
     const isRo=String(auth.user?.profileType||'').toUpperCase()==='RO';
     if(isRo){
-      state.settings={...state.settings,seMin:2,seMax:2,seTarget:2,sePreferredEmployeeId:nextSettings.sePreferredEmployeeId,sePreferredMinDays:numeric(state.settings.sePreferredMinDays,0),sePreferredMaxDays:numeric(state.settings.sePreferredMaxDays,31)};
+      const roDailyTarget=secondariDailyTarget(state.settings);
+      state.settings={...state.settings,seMin:roDailyTarget,seMax:roDailyTarget,seTarget:roDailyTarget,sePreferredEmployeeId:nextSettings.sePreferredEmployeeId,sePreferredMinDays:numeric(state.settings.sePreferredMinDays,0),sePreferredMaxDays:numeric(state.settings.sePreferredMaxDays,31)};
       state.localDirty=true;
       saveState();
       renderAll();
@@ -6840,7 +6881,8 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       try{
         const data=await saveSharedSettings({url:serverUrl,token:auth.token,settings:sharedSettingsPayload(nextSettings)});
         if(data?.sharedSettings?.settings){
-          state.settings={...state.settings,...data.sharedSettings.settings,seMin:2,seMax:2,seTarget:2};
+          const roDailyTarget=secondariDailyTarget(state.settings);
+          state.settings={...state.settings,...data.sharedSettings.settings,seMin:roDailyTarget,seMax:roDailyTarget,seTarget:roDailyTarget};
           state.sharedSettingsUpdatedAt=String(data.sharedSettings.updatedAt||'');
           state.sharedSettingsUpdatedBy=String(data.sharedSettings.updatedBy||auth.user?.username||'');
           saveState();
@@ -6879,15 +6921,20 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
             )
         });
 
+      const serverSettings=data.sharedSettings?.settings||{};
+      const echoedDailyRaw=Number(serverSettings.seTarget??serverSettings.seMin);
+      const echoedDaily=Number.isFinite(echoedDailyRaw)?Math.max(0,Math.min(6,Math.round(echoedDailyRaw))):null;
+      const localDailyOverride=echoedDaily===null||echoedDaily!==dailyTarget;
       state.settings={
         ...nextSettings,
-        ...(data.sharedSettings?.settings||{}),
+        ...serverSettings,
         matrixCsvUrl:'',
         databaseCsvUrl:'',
         appsScriptUrl:serverUrl,
-        seMin:2,
-        seMax:2,
-        seTarget:2
+        seMin:dailyTarget,
+        seMax:dailyTarget,
+        seTarget:dailyTarget,
+        seDailyTargetLocalOverride:localDailyOverride
       };
 
       state.sharedSettingsUpdatedAt=
