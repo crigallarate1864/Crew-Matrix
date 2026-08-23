@@ -6,6 +6,10 @@ on:
       - atlas/grs-monthly-mgse-safe-20260823
     paths:
       - .github/workflows/apply-safe-grs-monthly-mgse.yml
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
