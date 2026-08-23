@@ -1,0 +1,62 @@
+name: Fix ATLAS MGSE normalization
+
+on:
+  push:
+    branches:
+      - atlas/mgse-settings-coverage-20260823
+    paths:
+      - .github/workflows/fix-atlas-mgse-normalization.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: atlas/mgse-settings-coverage-20260823
+          fetch-depth: 0
+
+      - name: Normalize MGSE shared settings and weekend display
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('atlas/js/atlas-app.js')
+          s=p.read_text(encoding='utf-8')
+
+          old="""      holidayRecoveryDays:\n        Number(\n          shared.settings.holidayRecoveryDays\n        )||30\n    };"""
+          new="""      holidayRecoveryDays:\n        Number(\n          shared.settings.holidayRecoveryDays\n        )||30,\n      // Regola strutturale ATLAS: MGSE ordinario sempre 2/2.\n      // Un vecchio valore condiviso non deve riattivare il precedente minimo 1.\n      seMin:2,\n      seMax:2,\n      seTarget:2\n    };"""
+          if s.count(old)!=1:
+              raise SystemExit(f'applySharedSettings marker: {s.count(old)}')
+          s=s.replace(old,new,1)
+
+          old="""  function secondariDayStatus(day){\n    const employees=rowsForDay(day).filter(r=>r.a.category==='SE');\n    const count=employees.length;\n    const target=2;\n    const reduced=count<target&&required118OnDay(day);\n    return{\n      count,target,reduced,\n      tone:count>=target?'ok':reduced?'reduced':'bad',\n      employees,\n      label:count>=target?'MGSE ordinario':reduced?'MGSE ridotto · priorità 118':'MGSE sotto minimo'\n    };\n  }"""
+          new="""  function secondariDayStatus(day){\n    const employees=rowsForDay(day).filter(r=>r.a.category==='SE');\n    const count=employees.length;\n    const weekday=!isWeekend(parseDateKey(day));\n    const target=weekday?2:0;\n    const reduced=weekday&&count<target&&required118OnDay(day);\n    return{\n      count,target,reduced,\n      tone:!weekday?'na':count>=target?'ok':reduced?'reduced':'bad',\n      employees,\n      label:!weekday?'MGSE non previsti':count>=target?'MGSE ordinario':reduced?'MGSE ridotto · priorità 118':'MGSE sotto minimo'\n    };\n  }"""
+          if s.count(old)!=1:
+              raise SystemExit(f'secondariDayStatus marker: {s.count(old)}')
+          s=s.replace(old,new,1)
+
+          old="""      state.settings={\n        ...nextSettings,\n        ...(data.sharedSettings?.settings||{}),\n        matrixCsvUrl:'',\n        databaseCsvUrl:'',\n        appsScriptUrl:serverUrl\n      };"""
+          new="""      state.settings={\n        ...nextSettings,\n        ...(data.sharedSettings?.settings||{}),\n        matrixCsvUrl:'',\n        databaseCsvUrl:'',\n        appsScriptUrl:serverUrl,\n        seMin:2,\n        seMax:2,\n        seTarget:2\n      };"""
+          if s.count(old)!=1:
+              raise SystemExit(f'admin shared settings marker: {s.count(old)}')
+          s=s.replace(old,new,1)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Syntax and behavior markers
+        run: |
+          node --check atlas/js/atlas-app.js
+          grep -q "MGSE non previsti" atlas/js/atlas-app.js
+          grep -q "Regola strutturale ATLAS: MGSE ordinario sempre 2/2" atlas/js/atlas-app.js
+
+      - name: Commit fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add atlas/js/atlas-app.js
+          git commit -m "ATLAS: enforce MGSE 2/2 and neutral weekends"
+          git push origin HEAD:atlas/mgse-settings-coverage-20260823
