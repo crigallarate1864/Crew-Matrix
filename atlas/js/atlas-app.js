@@ -2523,40 +2523,67 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     sourceEmployee,
     day,
     sourceItem,
-    excludedIds
+    excludedIds,
+    {allowResponsibilityFallback=false}={}
   ){
     return state.employees
       .filter(employee=>
         employee.id!==sourceEmployee.id&&
         employee.attivo!==false&&
         employee.turno!=='Amministrazione'&&
-        employee.turno!=='RO'&&
         !excludedIds.has(employee.id)
       )
       .map(employee=>{
+        const releases=allowResponsibilityFallback
+          ?releasableResponsibilityAssignments(employee,day)
+            .filter(entry=>VOLUNTEER_RESPONSIBILITY_FALLBACK_TYPES.has(String(entry.type||entry.code||'').toUpperCase()))
+          :[];
+
+        // RO entra nella catena solo quando la sua giornata GRO è davvero liberabile.
+        if(employee.turno==='RO'&&!releases.some(entry=>String(entry.type||entry.code||'').toUpperCase()==='GRO') ){
+          return null;
+        }
+
         const candidate={
           ...sourceItem,
           id:`VOL-REPL-${sourceItem.id||uid()}`
         };
 
-        const check=checkCandidate(
-          employee,
-          day,
-          candidate,
-          {
-            manual:false,
-            allowRo:true
-          }
-        );
+        let check=checkCandidate(employee,day,candidate,{manual:false,allowRo:true});
+        let released=[];
 
-        if(check.errors.length){
-          return null;
+        if(check.errors.length&&releases.length){
+          check=withResponsibilityAssignmentsRemoved(
+            employee,
+            day,
+            releases,
+            ()=>checkCandidate(employee,day,candidate,{manual:false,allowRo:true})
+          );
+          if(!check.errors.length)released=releases;
         }
+
+        if(check.errors.length)return null;
+
+        const codes=[...new Set(released.map(entry=>String(entry.type||entry.code||'').toUpperCase()))];
+        const fallbackResponsibility=codes.join(' + ');
+        const releasedResponsibilityHours=released.reduce((total,entry)=>{
+          const times=assignmentTimes(entry,day);
+          return total+Number(times?.hours||entry.hours||0);
+        },0);
 
         return{
           employee,
-          warnings:check.warnings||[],
-          score:candidateScore(employee,day,candidate,null)
+          warnings:[
+            ...(check.warnings||[]),
+            ...(fallbackResponsibility
+              ?[`Fallback Buchi volontari: ${fallbackResponsibility} viene liberato per consentire il cambio turno.`]
+              :[])
+          ],
+          score:candidateScore(employee,day,candidate,null)+(fallbackResponsibility?1200:0),
+          releasedResponsibilityIds:released.map(entry=>entry.id),
+          releasedResponsibilityCodes:codes,
+          fallbackResponsibility,
+          releasedResponsibilityHours
         };
       })
       .filter(Boolean)
@@ -2565,7 +2592,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         left.score-right.score||
         employeeName(left.employee).localeCompare(employeeName(right.employee),'it')
       )
-      .slice(0,2);
+      .slice(0,allowResponsibilityFallback?5:2);
   }
 
   function volunteerChangeOptions(
@@ -2573,7 +2600,8 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     role,
     item,
     reasonMap,
-    totalRoles
+    totalRoles,
+    {allowResponsibilityFallback=false}={}
   ){
     const day=String(hole.day||'').slice(0,10);
     const options=[];
@@ -2591,39 +2619,21 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       });
 
     for(const employee of blocked){
-      if(options.length>=5){
-        break;
-      }
+      if(options.length>=5)break;
 
       const sourceItem=getAssignments(employee.id,day)
         .filter(isWorkingAssignment)[0];
-
-      if(!sourceItem){
-        continue;
-      }
+      if(!sourceItem)continue;
 
       const holeCheck=withVolunteerAssignmentRemoved(
         employee.id,
         day,
         sourceItem.id,
-        ()=>checkCandidate(
-          employee,
-          day,
-          item,
-          {
-            manual:false,
-            allowRo:true
-          }
-        )
+        ()=>checkCandidate(employee,day,item,{manual:false,allowRo:true})
       );
 
       if(holeCheck.errors.length){
-        holeCheck.errors.forEach(error=>
-          reasonMap.set(
-            error,
-            (reasonMap.get(error)||0)+1
-          )
-        );
+        holeCheck.errors.forEach(error=>reasonMap.set(error,(reasonMap.get(error)||0)+1));
         continue;
       }
 
@@ -2635,48 +2645,39 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
           employee,
           day,
           sourceItem,
-          new Set([employee.id])
+          new Set([employee.id]),
+          {allowResponsibilityFallback}
         )
       );
 
       for(const replacement of replacements){
         options.push({
           type:'change',
-          cost:1,
+          cost:replacement.fallbackResponsibility?4:1,
           role,
-          resources:[
-            employee.id,
-            replacement.employee.id
-          ],
+          resources:[employee.id,replacement.employee.id],
           cover:employee,
           replacement:replacement.employee,
           sourceItem,
-          warnings:[
-            ...(holeCheck.warnings||[]),
-            ...(replacement.warnings||[])
-          ],
+          replacementReleasedResponsibilityIds:[...(replacement.releasedResponsibilityIds||[])],
+          replacementReleasedResponsibilityCodes:[...(replacement.releasedResponsibilityCodes||[])],
+          replacementFallbackResponsibility:String(replacement.fallbackResponsibility||''),
+          replacementReleasedResponsibilityHours:Number(replacement.releasedResponsibilityHours||0),
+          warnings:[...(holeCheck.warnings||[]),...(replacement.warnings||[])],
           targetHours:Number(item.hours||0),
           sourceHours:Number(sourceItem.hours||0),
-          score:
-            candidateScore(employee,day,item,null)+
-            replacement.score+
-            250,
+          score:candidateScore(employee,day,item,null)+replacement.score+250,
           text:
             `${employeeName(employee)} può coprire ${role}; `+
-            `${employeeName(replacement.employee)} può sostituirlo su ${normalizeCode(sourceItem)}`
+            `${employeeName(replacement.employee)} può sostituirlo su ${normalizeCode(sourceItem)}`+
+            (replacement.fallbackResponsibility?` liberando ${replacement.fallbackResponsibility}`:'')
         });
-
-        if(options.length>=5){
-          break;
-        }
+        if(options.length>=5)break;
       }
     }
 
     return options
-      .sort((left,right)=>
-        left.warnings.length-right.warnings.length||
-        left.score-right.score
-      )
+      .sort((left,right)=>left.cost-right.cost||left.warnings.length-right.warnings.length||left.score-right.score)
       .slice(0,5);
   }
 
@@ -2712,7 +2713,8 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
           role,
           item,
           reasonMap,
-          roles.length
+          roles.length,
+          {allowResponsibilityFallback}
         );
       }
 
@@ -2882,6 +2884,10 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         sourceCode:normalizeCode(option.sourceItem),
         targetHours:Number(option.targetHours||0),
         sourceHours:Number(option.sourceHours||option.sourceItem?.hours||0),
+        replacementReleasedResponsibilityIds:[...(option.replacementReleasedResponsibilityIds||[])],
+        replacementReleasedResponsibilityCodes:[...(option.replacementReleasedResponsibilityCodes||[])],
+        replacementFallbackResponsibility:String(option.replacementFallbackResponsibility||''),
+        replacementReleasedResponsibilityHours:Number(option.replacementReleasedResponsibilityHours||0),
         text:option.text,
         warnings:option.warnings||[]
       };
@@ -2946,7 +2952,9 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
           ?`${operation.coverName} · ${operation.fallbackResponsibility} → 118`
           :operation.mode==='sunday-rest'
             ?`${operation.coverName} · riposo domenicale spostato`
-            :`${operation.coverName} ⇄ ${operation.replacementName}`)
+            :operation.replacementFallbackResponsibility
+              ?`${operation.coverName} ⇄ ${operation.replacementName} · ${operation.replacementFallbackResponsibility} liberato`
+              :`${operation.coverName} ⇄ ${operation.replacementName}`)
         .join(' · ');
 
       label=`${changes.length} ${changes.length===1?'adeguamento':'adeguamenti'} · ${names}`;
@@ -3017,8 +3025,15 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       }else if(operation.mode==='sunday-rest'){
         add(operation.coverEmployeeId,target,'Copertura con riposo domenicale spostato');
       }else if(operation.mode==='change'){
+        const releasedResponsibilityHours=Number(operation.replacementReleasedResponsibilityHours||0);
         add(operation.coverEmployeeId,target-source,'Passaggio sul turno volontari');
-        add(operation.replacementEmployeeId,source,'Subentro sul turno spostato');
+        add(
+          operation.replacementEmployeeId,
+          source-releasedResponsibilityHours,
+          operation.replacementFallbackResponsibility
+            ?`Subentro sul turno spostato · ${operation.replacementFallbackResponsibility} liberato`
+            :'Subentro sul turno spostato'
+        );
       }
     });
 
@@ -3197,7 +3212,10 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
 
     const best=solutions[0];
     const changes=best.changes||[];
-    const responsibilityFallbacks=changes.filter(operation=>!!operation.fallbackResponsibility);
+    const responsibilityFallbacks=changes.filter(operation=>
+      !!operation.fallbackResponsibility||
+      !!operation.replacementFallbackResponsibility
+    );
 
     if(changes.length){
       return{
@@ -3383,6 +3401,23 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
           delete state.assignments[sourceKey];
         }
 
+        const replacementKey=assignmentKey(replacement.id,day);
+        const replacementReleaseIds=new Set(operation.replacementReleasedResponsibilityIds||[]);
+
+        if(replacementReleaseIds.size){
+          const replacementCurrent=[...getAssignments(replacement.id,day)];
+          const released=replacementCurrent.filter(entry=>replacementReleaseIds.has(entry.id));
+          const invalid=released.filter(entry=>
+            entry?.category!=='RESP'||
+            !VOLUNTEER_RESPONSIBILITY_FALLBACK_TYPES.has(String(entry.type||entry.code||'').toUpperCase())
+          );
+          if(released.length!==replacementReleaseIds.size||invalid.length){
+            throw new Error(`La giornata ${operation.replacementFallbackResponsibility||'GRO/GRS'} di ${employeeName(replacement)} non è più disponibile. Ricalcola la compatibilità.`);
+          }
+          const remaining=replacementCurrent.filter(entry=>!replacementReleaseIds.has(entry.id));
+          if(remaining.length)state.assignments[replacementKey]=remaining;else delete state.assignments[replacementKey];
+        }
+
         const replacementItem={
           ...sourceItem,
           id:uid(),
@@ -3394,7 +3429,10 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
           note:[
             sourceItem.note,
             marker,
-            `Cambio per copertura volontari: ${employeeName(cover)} → ${employeeName(replacement)}`
+            `Cambio per copertura volontari: ${employeeName(cover)} → ${employeeName(replacement)}`,
+            operation.replacementFallbackResponsibility
+              ?`${operation.replacementFallbackResponsibility} liberato come fallback per consentire il cambio`
+              :''
           ].filter(Boolean).join(' · '),
           replacementOf:sourceItem.id,
           replacedEmployeeId:cover.id,
@@ -3421,12 +3459,6 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
             `${employeeName(replacement)} non è più compatibile con ${normalizeCode(sourceItem)}: ${replacementCheck.errors.join(' ')}`
           );
         }
-
-        const replacementKey=
-          assignmentKey(
-            replacement.id,
-            day
-          );
 
         state.assignments[replacementKey]=[
           ...getAssignments(
