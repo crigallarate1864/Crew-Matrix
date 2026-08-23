@@ -1850,6 +1850,8 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     workdays().forEach(d=>{const day=dateKey(d),count=rows.filter(r=>r.day===day&&r.a.category==='SE').length;if(count<2){if(required118OnDay(day))out.push(validation('info','MGSE ridotto per priorità 118',`${DOW[d.getDay()]} ${d.getDate()}: ${count}/2 risorse MGSE. Riduzione ammessa perché nella giornata è richiesta copertura 118, che ha priorità.`,null,day));else out.push(validation('warning','Secondari sotto il minimo',`${DOW[d.getDay()]} ${d.getDate()}: ${count}/2 persone operative in MGSE senza una fascia 118 richiesta che giustifichi la riduzione.`,null,day));}if(count>2)out.push(validation('error','Troppi dipendenti nei Secondari',`${DOW[d.getDay()]} ${d.getDate()}: ${count} persone, massimo 2.`,null,day));});
     const preferredSeEmployee=ordinarySecondariPreferredEmployee();
     if(preferredSeEmployee){const preferredDays=preferredSecondariDayCount(preferredSeEmployee.id),preferredMin=Math.max(0,Math.min(31,numeric(state.settings.sePreferredMinDays,0))),preferredMax=Math.max(preferredMin,Math.min(31,numeric(state.settings.sePreferredMaxDays,31)));if(preferredDays<preferredMin)out.push(validation('warning','Prevalente Secondari sotto il minimo',`${employeeName(preferredSeEmployee)}: ${preferredDays} giornate MGSE, minimo ${preferredMin}.`,preferredSeEmployee.id,null));if(preferredDays>preferredMax)out.push(validation('warning','Prevalente Secondari oltre il massimo',`${employeeName(preferredSeEmployee)}: ${preferredDays} giornate MGSE, massimo ${preferredMax}.`,preferredSeEmployee.id,null));}
+    const preferredSeEmployee=ordinarySecondariPreferredEmployee();
+    if(preferredSeEmployee){const preferredDays=preferredSecondariDayCount(preferredSeEmployee.id),preferredMin=Math.max(0,Math.min(31,numeric(state.settings.sePreferredMinDays,0))),preferredMax=Math.max(preferredMin,Math.min(31,numeric(state.settings.sePreferredMaxDays,31)));if(preferredDays<preferredMin)out.push(validation('warning','Prevalente Secondari sotto il minimo',`${employeeName(preferredSeEmployee)}: ${preferredDays} giornate MGSE, minimo ${preferredMin}.`,preferredSeEmployee.id,null));if(preferredDays>preferredMax)out.push(validation('warning','Prevalente Secondari oltre il massimo',`${employeeName(preferredSeEmployee)}: ${preferredDays} giornate MGSE, massimo ${preferredMax}.`,preferredSeEmployee.id,null));}
     monthDates().forEach(d=>{const day=dateKey(d);['M','P','N'].forEach(shift=>{if(state.requirements[`${day}|${shift}`]!=='required')return;const cov=coverageFor(day,shift);Object.entries(cov).forEach(([crew,roles])=>Object.entries(roles).forEach(([role,people])=>{if(!people.length)out.push(validation('error','Ruolo 118 scoperto',`${DOW[d.getDay()]} ${d.getDate()} · ${shift} · ${crew}: manca ${role}.`,null,day));if(people.length>1)out.push(validation('error','Ruolo duplicato',`${DOW[d.getDay()]} ${d.getDate()} · ${shift} · ${crew}: ${role} assegnato a più persone.`,null,day));}));
       const sr=shiftRows(day,shift),groups=[...new Set(sr.map(r=>r.employee.turno).filter(g=>['A','B'].includes(g)))],crossRows=sr.filter(r=>r.a.crossGroup===true);
       if(groups.length>1)out.push(validation('warning','Gruppi A/B mischiati',`${DOW[d.getDay()]} ${d.getDate()} · ${shift}: sono presenti dipendenti dei gruppi A e B. Il cross è stato utilizzato per completare la copertura.`,null,day));
@@ -4227,6 +4229,16 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
   function scheduleAdmin(){let added=0;workdays().forEach(d=>{const day=dateKey(d);state.employees.filter(e=>e.turno==='Amministrazione'&&employeeActiveOn(e,day)).forEach(e=>{if(getAssignments(e.id,day).length)return;const dow=d.getDay();let code='AM7';if(slug(e.cognome)==='praderio')code=dow===5?'AM4':'AM8,5';else if(slug(e.cognome)==='vescera')code=[1,5].includes(dow)?'AM4':'AM7';addAuto(e,day,{category:'AM',type:code,code});added++;});});return added;}
   function scheduleFixedResponsibles(){let added=0;const bosetti=state.employees.find(e=>slug(e.responsabile)==='operativo'||e.turno==='RO');if(bosetti)workdays().forEach(d=>{const day=dateKey(d),item={category:'RESP',type:'GRO',code:'GRO'};if(employeeActiveOn(bosetti,day)&&!getAssignments(bosetti.id,day).length&&checkCandidate(bosetti,day,item).errors.length===0){addAuto(bosetti,day,item);added++;}});const raschi=state.employees.find(e=>slug(e.responsabile)==='secondari'||e.turno==='RS');if(raschi)workdays().forEach(d=>{const day=dateKey(d),item={category:'RESP',type:'GRS',code:'GRS'};if(employeeActiveOn(raschi,day)&&!getAssignments(raschi.id,day).length&&checkCandidate(raschi,day,item).errors.length===0){addAuto(raschi,day,item);added++;}});const responsibles=[...state.employees.filter(e=>slug(e.responsabile)==='autoparco').map(e=>[e,'GRA']),...state.employees.filter(e=>slug(e.responsabile)==='magazzino').map(e=>[e,'GRM'])];responsibles.forEach(([e,code],idx)=>{let count=allAssignmentRows().filter(r=>r.employeeId===e.id&&r.a.type===code).length;const candidates=workdays().filter((d,i)=>i%Math.max(1,Math.floor(workdays().length/state.settings.respGoal))===idx%2).concat(workdays());for(const d of candidates){if(count>=state.settings.respGoal)break;const day=dateKey(d);if(getAssignments(e.id,day).length)continue;const item={category:'RESP',type:code,code};if(checkCandidate(e,day,item).errors.length)continue;addAuto(e,day,item);count++;added++;}});return added;}
   function removeAutoGrsForRaschi(raschi,day){const items=getAssignments(raschi.id,day),keep=items.filter(a=>!(a.type==='GRS'&&sourceLabel(a)==='AUTO'&&!a.locked));setAssignments(raschi.id,day,keep,{dirty:false,render:false});}
+  function preferredSecondariDayCount(employeeId){
+    if(!employeeId)return 0;
+    return workdays().reduce((count,d)=>count+(getAssignments(employeeId,dateKey(d)).some(a=>a.category==='SE')?1:0),0);
+  }
+  function ordinarySecondariPreferredEmployee(){
+    const id=String(state.settings.sePreferredEmployeeId||'');
+    const employee=id?state.employees.find(e=>e.id===id):null;
+    if(!employee||!['A','B','Libera'].includes(employee.turno)||slug(employee.responsabile)==='secondari')return null;
+    return employee;
+  }
   function preferredSecondariDayCount(employeeId){
     if(!employeeId)return 0;
     return workdays().reduce((count,d)=>count+(getAssignments(employeeId,dateKey(d)).some(a=>a.category==='SE')?1:0),0);
@@ -6721,6 +6733,8 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       );
       return;
     }
+
+    if(nextSettings.sePreferredMinDays>nextSettings.sePreferredMaxDays){toast('Impostazioni non valide','Le giornate minime del prevalente non possono superare le massime.','error');return;}
 
     if(nextSettings.sePreferredMinDays>nextSettings.sePreferredMaxDays){toast('Impostazioni non valide','Le giornate minime del prevalente non possono superare le massime.','error');return;}
 
