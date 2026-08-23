@@ -250,7 +250,12 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
       holidayRecoveryDays:
         Number(
           shared.settings.holidayRecoveryDays
-        )||30
+        )||30,
+      // Regola strutturale ATLAS: MGSE ordinario sempre 2/2.
+      // Un vecchio valore condiviso non deve riattivare il precedente minimo 1.
+      seMin:2,
+      seMax:2,
+      seTarget:2
     };
 
     state.sharedSettingsUpdatedAt=
@@ -1896,13 +1901,14 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
   function secondariDayStatus(day){
     const employees=rowsForDay(day).filter(r=>r.a.category==='SE');
     const count=employees.length;
-    const target=2;
-    const reduced=count<target&&required118OnDay(day);
+    const weekday=!isWeekend(parseDateKey(day));
+    const target=weekday?2:0;
+    const reduced=weekday&&count<target&&required118OnDay(day);
     return{
       count,target,reduced,
-      tone:count>=target?'ok':reduced?'reduced':'bad',
+      tone:!weekday?'na':count>=target?'ok':reduced?'reduced':'bad',
       employees,
-      label:count>=target?'MGSE ordinario':reduced?'MGSE ridotto · priorità 118':'MGSE sotto minimo'
+      label:!weekday?'MGSE non previsti':count>=target?'MGSE ordinario':reduced?'MGSE ridotto · priorità 118':'MGSE sotto minimo'
     };
   }
   function crewHtml(name,roles){const title=name==='Somma'?'SOMMA':name==='Sumirago'?'SUMIRAGO':`GALLARATE ${name.slice(1)}`;return`<div class="crew"><div class="crew-title">${esc(title)}</div>${Object.entries(roles).map(([role,people])=>`<div class="role-row ${people.length?'':'missing'}"><span class="role-code">${role}</span><span class="role-person">${people.length?esc(people.join(', ')):'manca'}</span></div>`).join('')}</div>`;}
@@ -6787,7 +6793,10 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         ...(data.sharedSettings?.settings||{}),
         matrixCsvUrl:'',
         databaseCsvUrl:'',
-        appsScriptUrl:serverUrl
+        appsScriptUrl:serverUrl,
+        seMin:2,
+        seMax:2,
+        seTarget:2
       };
 
       state.sharedSettingsUpdatedAt=
