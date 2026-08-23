@@ -1,5 +1,6 @@
 from pathlib import Path
 
+# Validation marker: 2026-08-23-safe-rerun
 js = Path('atlas/js/atlas-app.js').read_text(encoding='utf-8')
 cfg = Path('atlas/js/config.js').read_text(encoding='utf-8')
 admin = Path('admin.html').read_text(encoding='utf-8')
