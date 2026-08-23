@@ -4,18 +4,20 @@ on:
   pull_request:
     branches: [main]
     types: [synchronize, reopened]
+  schedule:
+    - cron: '*/5 * * * *'
 
 permissions:
   contents: write
 
 jobs:
   patch-and-check:
-    if: github.head_ref == 'atlas/grs-monthly-mgse-safe-20260823'
+    if: github.event_name == 'schedule' || github.head_ref == 'atlas/grs-monthly-mgse-safe-20260823'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: atlas/grs-monthly-mgse-safe-20260823
           fetch-depth: 0
       - name: Apply patch once
         run: |
@@ -38,5 +40,5 @@ jobs:
             echo "No application changes to commit"
           else
             git commit -m "ATLAS: structural GRS + monthly MGSE quota [validated]"
-            git push origin HEAD:${{ github.head_ref }}
+            git push origin HEAD:atlas/grs-monthly-mgse-safe-20260823
           fi
