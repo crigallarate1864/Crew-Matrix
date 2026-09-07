@@ -204,7 +204,11 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
     'bankHoursMinBlock',
     'patronHoliday',
     'enforceNoSplitDay',
-    'autoCompensatoryRestDefault'
+    'autoCompensatoryRestDefault',
+    'personalPermitDailyMaxRatio',
+    'seriousReasonsMaxDaysAnnual',
+    'bereavementEventWindowDays',
+    'shiftTemplates'
   ];
 
   function sharedSettingsPayload(
@@ -368,37 +372,59 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
     }
   }
 
-  function shiftWindow(type,day,customStart,customEnd){
-    const d=parseDateKey(day),dow=d.getDay(); let start='',end='',nextDay=false,hours=0;
-    const operational=operationalShiftMeta(type);
+  function shiftTemplateKey(type,dow,category=''){
+    const code=String(type||'').toUpperCase();
+    if(category==='OP')return `OP_${code}`;
+    if(code==='M')return dow===0?'SUN_M':dow===6?'SAT_M':'WD_M';
+    if(code==='P')return dow===0?'SUN_P':dow===6?'SAT_P':'WD_P';
+    if(code==='N')return dow===0?'SUN_N':dow===6?'SAT_N':'WD_N';
+    if(code==='MGSE')return'MGSE';
+    if(['GRA','GRM','GRS','GRO','RO'].includes(code))return'RESP';
+    if(code==='AM7')return'AM7';
+    if(code==='AM8,5')return'AM85';
+    if(code==='AM4')return'AM4';
+    return'';
+  }
+  function configuredShiftTemplate(key){
+    const base=DEFAULT_SETTINGS.shiftTemplates?.[key]||{};
+    const local=state.settings.shiftTemplates?.[key]||{};
+    const template={...base,...local};
+    const start=String(template.start||'');
+    const end=String(template.end||'');
+    let nextDay=template.nextDay;
+    if(nextDay==null&&start&&end)nextDay=end<=start;
+    return{start,end,hours:Math.max(0,numeric(template.hours,0)),nextDay:!!nextDay};
+  }
+  function shiftWindow(type,day,customStart,customEnd,category=''){
+    const d=parseDateKey(day),dow=d.getDay();let start='',end='',nextDay=false,hours=0;
     if(customStart&&customEnd){
       start=customStart;end=customEnd;
       const [sh,sm]=start.split(':').map(Number),[eh,em]=end.split(':').map(Number);
       let mins=eh*60+em-(sh*60+sm);
       if(mins<0){mins+=1440;nextDay=true;}
       hours=mins/60;
+      return{start,end,nextDay,hours};
     }
-    else if(operational){
-      start=operational.start;
-      end=operational.end;
-      nextDay=!!operational.nextDay;
-      hours=Number(operational.hours||0);
+    if(String(type||'').toUpperCase()==='PN'&&category!=='OP'){
+      const p=shiftWindow('P',day,'','',category);
+      const n=shiftWindow('N',day,'','',category);
+      return{start:p.start,end:n.end,nextDay:true,hours:round2(Number(p.hours||0)+Number(n.hours||0))};
     }
-    else if(type==='M'){ if(dow===0){start='08:00';end='14:00';hours=6;} else {start='06:00';end='13:30';hours=7.5;} }
-    else if(type==='P'){ if(dow===0){start='14:00';end='20:00';hours=6;} else if(dow===6){start='13:00';end='20:00';hours=7;} else {start='13:00';end='20:30';hours=7.5;} }
-    else if(type==='N'){ if(dow===6){start='20:00';end='08:00';hours=12;} else if(dow===0){start='20:00';end='06:00';hours=10;} else {start='20:30';end='06:00';hours=9.5;} nextDay=true; }
-    else if(type==='PN'){ if(dow===6){start='13:00';end='08:00';hours=19;} else if(dow===0){start='14:00';end='06:00';hours=16;} else {start='13:00';end='06:00';hours=17;} nextDay=true; }
-    else if(type==='MGSE'){start='06:00';end='13:30';hours=7.5;}
-    else if(['GRA','GRM','GRS','GRO','RO'].includes(type)){start='08:00';end='17:00';hours=7.5;}
-    else if(type==='AM7'){start='08:00';end='15:00';hours=7;}
-    else if(type==='AM8,5'){start='08:00';end='17:00';hours=8.5;}
-    else if(type==='AM4'){start='08:00';end='12:00';hours=4;}
-    return {start,end,nextDay,hours};
+    const key=shiftTemplateKey(type,dow,category);
+    if(key){
+      const configured=configuredShiftTemplate(key);
+      if(configured.start&&configured.end)return configured;
+    }
+    const operational=category==='OP'?operationalShiftMeta(type):null;
+    if(operational){
+      return{start:operational.start,end:operational.end,nextDay:!!operational.nextDay,hours:Number(operational.hours||0)};
+    }
+    return{start,end,nextDay,hours};
   }
   function getDateTime(day,time,nextDay=false){ const d=parseDateKey(day),[h,m]=String(time||'00:00').split(':').map(Number); d.setHours(h||0,m||0,0,0); if(nextDay)d.setDate(d.getDate()+1); return d; }
   function assignmentTimes(a,day){
     if(a.allDay && !a.start && !a.end) return {start:null,end:null,hours:Number(a.hours||0),startText:'giornata',endText:'',timed:false};
-    const w=shiftWindow(a.shift||a.type||a.code,day,a.start,a.end); const st=a.start||w.start, en=a.end||w.end;
+    const w=shiftWindow(a.shift||a.type||a.code,day,a.start,a.end,a.category||''); const st=a.start||w.start, en=a.end||w.end;
     if(!st||!en)return {start:null,end:null,hours:Number(a.hours??w.hours??0),startText:'',endText:'',timed:false};
     const next=a.nextDay??w.nextDay; return {start:getDateTime(day,st,false),end:getDateTime(day,en,next),hours:Number(a.hours??w.hours),startText:st,endText:en,timed:true};
   }
@@ -973,7 +999,7 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
       state.assignments=clonePlan(cached?.assignments||data.assignments||{});
       state.requirements=clonePlan(cached?.requirements||data.requirements||{});
       migrateAssignmentStore();
-      state.settings={...DEFAULT_SETTINGS,...(data.settings||{}),holidayRecoveryDays:30};
+      state.settings={...DEFAULT_SETTINGS,...(data.settings||{})};
       state.localDirty=cached?!!cached.localDirty:!!data.localDirty;
       state.lastAutoSummary=clonePlan(cached?.lastAutoSummary||data.lastAutoSummary||null);
       restoreProtectedRecordsForCurrentMonth();
@@ -1854,8 +1880,8 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       const ferie=annualCodeHours(e.id,year,'F'),ferieLimit=e.vacationAnnualHours||state.settings.vacationAnnualHours;if(ferie>ferieLimit)out.push(validation('error','Ferie oltre monte annuo',`${employeeName(e)}: ${fmt(ferie)}/${fmt(ferieLimit)} ore.`,e.id,null));
       const fs=annualCodeHours(e.id,year,'FS'),fsLimit=e.suppressedHolidayAnnualHours||state.settings.suppressedHolidayAnnualHours;if(fs>fsLimit)out.push(validation('error','Festività soppresse oltre monte',`${employeeName(e)}: ${fmt(fs)}/${fmt(fsLimit)} ore.`,e.id,null));
       const pr=annualCodeHours(e.id,year,'PR36');if(pr>state.settings.personalPermitAnnualHours)out.push(validation('error','Permessi personali oltre 36 ore',`${employeeName(e)}: ${fmt(pr)}/${fmt(state.settings.personalPermitAnnualHours)} ore.`,e.id,null));if(pr>0&&fs<fsLimit)out.push(validation('warning','Permesso art. 33 prima delle festività soppresse',`${employeeName(e)} ha usato PR36 ma risultano ancora ${fmt(fsLimit-fs)} ore FS disponibili.`,e.id,null));
-      if(annualCodeDays(e.id,year,'GRAVI')>5)out.push(validation('error','Permesso gravi ragioni oltre limite',`${employeeName(e)} supera 5 giorni annui.`,e.id,null));
-      annualRows(e.id,year).filter(r=>isProtectedCalendarRecord(r.a)).forEach(r=>{const code=r.a.code||r.a.type,meta=absenceMeta(code);if(code==='PR36'){if(r.a.allDay||Number(r.hours)>dailyContractHours(e)/2)out.push(validation('error','Permesso art. 33 non conforme',`${employeeName(e)}: ${formatDateIt(r.day)} supera metà dell’orario giornaliero o è a giornata intera.`,e.id,r.day));}if(code==='RCB'&&Number(r.hours)<state.settings.bankHoursMinBlock)out.push(validation('error','Banca ore sotto il blocco minimo',`${employeeName(e)}: ${formatDateIt(r.day)} contiene ${fmt(r.hours)} ore, minimo ${fmt(state.settings.bankHoursMinBlock)}.`,e.id,r.day));if(meta.eventRequired&&!r.a.eventDate)out.push(validation('error','Data evento mancante',`${employeeName(e)}: ${code} del ${formatDateIt(r.day)} richiede la data dell’evento.`,e.id,r.day));if(code==='LUTTO'&&r.a.eventDate&&(daysBetween(r.a.eventDate,r.day)<0||daysBetween(r.a.eventDate,r.day)>7))out.push(validation('error','Permesso lutto fuori termine',`${employeeName(e)}: ${formatDateIt(r.day)} non è entro 7 giorni dall’evento.`,e.id,r.day));if(r.a.recoveryRequired&&!recoverySatisfied(e.id,r.a)){
+      if(annualCodeDays(e.id,year,'GRAVI')>state.settings.seriousReasonsMaxDaysAnnual)out.push(validation('error','Permesso gravi ragioni oltre limite',`${employeeName(e)} supera ${state.settings.seriousReasonsMaxDaysAnnual} giorni annui.`,e.id,null));
+      annualRows(e.id,year).filter(r=>isProtectedCalendarRecord(r.a)).forEach(r=>{const code=r.a.code||r.a.type,meta=absenceMeta(code);if(code==='PR36'){const maxDaily=round2(dailyContractHours(e)*Math.max(0,Math.min(1,numeric(state.settings.personalPermitDailyMaxRatio,0.5))));if(r.a.allDay||Number(r.hours)>maxDaily)out.push(validation('error','Permesso art. 33 non conforme',`${employeeName(e)}: ${formatDateIt(r.day)} supera il massimo giornaliero configurato (${fmt(maxDaily)} h) o è a giornata intera.`,e.id,r.day));}if(code==='RCB'&&Number(r.hours)<state.settings.bankHoursMinBlock)out.push(validation('error','Banca ore sotto il blocco minimo',`${employeeName(e)}: ${formatDateIt(r.day)} contiene ${fmt(r.hours)} ore, minimo ${fmt(state.settings.bankHoursMinBlock)}.`,e.id,r.day));if(meta.eventRequired&&!r.a.eventDate)out.push(validation('error','Data evento mancante',`${employeeName(e)}: ${code} del ${formatDateIt(r.day)} richiede la data dell’evento.`,e.id,r.day));if(code==='LUTTO'&&r.a.eventDate&&(daysBetween(r.a.eventDate,r.day)<0||daysBetween(r.a.eventDate,r.day)>state.settings.bereavementEventWindowDays))out.push(validation('error','Permesso lutto fuori termine',`${employeeName(e)}: ${formatDateIt(r.day)} non è entro ${state.settings.bereavementEventWindowDays} giorni dall’evento.`,e.id,r.day));if(r.a.recoveryRequired&&!recoverySatisfied(e.id,r.a)){
         const missingDue=!r.a.recoveryDue,dueInViewedMonth=!!r.a.recoveryDue&&r.a.recoveryDue<=endOfMonthKey(state.month),overdue=!!r.a.recoveryDue&&r.a.recoveryDue<dateKey(new Date());
         out.push(validation(missingDue||dueInViewedMonth||overdue?'error':'warning',missingDue?'Scadenza recupero obbligatoria mancante':'Recupero permesso da completare',`${employeeName(e)}: ${code} del ${formatDateIt(r.day)}${r.a.recoveryDue?` da recuperare entro ${formatDateIt(r.a.recoveryDue)}`:' senza scadenza configurata'}.`,e.id,r.day));
       }});
@@ -6838,6 +6864,38 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     switchView(activeView);
   }
 
+  function populateShiftTemplateSettings(){
+    $$('[data-shift-template]').forEach(row=>{
+      const key=row.dataset.shiftTemplate;
+      const template=configuredShiftTemplate(key);
+      const start=row.querySelector('[data-shift-part="start"]');
+      const end=row.querySelector('[data-shift-part="end"]');
+      const hours=row.querySelector('[data-shift-part="hours"]');
+      if(start)start.value=template.start||'';
+      if(end)end.value=template.end||'';
+      if(hours)hours.value=Number(template.hours||0);
+    });
+  }
+  function readShiftTemplateSettings(){
+    const output=structuredClone(DEFAULT_SETTINGS.shiftTemplates||{});
+    $$('[data-shift-template]').forEach(row=>{
+      const key=row.dataset.shiftTemplate;
+      const start=row.querySelector('[data-shift-part="start"]')?.value||'';
+      const end=row.querySelector('[data-shift-part="end"]')?.value||'';
+      const hours=Math.max(0,numeric(row.querySelector('[data-shift-part="hours"]')?.value,0));
+      output[key]={start,end,hours,nextDay:!!(start&&end&&end<=start)};
+    });
+    return output;
+  }
+  function validateShiftTemplateSettings(templates){
+    for(const [key,template] of Object.entries(templates||{})){
+      if(!template.start||!template.end)return`Orario ${key}: indica sia inizio sia fine.`;
+      if(!/^\d{2}:\d{2}$/.test(template.start)||!/^\d{2}:\d{2}$/.test(template.end))return`Orario ${key}: formato non valido.`;
+      if(!Number.isFinite(Number(template.hours))||Number(template.hours)<0)return`Orario ${key}: ore riconosciute non valide.`;
+    }
+    return'';
+  }
+
   function bindSettingsMenu(){
     const modal=$('#settingsModal');
     if(!modal||modal.dataset.settingsMenuBound==='1')return;
@@ -6887,6 +6945,9 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     $('#setVacationAnnual').value=state.settings.vacationAnnualHours;
     $('#setSuppressedHolidayAnnual').value=state.settings.suppressedHolidayAnnualHours;
     $('#setPersonalPermitAnnual').value=state.settings.personalPermitAnnualHours;
+    $('#setPersonalPermitDailyMaxRatio').value=Math.max(0,Math.min(1,numeric(state.settings.personalPermitDailyMaxRatio,0.5)));
+    $('#setSeriousReasonsMaxDaysAnnual').value=Math.max(0,Math.round(numeric(state.settings.seriousReasonsMaxDaysAnnual,5)));
+    $('#setBereavementEventWindowDays').value=Math.max(0,Math.round(numeric(state.settings.bereavementEventWindowDays,7)));
     $('#setPersonalPermitRecoveryMonths').value=Math.max(0,Math.round(numeric(state.settings.personalPermitRecoveryMonths,2)));
     $('#setHolidayRecoveryDays').value=Math.max(1,Math.round(numeric(state.settings.holidayRecoveryDays,30)));
     $('#setBankHoursMinBlock').value=state.settings.bankHoursMinBlock;
@@ -6899,6 +6960,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     $('#setAutoCompensatoryRestDefault').checked=state.settings.autoCompensatoryRestDefault===true;
     $('#setAppsScript').value=ATLAS_SERVER_URL;
     $('#setRotation').checked=state.settings.useABRotation;
+    populateShiftTemplateSettings();
 
     const preferred=$('#setSePreferredEmployee');
     preferred.innerHTML='<option value="">Nessuna preferenza</option>'+state.employees
@@ -7028,6 +7090,9 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
           $('#setPersonalPermitAnnual').value,
           36
         ),
+      personalPermitDailyMaxRatio:Math.max(0,Math.min(1,numeric($('#setPersonalPermitDailyMaxRatio').value,0.5))),
+      seriousReasonsMaxDaysAnnual:Math.max(0,Math.round(numeric($('#setSeriousReasonsMaxDaysAnnual').value,5))),
+      bereavementEventWindowDays:Math.max(0,Math.round(numeric($('#setBereavementEventWindowDays').value,7))),
       personalPermitRecoveryMonths:
         Math.max(0,Math.min(24,Math.round(numeric($('#setPersonalPermitRecoveryMonths').value,2)))),
       holidayRecoveryDays:
@@ -7046,12 +7111,19 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       autoSecondari:$('#setAutoSecondari').checked,
       allowRoAuto:$('#setAllowRoAuto').checked,
       autoCompensatoryRestDefault:$('#setAutoCompensatoryRestDefault').checked,
+      shiftTemplates:readShiftTemplateSettings(),
       matrixCsvUrl:'',
       databaseCsvUrl:'',
       appsScriptUrl:serverUrl,
       useABRotation:
         $('#setRotation').checked
     };
+
+    const shiftSettingsError=validateShiftTemplateSettings(nextSettings.shiftTemplates);
+    if(shiftSettingsError){
+      toast('Impostazioni non valide',shiftSettingsError,'error');
+      return;
+    }
 
     if(nextSettings.seMin>nextSettings.seMax){
       toast(

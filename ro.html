@@ -416,6 +416,7 @@
         <div class="settings-commandbar">
           <div class="settings-menu-grid" aria-label="Menu impostazioni">
             <button type="button" data-settings-jump="#settingsGeneral"><b>118</b><span>Turnazione</span></button>
+            <button type="button" data-settings-jump="#settingsShiftTimes"><b>⏱</b><span>Orari turni</span></button>
             <button type="button" data-settings-jump="#settingsSecondari"><b>SE</b><span>Secondari</span></button>
             <button type="button" data-settings-jump="#settingsResponsibility"><b>R</b><span>Responsabilità</span></button>
             <button type="button" data-settings-jump="#settingsGeneration"><b>⚙</b><span>Generazione</span></button>
@@ -436,6 +437,47 @@
               <div class="field"><label>Monte ore mensile standard</label><input id="setTargetHours" class="input" type="number" step="0.1" min="0" /></div>
               <div class="field"><label>Riposo minimo tra servizi (ore)</label><input id="setMinRest" class="input" type="number" step="0.5" min="0" /></div>
               <div class="field full"><label class="settings-check"><input id="setRotation" type="checkbox" /> Usa rotazione A/B settimanale</label><small>Settimane pari: A mattina / B pomeriggio; settimane dispari: inversione.</small></div>
+            </div>
+          </details>
+
+          <details class="settings-section settings-section-times" id="settingsShiftTimes">
+            <summary><span class="settings-summary-icon">⏱</span><span><b>Orari turni</b><small>Fasce orarie e ore riconosciute usate dal generatore</small></span><i>⌄</i></summary>
+            <div class="settings-section-body">
+              <div class="notice info settings-times-note">Modifica il template standard. Le assegnazioni inserite manualmente con un orario personalizzato mantengono il proprio orario.</div>
+              <div class="settings-times-table-wrap">
+                <table class="settings-times-table">
+                  <thead><tr><th>Turno</th><th>Inizio</th><th>Fine</th><th>Ore riconosciute</th></tr></thead>
+                  <tbody>
+                    <tr class="settings-times-group"><th colspan="4">118 · fasce ordinarie</th></tr>
+                    <tr data-shift-template="WD_M"><th>Feriale M</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="WD_P"><th>Feriale P</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="WD_N"><th>Feriale N</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="SAT_M"><th>Sabato M</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="SAT_P"><th>Sabato P</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="SAT_N"><th>Sabato N</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="SUN_M"><th>Domenica M</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="SUN_P"><th>Domenica P</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="SUN_N"><th>Domenica N</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr class="settings-times-group"><th colspan="4">Attività interne</th></tr>
+                    <tr data-shift-template="MGSE"><th>MGSE</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="RESP"><th>GRA / GRM / GRS / GRO / RO</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="AM7"><th>AM7</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="AM85"><th>AM8,5</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="AM4"><th>AM4</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr class="settings-times-group"><th colspan="4">Sigle operative</th></tr>
+                    <tr data-shift-template="OP_GM"><th>GM</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="OP_GP"><th>GP</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="OP_GN"><th>GN</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="OP_GG"><th>GG</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="OP_GSA"><th>GSA</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="OP_GSC"><th>GSC</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="OP_GSS"><th>GSS</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="OP_N"><th>N operativo</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                    <tr data-shift-template="OP_NS"><th>NS</th><td><input class="input" data-shift-part="start" type="time" /></td><td><input class="input" data-shift-part="end" type="time" /></td><td><input class="input" data-shift-part="hours" type="number" min="0" step="0.25" /></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="notice info settings-times-foot">Il turno <strong>P+N</strong> viene calcolato automaticamente sommando le ore riconosciute di P e N della stessa giornata.</div>
             </div>
           </details>
 
@@ -493,6 +535,9 @@
               <div class="field"><label>Ferie annue standard (ore)</label><input id="setVacationAnnual" class="input" type="number" step="1" min="0" /></div>
               <div class="field"><label>Festività soppresse (ore)</label><input id="setSuppressedHolidayAnnual" class="input" type="number" step="1" min="0" /></div>
               <div class="field"><label>Permesso personale art. 33 (ore)</label><input id="setPersonalPermitAnnual" class="input" type="number" step="1" min="0" /></div>
+              <div class="field"><label>Quota massima giornaliera art. 33</label><input id="setPersonalPermitDailyMaxRatio" class="input" type="number" min="0" max="1" step="0.05" /><small>0,50 = massimo metà dell’orario giornaliero.</small></div>
+              <div class="field"><label>Gravi ragioni · giorni massimi annui</label><input id="setSeriousReasonsMaxDaysAnnual" class="input" type="number" min="0" max="365" step="1" /></div>
+              <div class="field"><label>Lutto · finestra dall’evento (giorni)</label><input id="setBereavementEventWindowDays" class="input" type="number" min="0" max="365" step="1" /></div>
               <div class="field"><label>Termine recupero permesso art. 33 (mesi)</label><input id="setPersonalPermitRecoveryMonths" class="input" type="number" min="0" max="24" step="1" /></div>
               <div class="field"><label>Recupero festività lavorata (giorni)</label><input id="setHolidayRecoveryDays" class="input" type="number" min="1" max="365" step="1" /><small>Scadenza entro cui ATLAS deve collocare RFS/RCF.</small></div>
               <div class="field"><label>Blocco minimo banca ore (ore)</label><input id="setBankHoursMinBlock" class="input" type="number" step="0.5" min="0" /></div>
