@@ -1767,3 +1767,19 @@ body.role-ro .settings-section:not(.settings-section-se) input:disabled{opacity:
 body.role-ro .settings-control-center input:disabled,body.role-ro .settings-control-center select:disabled{opacity:.46;cursor:not-allowed}
 @media(max-width:860px){.settings-menu-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.settings-toggle-grid{grid-template-columns:1fr}.settings-commandbar{top:-10px}.settings-control-center .settings-section{scroll-margin-top:170px}}
 @media(max-width:540px){.settings-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-expand-actions{justify-content:stretch}.settings-expand-actions .btn{flex:1}.settings-foot-hint{display:none}.settings-control-center .modal-body{padding:10px}.settings-control-center .settings-section>summary{grid-template-columns:34px minmax(0,1fr) 18px}}
+
+
+/* ATLAS ADMIN SHIFT TEMPLATES + PERMIT RULES 2026-09-07 */
+.settings-control-center .settings-menu-grid{grid-template-columns:repeat(8,minmax(0,1fr))}
+.settings-section-times[open]{border-color:rgba(167,139,250,.28)}
+.settings-times-note{margin:12px 0 10px}
+.settings-times-table-wrap{overflow:auto;border:1px solid rgba(125,211,252,.10);border-radius:12px;background:rgba(3,18,28,.42)}
+.settings-times-table{width:100%;min-width:610px;border-collapse:collapse}
+.settings-times-table th,.settings-times-table td{padding:7px 9px;border-bottom:1px solid rgba(125,211,252,.07);text-align:left}
+.settings-times-table thead th{position:sticky;top:0;z-index:1;background:#092433;color:#82a9ba;font-size:7px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
+.settings-times-table tbody th{color:#dff4fb;font-size:8px;font-weight:850}
+.settings-times-table .input{min-height:34px;padding:6px 8px;font-size:9px}
+.settings-times-group th{padding-top:11px!important;background:rgba(56,189,248,.055);color:#7dd3fc!important;font-size:7px!important;letter-spacing:.09em;text-transform:uppercase}
+.settings-times-foot{margin-top:10px}
+@media(max-width:900px){.settings-control-center .settings-menu-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:540px){.settings-control-center .settings-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
