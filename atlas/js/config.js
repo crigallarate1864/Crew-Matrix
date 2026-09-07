@@ -46,7 +46,35 @@ export const DEFAULT_SETTINGS = {
     bankHoursMinBlock: 4,
     patronHoliday: '',
     enforceNoSplitDay: true,
-    autoCompensatoryRestDefault: false
+    autoCompensatoryRestDefault: false,
+    personalPermitDailyMaxRatio: 0.5,
+    seriousReasonsMaxDaysAnnual: 5,
+    bereavementEventWindowDays: 7,
+    shiftTemplates: {
+      WD_M:{start:'06:00',end:'13:30',hours:7.5},
+      WD_P:{start:'13:00',end:'20:30',hours:7.5},
+      WD_N:{start:'20:30',end:'06:00',hours:9.5,nextDay:true},
+      SAT_M:{start:'06:00',end:'13:30',hours:7.5},
+      SAT_P:{start:'13:00',end:'20:00',hours:7},
+      SAT_N:{start:'20:00',end:'08:00',hours:12,nextDay:true},
+      SUN_M:{start:'08:00',end:'14:00',hours:6},
+      SUN_P:{start:'14:00',end:'20:00',hours:6},
+      SUN_N:{start:'20:00',end:'06:00',hours:10,nextDay:true},
+      MGSE:{start:'06:00',end:'13:30',hours:7.5},
+      RESP:{start:'08:00',end:'17:00',hours:7.5},
+      AM7:{start:'08:00',end:'15:00',hours:7},
+      AM85:{start:'08:00',end:'17:00',hours:8.5},
+      AM4:{start:'08:00',end:'12:00',hours:4},
+      OP_GM:{start:'08:00',end:'14:00',hours:6},
+      OP_GP:{start:'14:00',end:'20:00',hours:6},
+      OP_GN:{start:'20:00',end:'08:00',hours:12,nextDay:true},
+      OP_GG:{start:'08:00',end:'20:00',hours:12},
+      OP_GSA:{start:'08:00',end:'20:00',hours:12},
+      OP_GSC:{start:'08:00',end:'20:00',hours:12},
+      OP_GSS:{start:'08:00',end:'20:00',hours:12},
+      OP_N:{start:'20:00',end:'08:00',hours:12,nextDay:true},
+      OP_NS:{start:'20:00',end:'08:00',hours:12,nextDay:true}
+    }
   };
 export const STORAGE_KEY = 'atlas-118-turnazione-release-1';
 export const LEGACY_STORAGE_KEYS = ['atlas-118-turnazione-production-v1-5-8','atlas-118-turnazione-production-v1-5-7','atlas-118-turnazione-production-v1-5-6','atlas-118-turnazione-production-v1-5-3','atlas-118-turnazione-production-v1-5-1','atlas-118-turnazione-production-v1-5-0','atlas-118-turnazione-production-v1-4-3','atlas-118-turnazione-production-v1-4-2','atlas-118-turnazione-production-v1-4-1','atlas-118-turnazione-production-v1-3-9','atlas-118-turnazione-production-v1-3-8','atlas-118-turnazione-production-v1-3-7','atlas-118-turnazione-production-v1-3-6','atlas-118-turnazione-production-v1-3-5','atlas-118-turnazione-production-v1-3-4','atlas-118-turnazione-production-v1-3-3','atlas-118-turnazione-production-v1-3-1','atlas-118-turnazione-production-v1-3','atlas-118-turnazione-production-v1-2','atlas-118-turnazione-production-v1-1','atlas-118-turnazione-production-v1','atlas-118-turnazione-release-v6','atlas-118-turnazione-release-v5','atlas-118-turnazione-release-v4','atlas-118-turnazione-release-v3','atlas-118-turnazione-release-v2','atlas-118-turnazione-release-v1','atlas-118-turnazione-v15','atlas-118-turnazione-v14','atlas-118-turnazione-v13','atlas-118-turnazione-v12','atlas-118-turnazione-v11','atlas-118-turnazione-v10','atlas-118-turnazione-v9','atlas-118-turnazione-v8','atlas-118-turnazione-v7','atlas-118-turnazione-v6','aegis-118-turnazione-v6'];
