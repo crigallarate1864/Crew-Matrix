@@ -401,86 +401,111 @@
   </div>
 
   <div class="modal-backdrop" id="settingsModal">
-    <div class="modal settings-modal settings-modal-redesign">
-      <div class="modal-head">
+    <div class="modal settings-modal settings-modal-redesign settings-control-center">
+      <div class="modal-head settings-head">
         <div>
-          <div class="modal-title">Impostazioni ATLAS 118</div>
-          <div class="modal-sub">Regole operative organizzate per area · apri solo la sezione che ti serve</div>
+          <div class="settings-kicker">ATLAS 118 · CONTROL CENTER</div>
+          <div class="modal-title">Impostazioni operative</div>
+          <div class="modal-sub">Regole, orari contrattuali, permessi e automazioni organizzati per area</div>
         </div>
         <button class="modal-close" data-close="settingsModal">✕</button>
       </div>
       <div class="modal-body">
         <div class="notice info hidden" id="settingsPermissionNote"></div>
+
+        <div class="settings-commandbar">
+          <div class="settings-menu-grid" aria-label="Menu impostazioni">
+            <button type="button" data-settings-jump="#settingsGeneral"><b>118</b><span>Turnazione</span></button>
+            <button type="button" data-settings-jump="#settingsSecondari"><b>SE</b><span>Secondari</span></button>
+            <button type="button" data-settings-jump="#settingsResponsibility"><b>R</b><span>Responsabilità</span></button>
+            <button type="button" data-settings-jump="#settingsGeneration"><b>⚙</b><span>Generazione</span></button>
+            <button type="button" data-settings-jump="#settingsCcnl"><b>h</b><span>Orario / CCNL</span></button>
+            <button type="button" data-settings-jump="#settingsLeave"><b>P</b><span>Permessi</span></button>
+            <button type="button" data-settings-jump="#settingsSystem"><b>↻</b><span>Sistema</span></button>
+          </div>
+          <div class="settings-expand-actions">
+            <button class="btn small" id="settingsExpandAllBtn" type="button">Espandi tutto</button>
+            <button class="btn small" id="settingsCollapseAllBtn" type="button">Comprimi</button>
+          </div>
+        </div>
+
         <div class="settings-accordion">
-          <details class="settings-section" open>
-            <summary><span><b>Turnazione e 118</b><small>Monte ore, riposi e rotazione A/B</small></span><i>⌄</i></summary>
+          <details class="settings-section" id="settingsGeneral" open>
+            <summary><span class="settings-summary-icon">118</span><span><b>Turnazione e 118</b><small>Monte ore, riposo minimo e rotazione dei gruppi</small></span><i>⌄</i></summary>
             <div class="settings-section-body form-grid">
-              <div class="field"><label>Monte ore mensile</label><input id="setTargetHours" class="input" type="number" step="0.1" /></div>
-              <div class="field"><label>Riposo minimo (ore)</label><input id="setMinRest" class="input" type="number" step="0.5" /></div>
-              <div class="field full"><label class="settings-check"><input id="setRotation" type="checkbox" /> Usa rotazione A/B settimanale (settimane pari A=M, B=P; dispari B=M, A=P)</label></div>
+              <div class="field"><label>Monte ore mensile standard</label><input id="setTargetHours" class="input" type="number" step="0.1" min="0" /></div>
+              <div class="field"><label>Riposo minimo tra servizi (ore)</label><input id="setMinRest" class="input" type="number" step="0.5" min="0" /></div>
+              <div class="field full"><label class="settings-check"><input id="setRotation" type="checkbox" /> Usa rotazione A/B settimanale</label><small>Settimane pari: A mattina / B pomeriggio; settimane dispari: inversione.</small></div>
             </div>
           </details>
 
-          <details class="settings-section settings-section-se" open>
-            <summary><span><b>Secondari · MGSE</b><small>Numero giornaliero configurabile · il 118 mantiene sempre la priorità</small></span><i>⌄</i></summary>
+          <details class="settings-section settings-section-se" id="settingsSecondari">
+            <summary><span class="settings-summary-icon">SE</span><span><b>Secondari · MGSE</b><small>Dotazione giornaliera e quota mensile del dipendente prevalente</small></span><i>⌄</i></summary>
             <div class="settings-section-body form-grid">
               <div class="field"><label>Numero MGSE giornalieri</label><input id="setSeMin" class="input" type="number" min="0" max="6" step="1" value="2" /></div>
               <input id="setSeMax" type="hidden" value="2" />
-              <div class="field"><label>Regola</label><div class="notice info">L’Admin imposta quante persone ATLAS prova ad assegnare ogni giorno feriale ai Secondari. Il 118 resta prioritario e può ridurre questa dotazione quando necessario.</div></div>
-              <div class="field full">
-                <label>Dipendente prevalentemente assegnato ai Secondari</label>
-                <select id="setSePreferredEmployee" class="input"><option value="">Nessuna preferenza</option></select>
-                <small>È una preferenza soft: ferie, riposi, vincoli e soprattutto la copertura 118 hanno priorità. Se necessario, il dipendente può essere utilizzato nel 118.</small>
-              </div>
-              <div class="field full"><div class="section-label">QUOTA MENSILE DEL DIPENDENTE PREVALENTE</div></div>
-              <div class="field"><label>Minimo MENSILE di giornate MGSE</label><input id="setSePreferredMinDays" class="input" type="number" min="0" max="31" step="1" placeholder="es. 8" /></div>
-              <div class="field"><label>Massimo MENSILE di giornate MGSE</label><input id="setSePreferredMaxDays" class="input" type="number" min="0" max="31" step="1" placeholder="es. 12" /></div>
-              <div class="field full"><div class="notice info"><strong>Quota mensile del prevalente:</strong> questi due valori NON sono il minimo/massimo giornaliero. Indicano quante giornate MGSE deve svolgere nel mese il dipendente selezionato sopra. Esempio: minimo 8 e massimo 12 = ATLAS prova a tenerlo tra 8 e 12 giornate MGSE nell’intero mese.</div></div>
-              <div class="field full"><div class="notice warning"><strong>Regola operativa:</strong> ATLAS prova a mantenere il numero MGSE giornaliero configurato dall’Admin. Può scendere sotto quel valore quando le risorse sono necessarie per il 118; la pagina Coperture evidenzia il caso in arancione.</div></div>
+              <div class="field"><label>Priorità</label><div class="notice info">Il 118 resta prioritario: la dotazione MGSE può essere ridotta solo quando serve alla copertura.</div></div>
+              <div class="field full"><label>Dipendente prevalentemente assegnato ai Secondari</label><select id="setSePreferredEmployee" class="input"><option value="">Nessuna preferenza</option></select><small>Preferenza soft: il dipendente resta utilizzabile nel 118 se necessario.</small></div>
+              <div class="field full"><div class="settings-subtitle">Quota mensile del prevalente</div></div>
+              <div class="field"><label>Minimo mensile giornate MGSE</label><input id="setSePreferredMinDays" class="input" type="number" min="0" max="31" step="1" /></div>
+              <div class="field"><label>Massimo mensile giornate MGSE</label><input id="setSePreferredMaxDays" class="input" type="number" min="0" max="31" step="1" /></div>
             </div>
           </details>
 
-          <details class="settings-section">
-            <summary><span><b>Responsabilità</b><small>GRA / GRM e obiettivi mensili</small></span><i>⌄</i></summary>
+          <details class="settings-section" id="settingsResponsibility">
+            <summary><span class="settings-summary-icon">R</span><span><b>Responsabilità</b><small>Obiettivi GRA / GRM e fallback operativo</small></span><i>⌄</i></summary>
             <div class="settings-section-body form-grid">
-              <div class="field"><label>GRA/GRM minimo</label><input id="setRespMin" class="input" type="number" min="0" /></div>
-              <div class="field"><label>GRA/GRM obiettivo</label><input id="setRespGoal" class="input" type="number" min="0" /></div>
-              <div class="field full"><div class="notice info">Le giornate GRS, GRA, GRM e GRO restano responsabilità finché il 118 è coperto; possono essere convertite dal fallback emergenziale quando servono a chiudere un ruolo 118.</div></div>
+              <div class="field"><label>GRA/GRM minimo mensile</label><input id="setRespMin" class="input" type="number" min="0" /></div>
+              <div class="field"><label>GRA/GRM obiettivo mensile</label><input id="setRespGoal" class="input" type="number" min="0" /></div>
+              <div class="field full"><div class="notice info">GRS/GRO e le altre responsabilità restano assegnate finché il 118 è coperto; i fallback previsti possono liberarle quando necessario.</div></div>
             </div>
           </details>
 
-          <details class="settings-section">
-            <summary><span><b>Orario e CCNL</b><small>Settimane, media, riposi e straordinario</small></span><i>⌄</i></summary>
-            <div class="settings-section-body form-grid">
-              <div class="field"><label>Orario settimanale standard</label><input id="setWeeklyStandard" class="input" type="number" step="0.5" /></div>
-              <div class="field"><label>Minimo settimana multiperiodale</label><input id="setWeeklyMin" class="input" type="number" step="0.5" /></div>
-              <div class="field"><label>Massimo settimana multiperiodale</label><input id="setWeeklyMax" class="input" type="number" step="0.5" /></div>
-              <div class="field"><label>Media massima settimanale</label><input id="setWeeklyAverageMax" class="input" type="number" step="0.5" /></div>
-              <div class="field"><label>Riposo settimanale complessivo</label><input id="setWeeklyRestHours" class="input" type="number" step="0.5" /></div>
-              <div class="field"><label>Riposi minimi in 14 giorni</label><input id="setWeeklyRestOccurrences" class="input" type="number" min="1" max="4" /></div>
-              <div class="field"><label>Straordinario annuo · soglia</label><input id="setOvertimeLimit" class="input" type="number" step="1" /></div>
-              <div class="field"><label>Straordinario annuo · limite esteso</label><input id="setOvertimeExtended" class="input" type="number" step="1" /></div>
-              <div class="field full"><label class="settings-check"><input id="setNoSplitDay" type="checkbox" /> Blocca le giornate lavorative frazionate, salvo autorizzazione esplicita</label></div>
+          <details class="settings-section" id="settingsGeneration">
+            <summary><span class="settings-summary-icon">⚙</span><span><b>Generazione automatica</b><small>Decidi quali moduli ATLAS deve proporre automaticamente</small></span><i>⌄</i></summary>
+            <div class="settings-section-body settings-toggle-grid">
+              <label class="settings-toggle"><input id="setAutoAdmin" type="checkbox" /><span><b>Pianifica Amministrazione</b><small>Usa le regole AM durante la generazione.</small></span></label>
+              <label class="settings-toggle"><input id="setAutoResponsabili" type="checkbox" /><span><b>Pianifica responsabilità</b><small>Gestisce GRO e obiettivi GRA/GRM; GRS resta strutturale.</small></span></label>
+              <label class="settings-toggle"><input id="setAutoSecondari" type="checkbox" /><span><b>Pianifica Secondari</b><small>Completa MGSE alla dotazione configurata dopo la priorità 118.</small></span></label>
+              <label class="settings-toggle"><input id="setAllowRoAuto" type="checkbox" /><span><b>Consenti RO nel 118</b><small>Solo come risorsa di ultima istanza.</small></span></label>
+              <label class="settings-toggle"><input id="setAutoCompensatoryRestDefault" type="checkbox" /><span><b>Riposi compensativi automatici</b><small>Imposta come predefinita la pianificazione automatica dei recuperi.</small></span></label>
+              <label class="settings-toggle"><input id="setNoSplitDay" type="checkbox" /><span><b>Blocca giornata frazionata</b><small>Impedisce due prestazioni separate nello stesso giorno salvo autorizzazione.</small></span></label>
             </div>
           </details>
 
-          <details class="settings-section">
-            <summary><span><b>Ferie, permessi e recuperi</b><small>Contatori annuali e regole di recupero</small></span><i>⌄</i></summary>
+          <details class="settings-section" id="settingsCcnl">
+            <summary><span class="settings-summary-icon">h</span><span><b>Orario, riposi e straordinario</b><small>Parametri settimanali e limiti del regime orario</small></span><i>⌄</i></summary>
             <div class="settings-section-body form-grid">
-              <div class="field"><label>Ferie annue standard (ore)</label><input id="setVacationAnnual" class="input" type="number" step="1" /></div>
-              <div class="field"><label>Festività soppresse (ore)</label><input id="setSuppressedHolidayAnnual" class="input" type="number" step="1" /></div>
-              <div class="field"><label>Permesso personale art. 33 (ore)</label><input id="setPersonalPermitAnnual" class="input" type="number" step="1" /></div>
-              <div class="field"><label>Recupero festività</label><input id="setHolidayRecoveryDays" class="input" type="number" value="30" readonly /><small>30 giorni fissi dalla festività · Art. 29 CCNL</small></div>
-              <div class="field"><label>Blocco minimo banca ore (ore)</label><input id="setBankHoursMinBlock" class="input" type="number" step="0.5" /></div>
+              <div class="field"><label>Orario settimanale standard</label><input id="setWeeklyStandard" class="input" type="number" step="0.5" min="0" /></div>
+              <div class="field"><label>Minimo settimana multiperiodale</label><input id="setWeeklyMin" class="input" type="number" step="0.5" min="0" /></div>
+              <div class="field"><label>Massimo settimana multiperiodale</label><input id="setWeeklyMax" class="input" type="number" step="0.5" min="0" /></div>
+              <div class="field"><label>Media massima settimanale</label><input id="setWeeklyAverageMax" class="input" type="number" step="0.5" min="0" /></div>
+              <div class="field"><label>Riposo settimanale complessivo</label><input id="setWeeklyRestHours" class="input" type="number" step="0.5" min="0" /></div>
+              <div class="field"><label>Riposi minimi in 14 giorni</label><input id="setWeeklyRestOccurrences" class="input" type="number" min="1" max="14" /></div>
+              <div class="field"><label>Straordinario annuo · soglia</label><input id="setOvertimeLimit" class="input" type="number" step="1" min="0" /></div>
+              <div class="field"><label>Straordinario annuo · limite esteso</label><input id="setOvertimeExtended" class="input" type="number" step="1" min="0" /></div>
+            </div>
+          </details>
+
+          <details class="settings-section" id="settingsLeave">
+            <summary><span class="settings-summary-icon">P</span><span><b>Ferie, permessi e recuperi</b><small>Contatori annuali, scadenze e banca ore</small></span><i>⌄</i></summary>
+            <div class="settings-section-body form-grid">
+              <div class="field"><label>Ferie annue standard (ore)</label><input id="setVacationAnnual" class="input" type="number" step="1" min="0" /></div>
+              <div class="field"><label>Festività soppresse (ore)</label><input id="setSuppressedHolidayAnnual" class="input" type="number" step="1" min="0" /></div>
+              <div class="field"><label>Permesso personale art. 33 (ore)</label><input id="setPersonalPermitAnnual" class="input" type="number" step="1" min="0" /></div>
+              <div class="field"><label>Termine recupero permesso art. 33 (mesi)</label><input id="setPersonalPermitRecoveryMonths" class="input" type="number" min="0" max="24" step="1" /></div>
+              <div class="field"><label>Recupero festività lavorata (giorni)</label><input id="setHolidayRecoveryDays" class="input" type="number" min="1" max="365" step="1" /><small>Scadenza entro cui ATLAS deve collocare RFS/RCF.</small></div>
+              <div class="field"><label>Blocco minimo banca ore (ore)</label><input id="setBankHoursMinBlock" class="input" type="number" step="0.5" min="0" /></div>
               <div class="field"><label>Santo patrono (MM-GG)</label><input id="setPatronHoliday" class="input" placeholder="es. 07-25" /></div>
+              <div class="field full"><div class="notice warning"><strong>Attenzione:</strong> questi valori modificano le regole usate da ATLAS per conteggi, scadenze e validazioni. Le assenze già registrate non vengono cancellate.</div></div>
             </div>
           </details>
 
-          <details class="settings-section">
-            <summary><span><b>Sistema e sincronizzazione</b><small>Server ATLAS, backup e ricarica dati</small></span><i>⌄</i></summary>
+          <details class="settings-section" id="settingsSystem">
+            <summary><span class="settings-summary-icon">↻</span><span><b>Sistema e sincronizzazione</b><small>Dati, backup e collegamento al backend ATLAS</small></span><i>⌄</i></summary>
             <div class="settings-section-body form-grid">
-              <div class="field full"><div class="notice info"><strong>Lettura protetta:</strong> Matrice e Database vengono caricati tramite la sessione Apps Script. I collegamenti CSV pubblici non vengono utilizzati.</div></div>
-              <div class="field full"><label>Server ATLAS preconfigurato</label><input id="setAppsScript" class="input" readonly aria-readonly="true" /></div>
+              <div class="field full"><div class="notice info"><strong>Endpoint protetto:</strong> il server ATLAS resta preconfigurato e non viene modificato dalle regole operative.</div></div>
+              <div class="field full"><label>Server ATLAS</label><input id="setAppsScript" class="input" readonly aria-readonly="true" /></div>
               <div class="field full settings-system-actions">
                 <button class="btn small" id="importEmployeesBtn" data-access="admin">Ricarica Matrice + Database</button>
                 <button class="btn small" id="downloadBackupBtn">Scarica backup JSON</button>
@@ -490,7 +515,7 @@
           </details>
         </div>
       </div>
-      <div class="modal-foot"><button class="btn ghost" data-close="settingsModal">Annulla</button><button class="btn primary" id="saveSettingsBtn">Salva impostazioni</button></div>
+      <div class="modal-foot settings-foot"><span class="settings-foot-hint">Le modifiche Admin vengono condivise con il Responsabile Operativo.</span><button class="btn ghost" data-close="settingsModal">Annulla</button><button class="btn primary" id="saveSettingsBtn">Salva impostazioni</button></div>
     </div>
   </div>
 

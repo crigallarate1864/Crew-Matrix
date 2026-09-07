@@ -679,7 +679,8 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
     return monthDateKeysFor(month).at(-1);
   }
   function rfsRecoveryWindow(sourceDay){
-    const due=addDaysKey(sourceDay,30);
+    const recoveryDays=Math.max(1,Math.round(numeric(state.settings.holidayRecoveryDays,30)));
+    const due=addDaysKey(sourceDay,recoveryDays);
     return{
       start:addDaysKey(sourceDay,1),
       end:due,
@@ -867,10 +868,16 @@ import { ABSENCE_CATALOG, ART27_REASONS, absenceMeta, absenceLabel, addDaysKey, 
   function automaticRecoveryDue(day,meta){
     if(!day||!meta?.requiresRecovery)return'';
     if(Number(meta.recoveryDeadlineDays)>0){
-      return addDaysKey(day,Number(meta.recoveryDeadlineDays));
+      const days=String(meta.ccnlRef||'').includes('Art. 29')
+        ?Math.max(1,Math.round(numeric(state.settings.holidayRecoveryDays,meta.recoveryDeadlineDays)))
+        :Number(meta.recoveryDeadlineDays);
+      return addDaysKey(day,days);
     }
     if(Number(meta.autoRecoveryMonths)>0){
-      return addMonthsKey(day,Number(meta.autoRecoveryMonths));
+      const months=String(meta.ccnlRef||'').includes('Art. 33')
+        ?Math.max(0,Math.round(numeric(state.settings.personalPermitRecoveryMonths,meta.autoRecoveryMonths)))
+        :Number(meta.autoRecoveryMonths);
+      return addMonthsKey(day,months);
     }
     return'';
   }
@@ -5227,7 +5234,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       recoveryRequired:false,
       recoveryDue:entitlement.due,
       rfsTargetMonth:targetMonth,
-      note:`RFS maturato per festività lavorata del ${formatDateIt(entitlement.sourceDay)} · da fruire obbligatoriamente entro il ${formatDateIt(entitlement.due)} (30 giorni).`,
+      note:`RFS maturato per festività lavorata del ${formatDateIt(entitlement.sourceDay)} · da fruire obbligatoriamente entro il ${formatDateIt(entitlement.due)} (${Math.max(1,Math.round(numeric(state.settings.holidayRecoveryDays,30)))} giorni).`,
       createdAt:now,
       updatedAt:now
     };
@@ -6615,7 +6622,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
   function exportDatabaseCsv(){const headers=['ID_Record','ID_Dipendente','Data_Turno','Tipo_Record','Causale','Sigla','Fascia','Sede','Mezzo','Ruolo','Servizio_ID','DataOra_Inizio','DataOra_Fine','Ore_Dichiarate','Ore_Conteggiate','Stato','Copertura','Origine','Bloccato','Forzatura','Motivo_Forzatura','Note','Richiesto_Da','Data_Richiesta','Approvato_Da','Data_Approvazione','Modificato_Da','Ultima_Modifica','Regime_Ore','Riferimento_CCNL','Deroga_Codice','Autorizzato_Da','Recupero_Richiesto','Scadenza_Recupero','Ore_Recuperate','Data_Evento','Data_Riferimento','Record_Collegato','Frazionamento_Autorizzato','Motivo_Frazionamento'];const rows=[headers];allAssignmentRows().forEach(r=>{const a=r.a,tipo=a.category==='118'?'TURNO_118':a.category==='OP'?'TURNO_CODIFICATO':a.category==='SE'?'SECONDARI':a.category==='RESP'?'RESPONSABILE':a.category==='AM'?'AMMINISTRAZIONE':a.category==='FORM'?'FORMAZIONE':a.category==='ABS'?'ASSENZA':['RC','REST'].includes(a.category)?'RIPOSO':'ALTRO';rows.push([a.id,r.employeeId,r.day,tipo,a.type||a.code||'',normalizeCode(a),a.shift||'',a.site||'',a.machine||'',a.role||'',a.serviceId||'',r.timed?toIsoDateTime(r.day,r.startText,false):'',r.timed?toIsoDateTime(r.day,r.endText,r.end<r.start):'',r.hours,r.hours,a.status||'CONFERMATO',a.coverage||'ORDINARIA',sourceLabel(a)==='AUTO'?'AUTOMATICA':sourceLabel(a)==='DB'?'IMPORTATA':'MANUALE',a.locked?'SI':'NO',a.forced?'SI':'NO',a.forceReason||'',a.note||'',a.requestedBy||'',a.requestedAt||'',a.approvedBy||'',a.approvedAt||'',a.modifiedBy||'',a.updatedAt||'',a.workRegime||'ORDINARY',a.ccnlRef||'',a.derogationCode||'',a.derogationAuthorizedBy||'',a.recoveryRequired?'SI':'NO',a.recoveryDue||'',a.recoveredHours||0,a.eventDate||'',a.linkedEventDay||'',a.linkedRecordId||'',a.splitAllowed?'SI':'NO',a.splitReason||'']);});download(`Database_Turni_${state.month}.csv`,'\uFEFF'+rows.map(r=>r.map(csvEscape).join(';')).join('\n'),'text/csv;charset=utf-8');}
   function exportSummaryCsv(){const year=Number(state.month.slice(0,4)),rows=[['Dipendente','Gruppo','Target','Ore','Saldo','RFS Maturati','RFS Fruiti','RFS Residui','Mattini','Pomeriggi','Notti/P+N','Ruolo A','Ruolo C','Ruolo S','Weekend','Secondari','GRA','GRM','GRO','FORM','Assenze','AM']];state.employees.filter(e=>employeeVisibleInMonth(e)).forEach(e=>{const s=employeeStats(e),target=targetHoursFor(e),rfs=rfsCounter(e.id,year);rows.push([employeeName(e),e.turno,target,s.hours,s.hours-target,rfs.earned,rfs.used,rfs.remaining,s.M,s.P,s.N,s.roleA,s.roleC,s.roleS,s.weekends,s.se,s.gra,s.grm,s.gro,s.form,s.abs,s.am]);});download(`Riepilogo_${state.month}.csv`,'\uFEFF'+rows.map(r=>r.map(csvEscape).join(';')).join('\n'),'text/csv;charset=utf-8');}
   function downloadBackup(){download(`Backup_turnazione_${state.month}.json`,JSON.stringify({version:APP_VERSION,exportedAt:new Date().toISOString(),month:state.month,employees:state.employees,assignments:state.assignments,requirements:state.requirements,monthPlans:state.monthPlans,settings:state.settings},null,2),'application/json');}
-  function importBackupFile(file){const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(!d.assignments)throw new Error('Formato non valido');state.month=d.month||state.month;state.employees=d.employees||state.employees;state.monthPlans=d.monthPlans||{};state.assignments=d.assignments||state.monthPlans?.[state.month]?.assignments||{};state.requirements=d.requirements||state.monthPlans?.[state.month]?.requirements||{};state.settings={...DEFAULT_SETTINGS,...(d.settings||{}),holidayRecoveryDays:30};state.localDirty=true;updateMonthControls();saveState();renderAll();toast('Backup importato');}catch(e){toast('Importazione fallita',e.message,'error');}};reader.readAsText(file);}
+  function importBackupFile(file){const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(!d.assignments)throw new Error('Formato non valido');state.month=d.month||state.month;state.employees=d.employees||state.employees;state.monthPlans=d.monthPlans||{};state.assignments=d.assignments||state.monthPlans?.[state.month]?.assignments||{};state.requirements=d.requirements||state.monthPlans?.[state.month]?.requirements||{};state.settings={...DEFAULT_SETTINGS,...(d.settings||{})};state.localDirty=true;updateMonthControls();saveState();renderAll();toast('Backup importato');}catch(e){toast('Importazione fallita',e.message,'error');}};reader.readAsText(file);}
   let calendarSaveController=null;
   let calendarSaveCancelled=false;
   function ensureCalendarSaveOverlay(){
@@ -6831,6 +6838,34 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     switchView(activeView);
   }
 
+  function bindSettingsMenu(){
+    const modal=$('#settingsModal');
+    if(!modal||modal.dataset.settingsMenuBound==='1')return;
+    modal.dataset.settingsMenuBound='1';
+
+    $$('[data-settings-jump]').forEach(button=>button.addEventListener('click',()=>{
+      const target=$(button.dataset.settingsJump);
+      if(!target)return;
+      $$('#settingsModal details.settings-section').forEach(section=>{section.open=section===target;});
+      requestAnimationFrame(()=>target.scrollIntoView({behavior:'smooth',block:'start'}));
+    }));
+    $('#settingsExpandAllBtn')?.addEventListener('click',()=>
+      $$('#settingsModal details.settings-section').forEach(section=>{section.open=true;})
+    );
+    $('#settingsCollapseAllBtn')?.addEventListener('click',()=>
+      $$('#settingsModal details.settings-section').forEach(section=>{section.open=false;})
+    );
+  }
+
+  function syncGenerationOptionControls(){
+    const set=(id,value)=>{const control=$(id);if(control)control.checked=!!value;};
+    set('#autoAdmin',state.settings.autoAdmin!==false);
+    set('#autoResp',state.settings.autoResponsabili!==false);
+    set('#autoSe',state.settings.autoSecondari!==false);
+    set('#autoRo',state.settings.allowRoAuto===true);
+    set('#autoRc',state.settings.autoCompensatoryRestDefault===true);
+  }
+
   function openSettings(){
     const auth=getServerAuthContext();
     const isRo=String(auth.user?.profileType||'').toUpperCase()==='RO';
@@ -6852,10 +6887,16 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
     $('#setVacationAnnual').value=state.settings.vacationAnnualHours;
     $('#setSuppressedHolidayAnnual').value=state.settings.suppressedHolidayAnnualHours;
     $('#setPersonalPermitAnnual').value=state.settings.personalPermitAnnualHours;
-    $('#setHolidayRecoveryDays').value=30;
+    $('#setPersonalPermitRecoveryMonths').value=Math.max(0,Math.round(numeric(state.settings.personalPermitRecoveryMonths,2)));
+    $('#setHolidayRecoveryDays').value=Math.max(1,Math.round(numeric(state.settings.holidayRecoveryDays,30)));
     $('#setBankHoursMinBlock').value=state.settings.bankHoursMinBlock;
     $('#setPatronHoliday').value=state.settings.patronHoliday||'';
     $('#setNoSplitDay').checked=state.settings.enforceNoSplitDay!==false;
+    $('#setAutoAdmin').checked=state.settings.autoAdmin!==false;
+    $('#setAutoResponsabili').checked=state.settings.autoResponsabili!==false;
+    $('#setAutoSecondari').checked=state.settings.autoSecondari!==false;
+    $('#setAllowRoAuto').checked=state.settings.allowRoAuto===true;
+    $('#setAutoCompensatoryRestDefault').checked=state.settings.autoCompensatoryRestDefault===true;
     $('#setAppsScript').value=ATLAS_SERVER_URL;
     $('#setRotation').checked=state.settings.useABRotation;
 
@@ -6874,14 +6915,15 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       note.innerHTML=isRo?'<strong>Profilo Responsabile Operativo:</strong> puoi scegliere il dipendente prevalente MGSE. Il minimo e il massimo MENSILE sono definiti dall’Admin e restano in sola lettura.':'';
     }
     $$('#settingsModal input, #settingsModal select').forEach(control=>{
-      const fixed=['setAppsScript','setHolidayRecoveryDays','setSeMax'].includes(control.id);
       control.disabled=isRo&&control.id!=='setSePreferredEmployee';
       if(!isRo)control.disabled=false;
-      if(!isRo&&fixed)control.disabled=false;
+      control.readOnly=false;
     });
-    ['setAppsScript','setHolidayRecoveryDays','setSeMax'].forEach(id=>{const control=$('#'+id);if(control){control.readOnly=true;if(!isRo)control.disabled=false;}});
+    const serverControl=$('#setAppsScript');
+    if(serverControl){serverControl.readOnly=true;serverControl.disabled=false;}
     const dailyControl=$('#setSeMin');
     if(dailyControl){dailyControl.readOnly=isRo;dailyControl.disabled=isRo;}
+    bindSettingsMenu();
     openModal('settingsModal');
   }
   async function saveSettings(){
@@ -6986,7 +7028,10 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
           $('#setPersonalPermitAnnual').value,
           36
         ),
-      holidayRecoveryDays:30,
+      personalPermitRecoveryMonths:
+        Math.max(0,Math.min(24,Math.round(numeric($('#setPersonalPermitRecoveryMonths').value,2)))),
+      holidayRecoveryDays:
+        Math.max(1,Math.min(365,Math.round(numeric($('#setHolidayRecoveryDays').value,30)))),
       bankHoursMinBlock:
         numeric(
           $('#setBankHoursMinBlock').value,
@@ -6996,6 +7041,11 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         $('#setPatronHoliday').value.trim(),
       enforceNoSplitDay:
         $('#setNoSplitDay').checked,
+      autoAdmin:$('#setAutoAdmin').checked,
+      autoResponsabili:$('#setAutoResponsabili').checked,
+      autoSecondari:$('#setAutoSecondari').checked,
+      allowRoAuto:$('#setAllowRoAuto').checked,
+      autoCompensatoryRestDefault:$('#setAutoCompensatoryRestDefault').checked,
       matrixCsvUrl:'',
       databaseCsvUrl:'',
       appsScriptUrl:serverUrl,
@@ -7009,6 +7059,19 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
         'Secondari: il minimo non può essere maggiore del massimo.',
         'error'
       );
+      return;
+    }
+
+    if(nextSettings.weeklyMinHours>nextSettings.weeklyMaxHours){
+      toast('Impostazioni non valide','Orario multiperiodale: il minimo settimanale non può superare il massimo.','error');
+      return;
+    }
+    if(nextSettings.annualOvertimeLimit>nextSettings.annualOvertimeExtended){
+      toast('Impostazioni non valide','Straordinario: la soglia annua non può superare il limite esteso.','error');
+      return;
+    }
+    if(nextSettings.weeklyRestOccurrences14<1){
+      toast('Impostazioni non valide','Imposta almeno un riposo nel periodo di 14 giorni.','error');
       return;
     }
 
@@ -7257,7 +7320,7 @@ if(has118&&hasSE)out.push(validation('error','118 e Secondari nello stesso giorn
       'Verranno eliminati TUTTI i record del mese: turni 118, Secondari, responsabilità, amministrazione, formazione, riposi, ferie, malattie, 104, AVIS, congedi, permessi, RC e coperture. Anagrafiche e impostazioni non vengono toccate.',
       resetCalendarCompletely
     ));
-    $('#reloadSheetBtn').addEventListener('click',()=>confirmDialog('Ricaricare Matrice e Database?','Turni e coperture saranno riletti dal foglio','Ferie, malattie, permessi e altre assenze locali protette resteranno registrate.',()=>reloadSheets({replaceDb:true})));$('#autoBtn').addEventListener('click',openPreGenerationWizard);$('#generateAutoBtn').addEventListener('click',generateAutomatic);$('#rfsCurrentMonthBtn').addEventListener('click',()=>handleRfsPlacement('current'));$('#rfsNextMonthBtn').addEventListener('click',()=>handleRfsPlacement('next'));$('#rfsRoChoiceBtn').addEventListener('click',()=>handleRfsPlacement('ro'));$('#absenceBtn').addEventListener('click',openAbsenceModal);$('#absenceCreateTab').addEventListener('click',()=>setAbsencePane('create'));$('#absenceManageTab').addEventListener('click',()=>setAbsencePane('manage'));$('#absMode').addEventListener('change',toggleAbsenceMode);$('#absCode').addEventListener('change',updateAbsenceRuleHint);$('#absFrom').addEventListener('change',updateAbsenceRuleHint);$('#saveAbsenceBtn').addEventListener('click',declareAbsence);['absManageEmployee','absManageCode','absManageStatus','absManageFrom','absManageTo'].forEach(id=>$('#'+id).addEventListener('change',renderAbsenceBulkList));$('#absManageSearch').addEventListener('input',renderAbsenceBulkList);$('#absSelectVisibleBtn').addEventListener('click',selectVisibleAbsences);$('#absClearSelectionBtn').addEventListener('click',clearAbsenceSelection);$('#absDeleteSelectedBtn').addEventListener('click',requestBulkDeleteAbsences);
+    $('#reloadSheetBtn').addEventListener('click',()=>confirmDialog('Ricaricare Matrice e Database?','Turni e coperture saranno riletti dal foglio','Ferie, malattie, permessi e altre assenze locali protette resteranno registrate.',()=>reloadSheets({replaceDb:true})));$('#autoBtn').addEventListener('click',()=>{syncGenerationOptionControls();openPreGenerationWizard();});$('#generateAutoBtn').addEventListener('click',generateAutomatic);$('#rfsCurrentMonthBtn').addEventListener('click',()=>handleRfsPlacement('current'));$('#rfsNextMonthBtn').addEventListener('click',()=>handleRfsPlacement('next'));$('#rfsRoChoiceBtn').addEventListener('click',()=>handleRfsPlacement('ro'));$('#absenceBtn').addEventListener('click',openAbsenceModal);$('#absenceCreateTab').addEventListener('click',()=>setAbsencePane('create'));$('#absenceManageTab').addEventListener('click',()=>setAbsencePane('manage'));$('#absMode').addEventListener('change',toggleAbsenceMode);$('#absCode').addEventListener('change',updateAbsenceRuleHint);$('#absFrom').addEventListener('change',updateAbsenceRuleHint);$('#saveAbsenceBtn').addEventListener('click',declareAbsence);['absManageEmployee','absManageCode','absManageStatus','absManageFrom','absManageTo'].forEach(id=>$('#'+id).addEventListener('change',renderAbsenceBulkList));$('#absManageSearch').addEventListener('input',renderAbsenceBulkList);$('#absSelectVisibleBtn').addEventListener('click',selectVisibleAbsences);$('#absClearSelectionBtn').addEventListener('click',clearAbsenceSelection);$('#absDeleteSelectedBtn').addEventListener('click',requestBulkDeleteAbsences);
     $('#importBtn').addEventListener('click',()=>$('#fileInput').click());$('#fileInput').addEventListener('change',e=>{if(e.target.files[0])importBackupFile(e.target.files[0]);e.target.value='';});$('#clearAutoBtn').addEventListener('click',()=>confirmDialog('Rimuovere le proposte automatiche?','Le voci manuali, bloccate e importate restano','La turnazione potrà essere rigenerata successivamente.',clearAuto));$('#clearMonthBtn').addEventListener('click',()=>confirmDialog('Cancellare la turnazione?','Assenze e indisponibilità restano protette','Saranno rimossi turni 118, Secondari, responsabilità, amministrazione e formazione. Ferie, malattia, infortunio, 104, AVIS, congedi, permessi e RC manuali resteranno registrati.',clearMonth));$('#resetAppBtn').addEventListener('click',()=>confirmDialog('Ripristinare l’app?','Cancellazione dati locali','Saranno eliminati turni, impostazioni e collegamenti salvati nel browser.',resetApp));$('#confirmActionBtn').addEventListener('click',()=>{const fn=state.confirmAction;state.confirmAction=null;closeModal('confirmModal');if(fn)fn();});
     $('#monthPicker').addEventListener('change',e=>openMonth(e.target.value));
     $('#prevMonthBtn').addEventListener('click',()=>stepMonth(-1));
